@@ -1,0 +1,4 @@
+name = GraphicsMagick
+description = Integration of GraphicsMagick.
+package = Media
+core = 7.x

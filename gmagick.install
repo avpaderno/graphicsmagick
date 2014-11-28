@@ -1,0 +1,32 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the GraphicsMagick module.
+ */
+
+/**
+ * Implements hook_requirements().
+ */
+function gmagick_requirements($phase) {
+  $return = array();
+
+  if ($phase === 'runtime') {
+    // Ensure translations don't break at install time.
+    $t = get_t();
+    $version = NULL;
+    if (extension_loaded('gmagick')) {
+      $gmagick = new Gmagick();
+      $version = $gmagick->getVersion();
+    }
+
+    $return['gmagick_extension'] = array(
+      'title' => $t('GraphicsMagick: PHP Extension'),
+      'value' => $version ? $version['versionString'] : $t('Missing'),
+      'severity' => $version ? REQUIREMENT_OK : REQUIREMENT_ERROR,
+      'description' => $t('PECL extension is available here <a href="http://pecl.php.net/package/gmagick">http://pecl.php.net/package/gmagick</a>'),
+    );
+  }
+
+  return $return;
+}
