@@ -20,7 +20,6 @@
  *   - posterize
  *   - roundedcorners
  *   - sharpen
- *   - strip
  *   - watermark
  *   - image_style_quality_image_effect_info()
  *   - Module: filtersie
@@ -76,7 +75,7 @@ function image_gmagick_get_info(stdClass $image) {
  * Helper function to create an image resource from a file.
  *
  * @param object $image
- *   An image object. The $image->resource value will populated by this call.
+ *   An image object. The $image->handler value will populated by this call.
  *
  * @return bool
  *   TRUE or FALSE, based on success.
@@ -85,14 +84,13 @@ function image_gmagick_get_info(stdClass $image) {
  */
 function image_gmagick_load(stdClass $image) {
   try {
-    $image->resource = new Gmagick(drupal_realpath($image->source));
-
-    return TRUE;
+    $image->handler = new Gmagick(drupal_realpath($image->source));
   }
   catch (Exception $e) {
-    // @todo Watchdog.
     return FALSE;
   }
+
+  return TRUE;
 }
 
 /**
@@ -112,24 +110,23 @@ function image_gmagick_load(stdClass $image) {
  */
 function image_gmagick_save(stdClass $image, $destination) {
   try {
-    $image->resource->write(drupal_realpath($destination));
-
-    return TRUE;
+    $image->handler->write(drupal_realpath($destination));
   }
   catch (Exception $e) {
-    // @todo Watchdog.
     return FALSE;
   }
+
+  return TRUE;
 }
 
 /**
  * Implements image_TOOLKIT_resize().
  *
- * Scale an image to the specified size using GM.
+ * Scale an image to the specified size using GraphicsMagick.
  *
  * @param object $image
- *   An image object. The $image->resource, $image->info['width'], and
- *   $image->info['height'] values will be modified by this call.
+ *   An image object. The $image->info['width'] and $image->info['height']
+ *   values will be modified by this call.
  * @param int $width
  *   The new width of the resized image, in pixels.
  * @param int $height
@@ -148,15 +145,16 @@ function image_gmagick_resize(stdClass $image, $width, $height, array $options =
     'blur' => 0,
     'fit' => FALSE,
   );
-  try {
-    $image->resource->resizeimage($width, $height, $options['filter'], $options['blur'], $options['fit']);
 
-    return TRUE;
+  try {
+    $image->handler->resizeImage($width, $height, $options['filter'], $options['blur'], $options['fit']);
+    _gmagick_update_image_info($image);
   }
   catch (Exception $e) {
-    // @todo Watchdog.
     return FALSE;
   }
+
+  return TRUE;
 }
 
 /**
@@ -165,8 +163,8 @@ function image_gmagick_resize(stdClass $image, $width, $height, array $options =
  * Rotate an image the given number of degrees.
  *
  * @param object $image
- *   An image object. The $image->resource, $image->info['width'], and
- *   $image->info['height'] values will be modified by this call.
+ *   An image object. $image->info['width'] and $image->info['height'] values
+ *   will be modified by this call.
  * @param float $degrees
  *   The number of (clockwise) degrees to rotate the image.
  * @param string $background
@@ -183,14 +181,14 @@ function image_gmagick_resize(stdClass $image, $width, $height, array $options =
  */
 function image_gmagick_rotate(stdClass $image, $degrees, $background = NULL) {
   try {
-    $image->resource->rotateImage('#' . base_convert($background, 10, 16), $degrees);
-
-    return TRUE;
+    $image->handler->rotateImage('#' . base_convert($background, 10, 16), $degrees);
+    _gmagick_update_image_info($image);
   }
   catch (Exception $e) {
-    // @todo Watchdog.
     return FALSE;
   }
+
+  return TRUE;
 }
 
 /**
@@ -199,8 +197,8 @@ function image_gmagick_rotate(stdClass $image, $degrees, $background = NULL) {
  * Crop an image using the GraphicsMagick toolkit.
  *
  * @param object $image
- *   An image object. The $image->resource, $image->info['width'], and
- *   $image->info['height'] values will be modified by this call.
+ *   An image object. The image->info['width'] and $image->info['height'] values
+ *   will be modified by this call.
  * @param int $x
  *   The starting x offset at which to start the crop, in pixels.
  * @param int $y
@@ -217,26 +215,26 @@ function image_gmagick_rotate(stdClass $image, $degrees, $background = NULL) {
  */
 function image_gmagick_crop(stdClass $image, $x, $y, $width, $height) {
   try {
-    $image->resource->cropImage($width, $height, $x, $y);
-
-    return TRUE;
+    $image->handler->cropImage($width, $height, $x, $y);
+    _gmagick_update_image_info($image);
   }
   catch (Exception $e) {
-    // @todo Watchdog.
     return FALSE;
   }
+
+  return TRUE;
 }
 
 /**
  * Implements image_TOOLKIT_desaturate().
  *
- * Convert an image resource to grayscale.
+ * Convert an image resource to gray scale.
  *
  * @todo Check this statement is true for GM as well?
  * Note that transparent GIFs loose transparency when desaturated.
  *
  * @param object $image
- *   An image object. The $image->resource value will be modified by this call.
+ *   An image object.
  *
  * @return bool
  *   TRUE or FALSE, based on success.
@@ -245,14 +243,13 @@ function image_gmagick_crop(stdClass $image, $x, $y, $width, $height) {
  */
 function image_gmagick_desaturate(stdClass $image) {
   try {
-    $image->resource->setImageColorspace(Gmagick::COLORSPACE_GRAY);
-
-    return TRUE;
+    $image->handler->setImageColorspace(Gmagick::COLORSPACE_GRAY);
   }
   catch (Exception $e) {
-    // @todo Watchdog.
     return FALSE;
   }
+
+  return TRUE;
 }
 
 /**
@@ -274,6 +271,22 @@ function image_gmagick_brightness(stdClass $image, $settings = array()) {
 }
 
 /**
+ * Implements image_TOOLKIT_strip().
+ *
+ * @see imagemagick_advanced_strip_effect()
+ */
+function image_gmagick_strip(stdClass $image) {
+  try {
+    $image->handler->stripImage();
+  }
+  catch (Exception $e) {
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
  * Implements image_TOOLKIT_brightness().
  */
 function image_gmagick_modulate(stdClass $image, $settings = array()) {
@@ -284,10 +297,9 @@ function image_gmagick_modulate(stdClass $image, $settings = array()) {
   );
 
   try {
-    $image->resource->modulateImage($settings['brightness'], $settings['saturation'], $settings['hue']);
+    $image->handler->modulateImage($settings['brightness'], $settings['saturation'], $settings['hue']);
   }
   catch (Exception $e) {
-    // @todo Watchdog.
     return FALSE;
   }
 
@@ -303,4 +315,12 @@ function image_gmagick_modulate(stdClass $image, $settings = array()) {
  */
 function gmagick_value_to_percent($value, $range = 255, $zero = 0) {
   return ($value - $zero) / ($range / 100);
+}
+
+/**
+ * @param object $image
+ */
+function _gmagick_update_image_info($image) {
+  $image->info['width'] = $image->handler->getImageWidth();
+  $image->info['height'] = $image->handler->getImageHeight();
 }
