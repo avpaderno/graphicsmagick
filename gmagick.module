@@ -14,7 +14,6 @@
  *   - definecanvas
  *   - image_effects_text
  *   - imagemask
- *   - overlay
  *   - roundedcorners
  *   - sharpen
  *   - image_style_quality_image_effect_info()
@@ -379,11 +378,27 @@ function image_gmagick_charcoal(stdClass $image, array $options = array()) {
 }
 
 /**
+ * Implements image_TOOLKIT_coloroverlay().
+ *
+ * @see coloractions_coloroverlay_image()
+ */
+function image_gmagick_coloroverlay(stdClass $image, array $options = array()) {
+  try {
+    // @todo Implement color overlay effect.
+  }
+  catch (Exception $e) {
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
  * Implements image_TOOLKIT_colorshift().
  *
  * @see coloractions_colorshift_image()
  */
-function image_gmagick_colorshift(stdClass $image, array $data = array()) {
+function image_gmagick_colorshift(stdClass $image, array $options = array()) {
   try {
     // @todo Implement color shift effect.
   }
@@ -560,6 +575,26 @@ function image_gmagick_inverse(stdClass $image) {
 }
 
 /**
+ * Implements image_TOOLKIT_modulate().
+ */
+function image_gmagick_modulate(stdClass $image, $settings = array()) {
+  $settings += array(
+    'brightness' => 100,
+    'saturation' => 100,
+    'hue' => 100,
+  );
+
+  try {
+    $image->handler->modulateImage($settings['brightness'], $settings['saturation'], $settings['hue']);
+  }
+  catch (Exception $e) {
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
  * Implements image_TOOLKIT_oilpaint().
  */
 function image_gmagick_oil_paint(stdClass $image, array $options = array()) {
@@ -718,31 +753,16 @@ function image_gmagick_swirl(stdClass $image, array $options = array()) {
 }
 
 /**
- * Implements image_TOOLKIT_brightness().
+ * @param string $key
+ *
+ * @return array
  */
-function image_gmagick_modulate(stdClass $image, $settings = array()) {
-  $settings += array(
-    'brightness' => 100,
-    'saturation' => 100,
-    'hue' => 100,
-  );
-
-  try {
-    $image->handler->modulateImage($settings['brightness'], $settings['saturation'], $settings['hue']);
-  }
-  catch (Exception $e) {
-    return FALSE;
-  }
-
-  return TRUE;
-}
-
-function gmagick_channels() {
+function gmagick_channels($key = 'name') {
   $rgb = t('RGB', array(), array('context' => 'color channels'));
   $cmyk = t('CMYK', array(), array('context' => 'color channels'));
   $other = t('Other');
 
-  return array(
+  $channels = array(
     'red' => array(
       'group' => $rgb,
       'label' => t('Red'),
@@ -816,17 +836,46 @@ function gmagick_channels() {
       'value' => Gmagick::CHANNEL_INDEX,
     ),
   );
+
+  if ($key === 'name') {
+    return $channels;
+  }
+
+  $return = array();
+  foreach ($channels as $channel) {
+    $return[$channel[$key]] = $channel;
+  }
+
+  return $return;
 }
 
-function gmagick_channel_options($group = FALSE) {
+/**
+ * @param string|int $id
+ *
+ * @return array|null
+ */
+function gmagick_channel_load($id) {
+  $channels = gmagick_channels((is_numeric($id) ? 'value' : 'name'));
+
+  return isset($channels[$id]) ? $channels[$id] : NULL;
+}
+
+/**
+ * @param string $key
+ * @param string $value
+ * @param bool $group
+ *
+ * @return array
+ */
+function gmagick_channel_options($key = 'name', $value = 'label', $group = FALSE) {
   $options = array();
 
   foreach (gmagick_channels() as $channel) {
     if ($group) {
-      $options[$channel['group']][$channel['name']] = $channel['label'];
+      $options[$channel['group']][$channel[$key]] = $channel[$value];
     }
     else {
-      $options[$channel['name']] = $channel['label'];
+      $options[$channel[$key]] = $channel[$value];
     }
   }
 
