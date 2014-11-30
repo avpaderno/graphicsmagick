@@ -122,7 +122,6 @@ function gmagick_effects_image_effect_info() {
     'help' => t("Gamma-corrects an image. The same image viewed on different devices will have perceptual differences in the way the image's intensities are represented on the screen. Specify individual gamma levels for the red, green, and blue channels, or adjust all three with the gamma parameter. Values typically range from 0.8 to 2.3."),
     'form callback' => 'gmagick_effects_image_effect_gamma_form',
     'summary theme' => 'gmagick_effects_image_effect_gamma_summary',
-    'dimensions callback' => 'gmagick_effects_image_effect_gamma_dimensions',
     'effect callback' => 'gmagick_effects_image_effect_gamma_effect',
   );
 
