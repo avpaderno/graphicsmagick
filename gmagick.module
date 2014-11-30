@@ -10,7 +10,6 @@
  * @todo Actions:
  *   - colorshift
  *   - coloroverlay
- *   - convert_image
  *   - definecanvas
  *   - image_effects_text
  *   - imagemask
@@ -253,6 +252,20 @@ function image_gmagick_crop(stdClass $image, $x, $y, $width, $height) {
   try {
     $image->handler->cropImage($width, $height, $x, $y);
     _gmagick_update_image_info($image);
+  }
+  catch (Exception $e) {
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * Implements image_TOOLKIT_definecanvas().
+ */
+function image_gmagick_definecanvas(stdClass $image, array $options = array()) {
+  try {
+    // @todo.
   }
   catch (Exception $e) {
     return FALSE;
@@ -690,6 +703,27 @@ function image_gmagick_quantize(stdClass $image, array $options = array()) {
       $options['dither'],
       $options['measure_error']
     );
+  }
+  catch (Exception $e) {
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * Implements image_TOOLKIT_roll().
+ *
+ * @see http://php.net/manual/en/gmagick.rollimage.php
+ */
+function image_gmagick_roll(stdClass $image, array $options = array()) {
+  $options += array(
+    'x' => 0,
+    'y' => 0,
+  );
+
+  try {
+    $image->handler->rollImage($options['x'], $options['y']);
   }
   catch (Exception $e) {
     return FALSE;

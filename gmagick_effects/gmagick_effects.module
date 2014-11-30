@@ -133,6 +133,14 @@ function gmagick_effects_image_effect_info() {
     'effect callback' => 'gmagick_effects_image_effect_oil_paint_effect',
   );
 
+  $effects['gmagick_effects_roll'] = array(
+    'label' => t('Roll'),
+    'help' => t('Long description'),
+    'form callback' => 'gmagick_effects_image_effect_roll_form',
+    'summary theme' => 'gmagick_effects_image_effect_options_summary',
+    'effect callback' => 'gmagick_effects_image_effect_roll_effect',
+  );
+
   $effects['gmagick_effects_shear'] = array(
     'label' => t('Shear'),
     'help' => t('Slides one edge of an image along the X or Y axis, creating a parallelogram. An X direction shear slides an edge along the X axis, while a Y direction shear slides an edge along the Y axis. The amount of the shear is controlled by a shear angle. For X direction shears, x_shear is measured relative to the Y axis, and similarly, for Y direction shears y_shear is measured relative to the X axis. Empty triangles left over from shearing the image are filled with the background color.'),
@@ -731,6 +739,8 @@ function theme_gmagick_effects_image_effect_options_summary($variables) {
 
   $labels = array(
     'radius' => t('Radius'),
+    'x' => t('X'),
+    'y' => t('Y'),
   );
 
   foreach ($variables['data'] as $key => $value) {
@@ -755,6 +765,36 @@ function theme_gmagick_effects_image_effect_options_summary($variables) {
  */
 function gmagick_effects_image_effect_spread_effect($image, $data) {
   image_toolkit_invoke('spread', $image, array($data));
+}
+
+/**
+ * Implements callback_image_effect_info__form().
+ */
+function gmagick_effects_image_effect_roll_form($data) {
+  $data += array(
+    'x' => 0,
+    'y' => 0,
+  );
+
+  return array(
+    'x' => array(
+      '#type' => 'textfield',
+      '#title' => t('X'),
+      '#default_value' => $data['x'],
+    ),
+    'y' => array(
+      '#type' => 'textfield',
+      '#title' => t('Y'),
+      '#default_value' => $data['y'],
+    ),
+  );
+}
+
+/**
+ * Implements callback_image_effect_info__effect().
+ */
+function gmagick_effects_image_effect_roll_effect($image, $data) {
+  image_toolkit_invoke('roll', $image, array($data));
 }
 
 //hook_image_effect_info_callbacks
