@@ -410,6 +410,34 @@ function image_gmagick_colorshift(stdClass $image, array $options = array()) {
 }
 
 /**
+ * Implements image_TOOLKIT_convert_image().
+ *
+ * @see http://php.net/manual/en/gmagick.setimageformat.php
+ */
+function image_gmagick_convert_image(stdClass $image, array $options = array()) {
+  $options += array(
+    'format' => 'image/png',
+    'quality' => 75,
+  );
+
+  $map = gmagick_mimetype_format_map();
+  if (!isset($map[$options['format']])
+    || !in_array($map[$options['format']], $image->handler->queryFormats())
+  ) {
+    return TRUE;
+  }
+
+  try {
+    $image->handler->setImageFormat($map[$options['format']]);
+  }
+  catch (Exception $e) {
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
  * Implements image_TOOLKIT_composite().
  *
  * http://php.net/manual/en/gmagick.compositeimage.php
@@ -1049,6 +1077,17 @@ function gmagick_exif_orientation_mirror($orientation) {
   }
 
   return FALSE;
+}
+
+/**
+ * @return array
+ */
+function gmagick_mimetype_format_map() {
+  return variable_get('gmagick_mimetype_format_map', array(
+    'image/png' => 'PNG',
+    'image/jpeg' => 'JPG',
+    'image/gif' => 'GIF',
+  ));
 }
 
 /**
