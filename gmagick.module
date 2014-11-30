@@ -15,10 +15,8 @@
  *   - image_effects_text
  *   - imagemask
  *   - overlay
- *   - posterize
  *   - roundedcorners
  *   - sharpen
- *   - watermark
  *   - image_style_quality_image_effect_info()
  *   - Module: filtersie
  *     - filtersie_generic
@@ -489,8 +487,11 @@ function image_gmagick_imagecache_autorotate(stdClass $image) {
   $mirror = gmagick_exif_orientation_mirror($exif['Orientation']);
 
   $return = $rotate ? image_gmagick_rotate($image, $rotate) : TRUE;
-
   if ($return) {
+    if ($rotate === 90 || $rotate === 270) {
+      _gmagick_update_image_info($image);
+    }
+
     if ($mirror === 'flip') {
       $return = image_gmagick_flip($image);
     }
@@ -512,6 +513,48 @@ function image_gmagick_oil_paint(stdClass $image, array $options = array()) {
 
   try {
     $image->handler->oilPaintImage($options['radius']);
+  }
+  catch (Exception $e) {
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * Implements image_TOOLKIT_posterize().
+ */
+function image_gmagick_posterize(stdClass $image, $colors) {
+  return image_gmagick_quantize($image, array('num_of_colors' => (int) $colors));
+}
+
+/**
+ * Implements image_TOOLKIT_quantize().
+ *
+ * @see http://php.net/manual/en/gmagick.quantizeimage.php
+ */
+function image_gmagick_quantize(stdClass $image, array $options = array()) {
+  $options += array(
+    'num_of_colors' => 0,
+    'color_space' => $image->handler->getImageColorSpace(),
+    'tree_depth' => 0,
+    'dither' => FALSE,
+    'measure_error' => FALSE,
+  );
+
+  $color_space = gmagick_color_space_load($options['color_space']);
+  if (!$color_space || $color_space['value'] == Gmagick::COLORSPACE_UNDEFINED) {
+    return FALSE;
+  }
+
+  try {
+    $image->handler->quantizeImage(
+      $options['num_of_colors'],
+      $options['color_space'],
+      $options['tree_depth'],
+      $options['dither'],
+      $options['measure_error']
+    );
   }
   catch (Exception $e) {
     return FALSE;
@@ -676,6 +719,134 @@ function gmagick_channel_options($group = FALSE) {
     else {
       $options[$channel['name']] = $channel['label'];
     }
+  }
+
+  return $options;
+}
+
+/**
+ * @param string $key
+ *
+ * @return array
+ */
+function gmagick_color_spaces($key = 'name') {
+  $color_spaces = array(
+    'undefined' => array(
+      'name' => 'undefined',
+      'value' => Gmagick::COLORSPACE_UNDEFINED,
+      'label' => t('undefined'),
+    ),
+    'rgb' => array(
+      'name' => 'rgb',
+      'value' => Gmagick::COLORSPACE_RGB,
+      'label' => t('RGB'),
+    ),
+    'gray' => array(
+      'name' => 'gray',
+      'value' => Gmagick::COLORSPACE_GRAY,
+      'label' => t('Gray'),
+    ),
+    'transparent' => array(
+      'name' => 'transparent',
+      'value' => Gmagick::COLORSPACE_TRANSPARENT,
+      'label' => t('Transparent'),
+    ),
+    'ohta' => array(
+      'name' => 'ohta',
+      'value' => Gmagick::COLORSPACE_OHTA,
+      'label' => t('OHTA'),
+    ),
+    'lab' => array(
+      'name' => 'lab',
+      'value' => Gmagick::COLORSPACE_LAB,
+      'label' => t('LAB'),
+    ),
+    'xyz' => array(
+      'name' => 'xyz',
+      'value' => Gmagick::COLORSPACE_XYZ,
+      'label' => t('XYZ'),
+    ),
+    'ycbcr' => array(
+      'name' => 'ycbcr',
+      'value' => Gmagick::COLORSPACE_YCBCR,
+      'label' => t('YCBCR'),
+    ),
+    'ycc' => array(
+      'name' => 'ycc',
+      'value' => Gmagick::COLORSPACE_YCC,
+      'label' => t('YCC'),
+    ),
+    'yiq' => array(
+      'name' => 'yiq',
+      'value' => Gmagick::COLORSPACE_YIQ,
+      'label' => t('YIQ'),
+    ),
+    'ypbpr' => array(
+      'name' => 'ypbpr',
+      'value' => Gmagick::COLORSPACE_YPBPR,
+      'label' => t('YPBPR'),
+    ),
+    'yuv' => array(
+      'name' => 'yuv',
+      'value' => Gmagick::COLORSPACE_YUV,
+      'label' => t('YUV'),
+    ),
+    'cmyk' => array(
+      'name' => 'cmyk',
+      'value' => Gmagick::COLORSPACE_CMYK,
+      'label' => t('CMYK'),
+    ),
+    'srgb' => array(
+      'name' => 'srgb',
+      'value' => Gmagick::COLORSPACE_SRGB,
+      'label' => t('SRGB'),
+    ),
+    'hsl' => array(
+      'name' => 'hsl',
+      'value' => Gmagick::COLORSPACE_HSL,
+      'label' => t('HSL'),
+    ),
+    'hwb' => array(
+      'name' => 'hwb',
+      'value' => Gmagick::COLORSPACE_HWB,
+      'label' => t('HWB'),
+    ),
+  );
+
+  if ($key === 'name') {
+    return $color_spaces;
+  }
+
+  $return = array();
+  foreach ($color_spaces as $color_space) {
+    $return[$color_space[$key]] = $color_space;
+  }
+
+  return $return;
+}
+
+/**
+ * @param string|int $id
+ *
+ * @return array|null
+ */
+function gmagick_color_space_load($id) {
+  $color_spaces = gmagick_color_spaces((is_numeric($id) ? 'value' : 'name'));
+
+  return isset($color_spaces[$id]) ? $color_spaces[$id] : NULL;
+}
+
+/**
+ * @param string $key
+ * @param string $value
+ *
+ * @return array
+ */
+function gmagick_color_space_options($key = 'name', $value = 'label') {
+  $options = array();
+
+  foreach (gmagick_color_spaces() as $color_space) {
+    $options[$color_space[$key]] = $color_space[$value];
   }
 
   return $options;
