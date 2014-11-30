@@ -8,9 +8,9 @@
  * @see http://pecl.php.net/package/gmagick
  *
  * @todo Actions:
+ *   - motionblur
  *   - colorshift
  *   - coloroverlay
- *   - definecanvas
  *   - image_effects_text
  *   - imagemask
  *   - roundedcorners
@@ -155,75 +155,21 @@ function image_gmagick_save(stdClass $image, $destination) {
 }
 
 /**
- * Implements image_TOOLKIT_resize().
+ * Implements image_TOOLKIT_brightness().
  *
- * Scale an image to the specified size using GraphicsMagick.
- *
- * @param object $image
- *   An image object. The $image->info['width'] and $image->info['height']
- *   values will be modified by this call.
- * @param int $width
- *   The new width of the resized image, in pixels.
- * @param int $height
- *   The new height of the resized image, in pixels.
- * @param array $options
- *   Non standard options.
- *
- * @return bool
- *   TRUE or FALSE, based on success.
- *
- * @see image_resize()
+ * @see coloractions_brightness_form()
+ * @see coloractions_brightness_image()
  */
-function image_gmagick_resize(stdClass $image, $width, $height, array $options = array()) {
-  $options += array(
-    'filter' => Gmagick::FILTER_LANCZOS,
-    'blur' => 0,
-    'fit' => FALSE,
-  );
-
-  try {
-    $image->handler->resizeImage($width, $height, $options['filter'], $options['blur'], $options['fit']);
-    _gmagick_update_image_info($image);
-  }
-  catch (Exception $e) {
-    return FALSE;
+function image_gmagick_brightness(stdClass $image, $options = array()) {
+  if (isset($options['filter_arg1']) && !isset($options['brightness'])) {
+    $options['brightness'] = $options['filter_arg1'];
   }
 
-  return TRUE;
-}
-
-/**
- * Implements image_TOOLKIT_rotate().
- *
- * Rotate an image the given number of degrees.
- *
- * @param object $image
- *   An image object. $image->info['width'] and $image->info['height'] values
- *   will be modified by this call.
- * @param float $degrees
- *   The number of (clockwise) degrees to rotate the image.
- * @param string $background
- *   An hexadecimal integer specifying the background color to use for the
- *   uncovered area of the image after the rotation. E.g. 0x000000 for black,
- *   0xff00ff for magenta, and 0xffffff for white. For images that support
- *   transparency, this will default to transparent. Otherwise it will
- *   be white.
- *
- * @return bool
- *   TRUE or FALSE, based on success.
- *
- * @see image_rotate()
- */
-function image_gmagick_rotate(stdClass $image, $degrees, $background = NULL) {
-  try {
-    $image->handler->rotateImage('#' . base_convert($background, 10, 16), $degrees);
-    _gmagick_update_image_info($image);
-  }
-  catch (Exception $e) {
-    return FALSE;
+  if (isset($options['brightness'])) {
+    $options['brightness'] = 100 + gmagick_value_to_percent($options['brightness']);
   }
 
-  return TRUE;
+  return image_gmagick_modulate($image, $options);
 }
 
 /**
@@ -264,8 +210,56 @@ function image_gmagick_crop(stdClass $image, $x, $y, $width, $height) {
  * Implements image_TOOLKIT_definecanvas().
  */
 function image_gmagick_definecanvas(stdClass $image, array $options = array()) {
+  $options += array(
+    'RGB' => array(),
+    'targetsize' => array(),
+    'under' => TRUE,
+  );
+
+  $options['RGB'] += array(
+    'alpha' => 0,
+    'red' => 255,
+    'green' => 255,
+    'blue' => 255,
+    'HEX' => '#ffffff',
+  );
+  $options['targetsize'] += array(
+    'width' => $image->handler->getImageWidth(),
+    'height' => $image->handler->getImageHeight(),
+    'top' => 0,
+    'left' => 0,
+  );
+
+  // Move this to a separate function.
+  if ($options['RGB']['HEX']) {
+    $color = $options['RGB']['HEX'];
+    if (!empty($options['RGB']['alpha'])) {
+      $color .= base_convert($options['RGB']['alpha'], 10, 16);
+    }
+  }
+  else {
+    $color = 'transparent';
+  }
+
   try {
-    // @todo.
+    $base = new Gmagick();
+    $base->newImage(
+      $options['targetsize']['width'], $options['targetsize']['height'],
+      $color
+    );
+
+    if ($options['under']) {
+      $base->compositeImage(
+        $image->handler,
+        Gmagick::COMPOSITE_OVER,
+        $options['targetsize']['left'],
+        $options['targetsize']['top']
+      );
+    }
+
+    $image->handler->destroy();
+    $image->handler = $base;
+    _gmagick_update_image_info($image);
   }
   catch (Exception $e) {
     return FALSE;
@@ -299,24 +293,6 @@ function image_gmagick_desaturate(stdClass $image) {
   }
 
   return TRUE;
-}
-
-/**
- * Implements image_TOOLKIT_brightness().
- *
- * @see coloractions_brightness_form()
- * @see coloractions_brightness_image()
- */
-function image_gmagick_brightness(stdClass $image, $options = array()) {
-  if (isset($options['filter_arg1']) && !isset($options['brightness'])) {
-    $options['brightness'] = $options['filter_arg1'];
-  }
-
-  if (isset($options['brightness'])) {
-    $options['brightness'] = 100 + gmagick_value_to_percent($options['brightness']);
-  }
-
-  return image_gmagick_modulate($image, $options);
 }
 
 /**
@@ -712,6 +688,44 @@ function image_gmagick_quantize(stdClass $image, array $options = array()) {
 }
 
 /**
+ * Implements image_TOOLKIT_resize().
+ *
+ * Scale an image to the specified size using GraphicsMagick.
+ *
+ * @param object $image
+ *   An image object. The $image->info['width'] and $image->info['height']
+ *   values will be modified by this call.
+ * @param int $width
+ *   The new width of the resized image, in pixels.
+ * @param int $height
+ *   The new height of the resized image, in pixels.
+ * @param array $options
+ *   Non standard options.
+ *
+ * @return bool
+ *   TRUE or FALSE, based on success.
+ *
+ * @see image_resize()
+ */
+function image_gmagick_resize(stdClass $image, $width, $height, array $options = array()) {
+  $options += array(
+    'filter' => Gmagick::FILTER_LANCZOS,
+    'blur' => 0,
+    'fit' => FALSE,
+  );
+
+  try {
+    $image->handler->resizeImage($width, $height, $options['filter'], $options['blur'], $options['fit']);
+    _gmagick_update_image_info($image);
+  }
+  catch (Exception $e) {
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
  * Implements image_TOOLKIT_roll().
  *
  * @see http://php.net/manual/en/gmagick.rollimage.php
@@ -724,6 +738,40 @@ function image_gmagick_roll(stdClass $image, array $options = array()) {
 
   try {
     $image->handler->rollImage($options['x'], $options['y']);
+  }
+  catch (Exception $e) {
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * Implements image_TOOLKIT_rotate().
+ *
+ * Rotate an image the given number of degrees.
+ *
+ * @param object $image
+ *   An image object. $image->info['width'] and $image->info['height'] values
+ *   will be modified by this call.
+ * @param float $degrees
+ *   The number of (clockwise) degrees to rotate the image.
+ * @param string $background
+ *   An hexadecimal integer specifying the background color to use for the
+ *   uncovered area of the image after the rotation. E.g. 0x000000 for black,
+ *   0xff00ff for magenta, and 0xffffff for white. For images that support
+ *   transparency, this will default to transparent. Otherwise it will
+ *   be white.
+ *
+ * @return bool
+ *   TRUE or FALSE, based on success.
+ *
+ * @see image_rotate()
+ */
+function image_gmagick_rotate(stdClass $image, $degrees, $background = NULL) {
+  try {
+    $image->handler->rotateImage('#' . base_convert($background, 10, 16), $degrees);
+    _gmagick_update_image_info($image);
   }
   catch (Exception $e) {
     return FALSE;
