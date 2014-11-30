@@ -1,0 +1,6 @@
+name = GraphicsMagick - Effects
+description = Custom image effects.
+package = Media
+core = 7.x
+
+dependencies[] = gmagick
