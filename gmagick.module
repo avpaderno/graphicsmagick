@@ -14,7 +14,6 @@
  *   - definecanvas
  *   - image_effects_text
  *   - imagemask
- *   - inverse
  *   - overlay
  *   - posterize
  *   - roundedcorners
@@ -513,6 +512,33 @@ function image_gmagick_oil_paint(stdClass $image, array $options = array()) {
 
   try {
     $image->handler->oilPaintImage($options['radius']);
+  }
+  catch (Exception $e) {
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * Implements image_TOOLKIT_inverse().
+ */
+function image_gmagick_inverse(stdClass $image) {
+  return image_gmagick_solarize($image);
+}
+
+/**
+ * Implements image_TOOLKIT_solarize().
+ *
+ * @see http://php.net/manual/en/gmagick.solarizeimage.php
+ */
+function image_gmagick_solarize(stdClass $image, array $options = array()) {
+  $options += array(
+    'threshold' => 0,
+  );
+
+  try {
+    $image->handler->solarizeImage($options['threshold']);
   }
   catch (Exception $e) {
     return FALSE;
