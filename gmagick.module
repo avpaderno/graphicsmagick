@@ -295,16 +295,16 @@ function image_gmagick_desaturate(stdClass $image) {
  * @see coloractions_brightness_form()
  * @see coloractions_brightness_image()
  */
-function image_gmagick_brightness(stdClass $image, $settings = array()) {
-  if (isset($settings['filter_arg1']) && !isset($settings['brightness'])) {
-    $settings['brightness'] = $settings['filter_arg1'];
+function image_gmagick_brightness(stdClass $image, $options = array()) {
+  if (isset($options['filter_arg1']) && !isset($options['brightness'])) {
+    $options['brightness'] = $options['filter_arg1'];
   }
 
-  if (isset($settings['brightness'])) {
-    $settings['brightness'] = 100 + gmagick_value_to_percent($settings['brightness']);
+  if (isset($options['brightness'])) {
+    $options['brightness'] = 100 + gmagick_value_to_percent($options['brightness']);
   }
 
-  return image_gmagick_modulate($image, $settings);
+  return image_gmagick_modulate($image, $options);
 }
 
 /**
@@ -568,6 +568,30 @@ function image_gmagick_quantize(stdClass $image, array $options = array()) {
  */
 function image_gmagick_inverse(stdClass $image) {
   return image_gmagick_solarize($image);
+}
+
+/**
+ * Implements image_TOOLKIT_shear().
+ *
+ * @see http://php.net/manual/en/gmagick.shearimage.php
+ */
+function image_gmagick_shear(stdClass $image, array $options = array()) {
+  $options += array(
+    // @todo Use transparent only for PNG.
+    'color' => 'transparent',
+    'x_shear' => 0,
+    'y_shear' => 0,
+  );
+
+  try {
+    $image->handler->shearImage($options['color'], $options['x_shear'], $options['y_shear']);
+    _gmagick_update_image_info($image);
+  }
+  catch (Exception $e) {
+    return FALSE;
+  }
+
+  return TRUE;
 }
 
 /**
