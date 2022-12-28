@@ -1,4 +1,0 @@
-name = GraphicsMagick - Toolkit
-description = Integrates GraphicsMagick as an image toolkit.
-package = Media
-core = 7.x

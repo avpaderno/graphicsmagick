@@ -1,0 +1,8 @@
+name = GraphicsMagick
+description = Adds an image toolkit that uses the GraphicsMagick library.
+package = Media
+tags[] = Images
+backdrop = 1.x
+type = module
+
+dependencies[] = system (>=1.22.0)

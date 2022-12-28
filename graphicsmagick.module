@@ -1,0 +1,754 @@
+<?php
+/**
+ * @file
+ * Hooks implementations for the GraphicsMagick module.
+ */
+
+/**
+ * Implements hook_image_toolkits().
+ */
+function graphicsmagick_image_toolkits() {
+  return [
+    'graphicsmagick' => [
+      'title' => t('GraphicsMagick toolkit'),
+      'available' => graphicsmagick_available(),
+    ],
+  ];
+}
+
+/**
+ * Retrieve settings for the GraphicsMagick module.
+ */
+function image_graphicsmagick_settings() {
+  $form['graphicsmagick_resize_settings'] = [
+    '#type' => 'details',
+    '#summary' => t('Resize settings'),
+    '#open' => TRUE,
+  ];
+
+  $form['graphicsmagick_resize_settings']['graphicsmagick_image_blur'] = [
+    '#type' => 'number',
+    '#title' => t('Image blur'),
+    '#description' => t('The image blur (from 0 to 200). Values higher than 100 make the image blurry, while values lower than 100 make the image sharper. When the used image filter is Lanczos, it is probably better to use a blur value lower than 100.'),
+    '#min' => 0,
+    '#max' => 200,
+    '#default_value' => graphicsmagick_get_image_blur(),
+  ];
+
+  $options = [
+    Gmagick::FILTER_UNDEFINED => t('None'),
+    Gmagick::FILTER_POINT => t('Point'),
+    Gmagick::FILTER_BOX => t('Box'),
+    Gmagick::FILTER_TRIANGLE => t('Triangle'),
+    Gmagick::FILTER_HERMITE => t('Hermite'),
+    Gmagick::FILTER_HANNING => t('Hanning'),
+    Gmagick::FILTER_HAMMING => t('Hamming'),
+    Gmagick::FILTER_BLACKMAN => t('Blackman'),
+    Gmagick::FILTER_GAUSSIAN => t('Gaussian'),
+    Gmagick::FILTER_QUADRATIC => t('Quadratic'),
+    Gmagick::FILTER_CUBIC => t('Cubic'),
+    Gmagick::FILTER_CATROM => t('Catmull-Rom'),
+    Gmagick::FILTER_MITCHELL => t('Mitchell'),
+    Gmagick::FILTER_LANCZOS => t('Lanczos'),
+    Gmagick::FILTER_BESSEL => t('Bessel'),
+    Gmagick::FILTER_SINC => t('Sinc'),
+  ];
+
+  $form['graphicsmagick_resize_settings']['graphicsmagick_image_filter'] = [
+    '#type' => 'select',
+    '#title' => t('Image blur'),
+    '#options' => array(
+      0 => t('No'),
+      1 => t('Yes'),
+    ),
+    '#default_value' => graphicsmagick_get_image_filter(),
+    '#description' => t('The image filter applied to the image. By default no filter is applied when an image is resized. For a better effect, choose Lanczos or Mitchell.'),
+  ];
+
+  $form['graphicsmagick_save_settings'] = [
+    '#type' => 'details',
+    '#summary' => t('Save settings'),
+    '#open' => TRUE,
+  ];
+
+  $form['graphicsmagick_save_settings']['graphicsmagick_jpeg_quality'] = [
+    '#type' => 'number',
+    '#title' => t('JPEG quality'),
+    '#description' => t('The image quality for JPEG images (from 0 to 100). Higher values mean better image quality but bigger files.'),
+    '#min' => 0,
+    '#max' => 100,
+    '#default_value' => graphicsmagick_get_jpeg_quality(),
+    '#field_suffix' => t('%'),
+  ];
+
+  return $form;
+}
+
+/**
+ * Scale an image to the specified size using the GraphicsMagick library.
+ *
+ * @param stdClass $image
+ *   An image object. The $image->info['width'] and $image->info['height']
+ *   values will be modified by this call.
+ * @param int $width
+ *   The new width of the resized image, in pixels.
+ * @param int $height
+ *   The new height of the resized image, in pixels.
+ * @param int|string $background
+ *   An hexadecimal integer specifying the background color to use for the
+ *   uncovered area of the image after the rotation, for example 0x000000 for
+ *   black or 0xff00ff for magenta. The default value is #FFFFFF.
+ *
+ * @return bool
+ *   TRUE or FALSE, based on success.
+ *
+ * @see image_resize()
+ */
+function image_graphicsmagick_resize(stdClass $image, $width, $height, $background = NULL) {
+  $clone = clone $image->resource;
+  $filter = graphicsmagick_get_image_filter();
+  $blur = graphicsmagick_get_image_blur() / 100;
+  $color = graphicsmagick_color_string2object($background);
+
+  if  (!isset($color)) {
+    // Creating the GmagickPixel instance failed. Use a literal string.
+    $color = '#FFFFFF';
+  }
+
+  try {
+    if ($color) {
+      $image->resource->setImageBackgroundColor($color);
+    }
+
+    if ($image->resource->getNumberImages() > 1) {
+      $image->resource = $image->resource->coalesceImages();
+
+      do {
+        $image->resource->resizeImage($width, $height, $filter, $blur);
+      } while ($image->resource->nextImage());
+
+      $image->resource = $image->resource->deconstructImages();
+    }
+    else {
+      $image->resource->resizeImage($width, $height, $filter, $blur);
+    }
+  }
+  catch (GmagickException $e) {
+    try {
+      $image->resource->destroy();
+    }
+    catch (GmagickException $e) {
+      // Ignore the thrown exception.
+    }
+
+    $image->resource = $clone;
+    return FALSE;
+  }
+
+  try {
+    if ($color) {
+      // Restore the original background color.
+      $image->resource->setImageBackgroundColor($clone->getImageBackgroundColor());
+    }
+
+    $clone->destroy();
+  }
+  catch (GmagickException $e) {
+    // Ignore the thrown exception.
+  }
+
+  try {
+    // The following methods could throw an exception. In the case they do, use
+    // The width and height values passed to the method.
+    $new_width = $image->resource->getImageWidth();
+    $new_height = $image->resource->getImageHeight();
+  }
+
+  catch (GmagickException $e) {
+    $new_width = $width;
+    $new_height = $height;
+  }
+
+  $image->info['width'] = $new_width;
+  $image->info['height'] = $new_height;
+
+  return TRUE;
+}
+
+/**
+ * Rotate an image the given number of degrees.
+ *
+ * @param stdClass $image
+ *   An image object. The $image->info['width'] and $image->info['height']
+ *   values will be modified by this call.
+ * @param int $degrees
+ *   The number of (clockwise) degrees to rotate the image.
+ * @param int|string $background
+ *   An hexadecimal value specifying the background color to use for the
+ *   uncovered area of the image after the rotation, for example 0x000000 for
+ *   black or 0xff00ff for magenta. The default value is #FFFFFF.
+ *
+ * @return bool
+ *   TRUE or FALSE, based on success.
+ *
+ * @see image_rotate()
+ */
+function image_graphicsmagick_rotate(stdClass $image, $degrees, $background = NULL) {
+  $clone = clone $image->resource;
+  $color = graphicsmagick_color_string2object($background);
+
+  if  (!isset($color)) {
+    // Creating the GmagickPixel instance failed. Use a literal string.
+    $color = '#FFFFFF';
+  }
+
+  try {
+    if ($image->resource->getNumberImages() > 1) {
+      $image->resource = $image->resource->coalesceImages();
+
+      do {
+        $image->resource->rotateImage($color, (float) $degrees);
+      } while ($image->resource->nextImage());
+
+      $image->resource = $image->resource->deconstructImages();
+    }
+    else {
+      $image->resource->rotateImage($color, (float) $degrees);
+    }
+
+    $image->info['width'] = $image->resource->getImageWidth();
+    $image->info['height'] = $image->resource->getImageHeight();
+  }
+  catch (GmagickException $e) {
+    try {
+      $image->resource->destroy();
+    }
+    catch (GmagickException $e) {
+      // Ignore the thrown exception.
+    }
+
+    $image->resource = $clone;
+    return FALSE;
+  }
+
+  try {
+    $clone->destroy();
+  }
+  catch (GmagickException $e) {
+    // Ignore the thrown exception.
+  }
+
+  return TRUE;
+}
+
+/**
+ * Crop an image using the GraphicsMagick library.
+ *
+ * @param stdClass $image
+ *   An image object. The $image->info['width'] and $image->info['height']
+ *   values will be modified by this call.
+ * @param int $x
+ *   The starting x offset at which to start the crop, in pixels.
+ * @param int $y
+ *   The starting y offset at which to start the crop, in pixels.
+ * @param int $width
+ *   The width of the cropped area, in pixels.
+ * @param int $height
+ *   The height of the cropped area, in pixels.
+ * @param int|string $background
+ *   An hexadecimal value specifying the background color to use for the
+ *   uncovered area of the image after the rotation, for example 0x000000 for
+ *   black or 0xff00ff for magenta. The default value is #FFFFFF.
+ *
+ * @return bool
+ *   TRUE or FALSE, based on success.
+ *
+ * @see image_crop()
+ */
+function image_graphicsmagick_crop(stdClass $image, $x, $y, $width, $height, $background = NULL) {
+  $clone = clone $image->resource;
+  $color = graphicsmagick_color_string2object($background);
+
+  if  (!isset($color)) {
+    // Creating the GmagickPixel instance failed. Use a literal string.
+    $color = '#FFFFFF';
+  }
+
+  try {
+    $image->resource->setImageBackgroundColor($color);
+
+    if ($image->resource->getNumberImages() > 1) {
+      $image->resource = $image->resource->coalesceImages();
+
+      do {
+        $image->resource->cropImage($width, $height, $x, $y);
+        // After cropping, there is some blank space remaining on the image.
+        // Remove that black space by setting the image page.
+        $image->resource->setImagePage($width, $height, $x, $y);
+      } while ($image->resource->nextImage());
+
+      $image->resource = $image->resource->deconstructImages();
+    }
+    else {
+      $image->resource->cropImage($width, $height, $x, $y);
+      // After cropping, there is some blank space remaining on the image.
+      // Remove that black space by setting the image page.
+      $image->resource->setImagePage($width, $height, $x, $y);
+    }
+  }
+  catch (GmagickException $e) {
+    try {
+      $image->resource->destroy();
+    }
+    catch (GmagickException $e) {
+      // Ignore the thrown exception.
+    }
+
+    $image->resource = $clone;
+    return FALSE;
+  }
+
+  try {
+    // Restore the original background color.
+    $image->resource->setImageBackgroundColor($clone->getImageBackgroundColor());
+
+    $clone->destroy();
+  }
+  catch (GmagickException $e) {
+    // Ignore the thrown exception.
+  }
+
+  try {
+    // The following methods could throw an exception. In the case they do, use
+    // The width and height values passed to the method.
+    $new_width = $image->resource->getImageWidth();
+    $new_height = $image->resource->getImageHeight();
+  }
+
+  catch (GmagickException $e) {
+    $new_width = $width;
+    $new_height = $height;
+  }
+
+  $image->info['width'] = $new_width;
+  $image->info['height'] = $new_height;
+
+  return TRUE;
+}
+
+/**
+ * Convert an image to grayscale.
+ *
+ * @param stdClass $image
+ *   An image object.
+ *
+ * @return bool
+ *   TRUE or FALSE, based on success.
+ *
+ * @see image_desaturate()
+ */
+function image_graphicsmagick_desaturate(stdClass $image) {
+  $clone = clone $image->resource;
+
+  try {
+    if ($image->resource->getNumberImages() > 1) {
+      $image->resource = $image->resource->coalesceImages();
+
+      do {
+        $image->resource = $image->resource->setImageType(Gmagick::IMGTYPE_GRAYSCALE);
+      } while ($image->resource->nextImage());
+
+      $image->resource = $image->resource->deconstructImages();
+    }
+    else {
+      $image->resource = $image->resource->setImageType(Gmagick::IMGTYPE_GRAYSCALE);
+    }
+  }
+  catch (GmagickException $e) {
+    try {
+      $image->resource->destroy();
+    }
+    catch (GmagickException $e) {
+      // Ignore the thrown exception.
+    }
+
+    $image->resource = $clone;
+    return FALSE;
+  }
+
+  try {
+    $clone->destroy();
+  }
+  catch (GmagickException $e) {
+    // Ignore the thrown exception.
+  }
+
+  return TRUE;
+}
+
+/**
+ * GraphicsMagick helper function to load an image from a file.
+ *
+ * @param stdClass $image
+ *   An image object. The $image->resource and $image->format values will be
+ *   populated by this call.
+ *
+ * @return bool
+ *   TRUE or FALSE, based on success.
+ *
+ * @see image_load()
+ */
+function image_graphicsmagick_load(stdClass $image) {
+  try {
+    $resource = new Gmagick(backdrop_realpath($image->source));
+    $format = $resource->getImageFormat();
+  }
+  catch (GmagickException $e) {
+    return FALSE;
+  }
+
+  $image->resource = $resource;
+  $image->format = $format;
+
+  return TRUE;
+}
+
+/**
+ * GraphicsMagick helper to write an image to a destination file.
+ *
+ * @param stdClass $image
+ *   An image object. The $image->resource value will changed by this call.
+ * @param string $destination
+ *   A string file URI or path where the image should be saved.
+ *
+ * @return bool
+ *   TRUE or FALSE, based on success.
+ *
+ * @see image_save()
+ */
+function image_graphicsmagick_save(stdClass $image, $destination) {
+  $config = config('system.core');
+
+  try {
+    if ($image->format == 'JPEG' || $image->format == 'JPEG') {
+      $image->resource->setCompressionQuality(graphicsmagick_get_jpeg_quality());
+    }
+
+    $image->resource->writeImage(backdrop_realpath($destination), $image->resource->getNumberImages() > 1);
+
+    return TRUE;
+  }
+  catch (GmagickException $e) {
+    return FALSE;
+  }
+}
+
+/**
+ * Get details about an image.
+ *
+ * @param stdClass $image
+ *   An image object.
+ *
+ * @return false|array
+ *   FALSE, if the file could not be found or is not an image. Otherwise, a
+ *   keyed array containing information about the image:
+ *   - "width": Width, in pixels.
+ *   - "height": Height, in pixels.
+ *   - "extension": Commonly used file extension for the image.
+ *   - "mime_type": MIME type (for example 'image/jpeg' or 'image/gif').
+ *
+ * @see image_get_info()
+ */
+function image_graphicsmagick_get_info(stdClass $image) {
+  $details = [
+    'width' => 0,
+    'height' => 0,
+    'extension' => '',
+    'mime_type' => '',
+  ];
+
+  try {
+    $resource = new Gmagick(backdrop_realpath($image->source));
+    $format = $resource->getImageFormat();
+
+    $details['extension'] = graphicsmagick_image_format_to_extension($format);
+    $details['mime_type'] = graphicsmagick_image_format_to_mime_type($format);
+    $details['width'] = $resource->getImageWidth();
+    $details['height'] = $resource->getImageHeight();
+  }
+  catch (GmagickException $e) {
+    if (empty($details['extension'])) {
+      // The file is not an image, the code failed before checking that, or
+      // graphicsmagick_image_format_to_extension() did not return a valid
+      // image extension.
+      return FALSE;
+    }
+  }
+
+  return $details;
+}
+
+/**
+ * Verify the GraphicsMagick toolkit can be used.
+ *
+ * @return bool
+ *   TRUE when the GraphicsMagick toolkit can be used.
+ */
+function graphicsmagick_available() {
+  if (extension_loaded('gmagick') && class_exists('Gmagick')) {
+    try {
+      $resource = new Gmagick();
+
+      // Verify the undocumented methods used by the toolkit are implemented.
+      $missing_methods = FALSE;
+      $missing_methods |= !method_exists($resource, 'getNumberImages');
+      $missing_methods |= !method_exists($resource, 'coalesceImages');
+      $missing_methods |= !method_exists($resource, 'deconstructImages');
+
+      return !$missing_methods;
+    }
+    catch (GmagickException $e) {
+      return FALSE;
+    }
+  }
+
+  return FALSE;
+}
+
+/**
+ * Convert the format returned by the Gmagick class in the image extension.
+ *
+ * @param string $format
+ *   The image format returned from the Gmagick class.
+ *
+ * @return string
+ *   The image extension used by default for that image format.
+ */
+function graphicsmagick_image_format_to_extension($format) {
+  // The following list doesn't include all the file types recognized by the
+  // GraphicsMagick library; it includes most of the image types, excluding
+  // the raw images.
+  $extensions = [
+    'BIGTIFF' => 'tif',
+    'BMP' => 'bmp',
+    'CIN' => 'cin',
+    'DCX' => 'dcx',
+    'DPX' => 'dpx',
+    'EPDF' => 'pdf',
+    'EPI' => 'epi',
+    'EPS' => 'eps',
+    'EPSF' => 'eps',
+    'EPSI' => 'eps',
+    'EPT' => 'eps',
+    'EPT2' => 'eps',
+    'EPT3' => 'eps',
+    'FITS' => 'fits',
+    'GIF' => 'gif',
+    'GIF87' => 'gif',
+    'ICB' => 'icb',
+    'JPEG' => 'jpeg',
+    'JPG' => 'jpg',
+    'PAM' => 'pam',
+    'PBM' => 'pbm',
+    'PDF' => 'pdf',
+    'PGM' => 'pgm',
+    'PICON' => 'xpm',
+    'PNG' => 'png',
+    'PNG00' => 'png',
+    'PNG24' => 'png',
+    'PNG32' => 'png',
+    'PNG48' => 'png',
+    'PNM' => 'pnm',
+    'PPM' => 'ppm',
+    'PS' => 'ps',
+    'PTIF' => 'tif',
+    'SGI' => 'sgi',
+    'TGA' => 'tga',
+    'TIFF' => 'tiff',
+    'VDA' => 'vda',
+    'VST' => 'vst',
+    'WBMP' => 'wbmp',
+    'WEBP' => 'webp',
+    'XBM' => 'xbm',
+  ];
+
+  if (!isset($extensions[$format])) {
+    // Return only the values present in this array, as
+    // Gmagick::getImageFormat() returns also video formats.
+    return '';
+  }
+}
+
+/**
+ * Convert the format returned by the Gmagick class in the image MIME type.
+ *
+ * @param string $format
+ *   The image format returned from the Gmagick class.
+ *
+ * @return string
+ *   The image MIME type.
+ */
+function graphicsmagick_image_to_mime_type($format) {
+  // Since the Gmagick class doesn't provide a method to obtain an image MIME
+  // type, differently from the Imagick class, this code maps the Gmagick
+  // format to the MIME type using a literal array. There is no need to use
+  // mime_content_type() nor finfo_open()/finfo_file(), since the Gmagick
+  // class already recognized the file type.
+  // The following list doesn't include all the file types recognized by the
+  // GraphicsMagick library; it includes most of the image types, excluding
+  // the raw images.
+  $mime_types = [
+    'BIGTIFF' => 'image/tiff',
+    'BMP' => 'image/bmp',
+    'CIN' => 'image/cineon',
+    'DCX' => 'image/x-dcx',
+    'DPX' => 'image/x-dpx',
+    'EPDF' => 'application/pdf',
+    'EPI' => 'application/postscript',
+    'EPS' => 'application/postscript',
+    'EPSF' => 'application/postscript',
+    'EPSI' => 'application/postscript',
+    'EPT' => 'image/eps',
+    'EPT2' => 'image/eps',
+    'EPT3' => 'image/eps',
+    'FITS' => 'image/fits',
+    'GIF' => 'image/gif',
+    'GIF87' => 'image/gif',
+    'ICB' => 'image/x-tga',
+    'JPEG' => 'image/jpeg',
+    'JPG' => 'image/jpeg',
+    'PAM' => 'image/x-portable-pixmap',
+    'PBM' => 'image/x-portable-pixmap',
+    'PDF' => 'application/pdf',
+    'PGM' => 'image/x-portable-greymap',
+    'PICON' => 'image/x-xpmi',
+    'PNG' => 'image/png',
+    'PNG00' => 'image/png',
+    'PNG24' => 'image/png',
+    'PNG32' => 'image/png',
+    'PNG48' => 'image/png',
+    'PNM' => 'image/x-portable-pixmap',
+    'PPM' => 'image/x-portable-pixmap',
+    'PS' => 'application/postscript',
+    'PTIF' => 'image/tiff',
+    'SGI' => 'image/sgi',
+    'TGA' => 'image/x-tga',
+    'TIFF' => 'image/tiff',
+    'VDA' => 'image/x-tga',
+    'VST' => 'image/x-tga',
+    'WBMP' => 'image/vnd.wap.wbmp',
+    'WEBP' => 'image/webp',
+    'XBM' => 'image/x‑xbitmap',
+  ];
+
+  if (!isset($mime_types[$format])) {
+    // Return only the values present in this array, as
+    // Gmagick::getImageFormat() returns also video formats.
+    return '';
+  }
+
+  return $mime_types[$format];
+}
+
+/**
+ * Convert a value representing a color in a GmagickPixel instance.
+ *
+ * @param string|int $color
+ *   The value representing the color.
+ *
+ * @return GmagickPixel|null
+ *   The GmagickPixel instance for that color, or NULL in case of error.
+ */
+function graphicsmagick_color_string2object($color = NULL) {
+  if (isset($color)) {
+    if (is_int($color)) {
+      $color = sprintf('%X', $color);
+    }
+    elseif (is_string($color)) {
+      // Remove the leading '0x' or '#', if any.
+      if (strpos($color, '0x') === 0) {
+        $color = substr($color, 2);
+      }
+      elseif ($color[0] === '#') {
+        $color = substr($color, 1);
+      }
+    }
+
+    // Verify the color is an hex string and normalize shorthand versions.
+    // 'FA3' becomes 'FFAA33', while 'FA37' becomes 'FFAA3377'.
+    if (preg_match('/^[0-9A-F]{1,4}$/', $color)) {
+      $color = preg_replace('|([0-9A-F])|', '\1\1', $color);
+
+      $color = "#$color";
+    }
+  }
+  else {
+    // Use white as color.
+    $color = '#FFFFFF';
+  }
+
+  try {
+    $pixel = new GmagickPixel($color);
+  }
+  catch (GmagickException $e) {
+    // If the requested color isn't white, try to create a GmagickPixel instance
+    // for white.
+    if ($color !== '#FFFFFF') {
+      try {
+        $pixel = new GmagickPixel('#FFFFFF');
+
+        return $pixel;
+      }
+      catch (GmagickException $e) {
+        return NULL;
+      }
+    }
+
+    return NULL;
+  }
+}
+
+/**
+ * Return the image quality to use with JPEG images.
+ *
+ * @return int
+ *   The image quality for JPEG images, a value between 0 and 100, where 95 is
+ *   the default value.
+ */
+function graphicsmagick_get_jpeg_quality() {
+  $config = config('system.core');
+  $value = $config->get('graphicsmagick_jpeg_quality');
+
+  // If the blur value hasn't been set, return 95.
+  return isset($value) ? $value : 95;
+}
+
+/**
+ * Return the blur value required by some image manipulation methods.
+ *
+ * @return int
+ *   A value between 0 and 200, which needs to be divided by 100, to be used in
+ *   Gmagick methods that use a blur value, as they expect a float value.
+ */
+function graphicsmagick_get_image_blur() {
+  $config = config('system.core');
+  $value = $config->get('graphicsmagick_image_blur');
+
+  // If the blur value hasn't been set, return 1 instead of 0.
+  return isset($value) ? $value : 1;
+}
+
+/**
+ * Return the filter to use in some image manipulation methods.
+ *
+ * @return int
+ *   The filter value set in the settings form. It uses the
+ *   Gmagick::FILTER_* constants.
+ */
+function graphicsmagick_get_image_filter() {
+  $config = config('system.core');
+  $value = $config->get('graphicsmagick_image_filter');
+
+  // If  the filter value hasn't been set, return Gmagick::FILTER_UNDEFINED.
+  return isset($value) ? $value : Gmagick::FILTER_UNDEFINED;
+}

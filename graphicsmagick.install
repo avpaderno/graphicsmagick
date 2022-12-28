@@ -1,0 +1,79 @@
+<?php
+/**
+ * @file
+ * Install, update, and uninstall functions for the GraphicsMagick module.
+ */
+
+/**
+ * Implements hook_requirements().
+ */
+function graphicsmagick_requirements($phase) {
+  $requirements = [];
+
+  // Ensure translations don't break during installation.
+  $t = get_t();
+
+  if (extension_loaded('gmagick') && class_exists('Gmagick')) {
+    try {
+      $resource = new Gmagick();
+
+      // Verify the undocumented methods use by the toolkit are implemented.
+      $missing_methods = FALSE;
+      $missing_methods |= !method_exists($resource, 'getNumberImages');
+      $missing_methods |= !method_exists($resource, 'coalesceImages');
+      $missing_methods |= !method_exists($resource, 'deconstructImages');
+
+      if ($missing_methods) {
+        $requirements['graphicsmagick_extension'] = [
+          'title' => $t('Gmagick extension'),
+          'value' => $t('Missing methods'),
+          'severity' => REQUIREMENT_ERROR,
+          'description' => $t('The Gmagick extension has been installed, but the Gmagick class it implements does not have the necessary methods.'),
+        ];
+
+        return $requirements;
+      }
+
+      if ($version = $resource->getVersion()) {
+        $requirements['graphicsmagick_extension'] = [
+          'title' => $t('Gmagick extension'),
+          'value' => $t('GraphicsMagick library version %version (%full_version)', [
+            '%version' => $version['versionNumber'], '%full_version' => $version['versionString'],
+          ]),
+          'severity' => REQUIREMENT_OK,
+        ];
+
+        return $requirements;
+      }
+
+      $requirements['graphicsmagick_extension'] = [
+        'title' => $t('Gmagick extension'),
+        'value' => $t('Installed'),
+        'severity' => REQUIREMENT_OK,
+      ];
+
+      return $requirements;
+    }
+    catch (GmagickException $e) {
+      $requirements['graphicsmagick_extension'] = [
+        'title' => $t('Gmagick extension'),
+        'value' => $t('Installed'),
+        'severity' => REQUIREMENT_WARNING,
+        'description' => $t('The Gmagick extension has been installed, but using it caused an error.'),
+      ];
+
+      return $requirements;
+    }
+  }
+
+  $requirements['graphicsmagick_extension'] = [
+    'title' => $t('Gmagick extension'),
+    'value' => $t('Missing'),
+    'severity' => REQUIREMENT_ERROR,
+    'description' => $t('The <a href="@gmagick_php">Gmagick</a> extension is required from the GraphicsMagick module.', [
+      '@gmagick_php' => 'https://www.php.net/manual/book.gmagick.php',
+    ]),
+  ];
+
+  return $requirements;
+}
