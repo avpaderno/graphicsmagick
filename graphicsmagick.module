@@ -35,29 +35,10 @@ function image_graphicsmagick_settings() {
     '#default_value' => graphicsmagick_get_image_blur(),
   ];
 
-  $options = [
-    Gmagick::FILTER_UNDEFINED => t('None'),
-    Gmagick::FILTER_POINT => t('Point'),
-    Gmagick::FILTER_BOX => t('Box'),
-    Gmagick::FILTER_TRIANGLE => t('Triangle'),
-    Gmagick::FILTER_HERMITE => t('Hermite'),
-    Gmagick::FILTER_HANNING => t('Hanning'),
-    Gmagick::FILTER_HAMMING => t('Hamming'),
-    Gmagick::FILTER_BLACKMAN => t('Blackman'),
-    Gmagick::FILTER_GAUSSIAN => t('Gaussian'),
-    Gmagick::FILTER_QUADRATIC => t('Quadratic'),
-    Gmagick::FILTER_CUBIC => t('Cubic'),
-    Gmagick::FILTER_CATROM => t('Catmull-Rom'),
-    Gmagick::FILTER_MITCHELL => t('Mitchell'),
-    Gmagick::FILTER_LANCZOS => t('Lanczos'),
-    Gmagick::FILTER_BESSEL => t('Bessel'),
-    Gmagick::FILTER_SINC => t('Sinc'),
-  ];
-
   $form['graphicsmagick_resize_settings']['graphicsmagick_image_filter'] = [
     '#type' => 'select',
     '#title' => t('Image blur'),
-    '#options' => $options,
+    '#options' => graphicsmagick_image_filter_options(),
     '#default_value' => graphicsmagick_get_image_filter(),
     '#description' => t('The image filter applied to the image. By default no filter is applied when an image is resized. For a better effect, choose Lanczos or Mitchell.'),
   ];
@@ -510,6 +491,34 @@ function graphicsmagick_available() {
   }
 
   return FALSE;
+}
+
+/**
+ * Return the option array for the filters implemented by the Gmagick class.
+ *
+ * @return array
+ *   An array whose keys are the Gmagick::FILTER_* constants and the values are
+ *   the filter names to shown in forms.
+ */
+function graphicsmagick_image_filter_options() {
+  return [
+    Gmagick::FILTER_UNDEFINED => t('None'),
+    Gmagick::FILTER_POINT => t('Point'),
+    Gmagick::FILTER_BOX => t('Box'),
+    Gmagick::FILTER_TRIANGLE => t('Triangle'),
+    Gmagick::FILTER_HERMITE => t('Hermite'),
+    Gmagick::FILTER_HANNING => t('Hanning'),
+    Gmagick::FILTER_HAMMING => t('Hamming'),
+    Gmagick::FILTER_BLACKMAN => t('Blackman'),
+    Gmagick::FILTER_GAUSSIAN => t('Gaussian'),
+    Gmagick::FILTER_QUADRATIC => t('Quadratic'),
+    Gmagick::FILTER_CUBIC => t('Cubic'),
+    Gmagick::FILTER_CATROM => t('Catmull-Rom'),
+    Gmagick::FILTER_MITCHELL => t('Mitchell'),
+    Gmagick::FILTER_LANCZOS => t('Lanczos'),
+    Gmagick::FILTER_BESSEL => t('Bessel'),
+    Gmagick::FILTER_SINC => t('Sinc'),
+  ];
 }
 
 /**
