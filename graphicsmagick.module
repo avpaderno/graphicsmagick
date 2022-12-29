@@ -9,7 +9,7 @@
  */
 function graphicsmagick_image_toolkits() {
   return [
-    'graphicsmagick' => [
+    'graphicsmagick_toolkit' => [
       'title' => t('GraphicsMagick toolkit'),
       'available' => graphicsmagick_available(),
     ],
@@ -17,29 +17,29 @@ function graphicsmagick_image_toolkits() {
 }
 
 /**
- * Retrieve settings for the GraphicsMagick module.
+ * Retrieve settings for the GraphicsMagick toolkit.
  */
-function image_graphicsmagick_settings() {
-  $form['graphicsmagick_resize_settings'] = [
+function image_graphicsmagick_toolkit_settings() {
+  $form['graphicsmagick_toolkit_resize_settings'] = [
     '#type' => 'details',
     '#summary' => t('Resize settings'),
     '#open' => TRUE,
   ];
 
-  $form['graphicsmagick_resize_settings']['graphicsmagick_image_blur'] = [
+  $form['graphicsmagick_toolkit_resize_settings']['graphicsmagick_toolkit_image_blur'] = [
     '#type' => 'number',
     '#title' => t('Image blur'),
     '#description' => t('The image blur (from 0 to 200). Values higher than 100 make the image blurry, while values lower than 100 make the image sharper.'),
     '#min' => 0,
     '#max' => 200,
-    '#default_value' => graphicsmagick_get_image_blur(),
+    '#default_value' => graphicsmagick_toolkit_get_image_blur(),
   ];
 
-  $form['graphicsmagick_resize_settings']['graphicsmagick_image_filter'] = [
+  $form['graphicsmagick_toolkit_resize_settings']['graphicsmagick_toolkit_image_filter'] = [
     '#type' => 'select',
     '#title' => t('Image blur'),
     '#options' => graphicsmagick_image_filter_options(),
-    '#default_value' => graphicsmagick_get_image_filter(),
+    '#default_value' => graphicsmagick_toolkit_get_image_filter(),
     '#description' => t('The image filter applied to the image. By default no filter is applied when an image is resized. For a better effect, choose Lanczos or Mitchell.'),
   ];
 
@@ -55,7 +55,7 @@ function image_graphicsmagick_settings() {
     '#description' => t('The image quality for JPEG images (from 0 to 100). Higher values mean better image quality but bigger files.'),
     '#min' => 0,
     '#max' => 100,
-    '#default_value' => graphicsmagick_get_jpeg_quality(),
+    '#default_value' => graphicsmagick_toolkit_get_jpeg_quality(),
     '#field_suffix' => t('%'),
   ];
 
@@ -82,16 +82,16 @@ function image_graphicsmagick_settings() {
  *
  * @see image_resize()
  */
-function image_graphicsmagick_resize(stdClass $image, $width, $height, $background = NULL) {
+function image_graphicsmagick_toolkit_resize(stdClass $image, $width, $height, $background = NULL) {
   $clone = clone $image->resource;
-  $filter = graphicsmagick_get_image_filter();
+  $filter = graphicsmagick_toolkit_get_image_filter();
 
-  // The value returned by graphicsmagick_get_image_blur() is an integer from 0
+  // The value returned by graphicsmagick_toolkit_get_image_blur() is an integer from 0
   // to 200 that needs to be converted to a float, as required by
   // Gmagick::resizeImage().
-  $blur = graphicsmagick_get_image_blur() / 100;
+  $blur = graphicsmagick_toolkit_get_image_blur() / 100;
 
-  $color = graphicsmagick_color_string2object($background);
+  $color = graphicsmagick_color2object($background);
 
   if  (!isset($color)) {
     // Creating the GmagickPixel instance failed. Use a literal string.
@@ -176,9 +176,9 @@ function image_graphicsmagick_resize(stdClass $image, $width, $height, $backgrou
  *
  * @see image_rotate()
  */
-function image_graphicsmagick_rotate(stdClass $image, $degrees, $background = NULL) {
+function image_graphicsmagick_toolkit_rotate(stdClass $image, $degrees, $background = NULL) {
   $clone = clone $image->resource;
-  $color = graphicsmagick_color_string2object($background);
+  $color = graphicsmagick_color2object($background);
 
   if  (!isset($color)) {
     // Creating the GmagickPixel instance failed. Use a literal string.
@@ -248,9 +248,9 @@ function image_graphicsmagick_rotate(stdClass $image, $degrees, $background = NU
  *
  * @see image_crop()
  */
-function image_graphicsmagick_crop(stdClass $image, $x, $y, $width, $height, $background = NULL) {
+function image_graphicsmagick_toolkit_crop(stdClass $image, $x, $y, $width, $height, $background = NULL) {
   $clone = clone $image->resource;
-  $color = graphicsmagick_color_string2object($background);
+  $color = graphicsmagick_color2object($background);
 
   if  (!isset($color)) {
     // Creating the GmagickPixel instance failed. Use a literal string.
@@ -330,7 +330,7 @@ function image_graphicsmagick_crop(stdClass $image, $x, $y, $width, $height, $ba
  *
  * @see image_desaturate()
  */
-function image_graphicsmagick_desaturate(stdClass $image) {
+function image_graphicsmagick_toolkit_desaturate(stdClass $image) {
   $clone = clone $image->resource;
 
   try {
@@ -381,7 +381,7 @@ function image_graphicsmagick_desaturate(stdClass $image) {
  *
  * @see image_load()
  */
-function image_graphicsmagick_load(stdClass $image) {
+function image_graphicsmagick_toolkit_load(stdClass $image) {
   try {
     $resource = new Gmagick(backdrop_realpath($image->source));
     $format = $resource->getImageFormat();
@@ -409,12 +409,12 @@ function image_graphicsmagick_load(stdClass $image) {
  *
  * @see image_save()
  */
-function image_graphicsmagick_save(stdClass $image, $destination) {
+function image_graphicsmagick_toolkit_save(stdClass $image, $destination) {
   $config = config('system.core');
 
   try {
     if ($image->format == 'JPEG' || $image->format == 'JPEG') {
-      $image->resource->setCompressionQuality(graphicsmagick_get_jpeg_quality());
+      $image->resource->setCompressionQuality(graphicsmagick_toolkit_get_jpeg_quality());
     }
 
     $image->resource->writeImage(backdrop_realpath($destination), $image->resource->getNumberImages() > 1);
@@ -442,7 +442,7 @@ function image_graphicsmagick_save(stdClass $image, $destination) {
  *
  * @see image_get_info()
  */
-function image_graphicsmagick_get_info(stdClass $image) {
+function image_graphicsmagick_toolkit_get_info(stdClass $image) {
   $details = [
     'width' => 0,
     'height' => 0,
@@ -472,10 +472,61 @@ function image_graphicsmagick_get_info(stdClass $image) {
 }
 
 /**
- * Verify the GraphicsMagick toolkit can be used.
+ * Return the image quality to use with JPEG images.
+ *
+ * @return int
+ *   The image quality for JPEG images, a value between 0 and 100, where 95 is
+ *   the default value.
+ */
+function graphicsmagick_toolkit_get_jpeg_quality() {
+  $config = config('system.core');
+  $value = $config->get('graphicsmagick_jpeg_quality');
+
+  // If the blur value hasn't been set, return 95.
+  return isset($value) ? $value : 95;
+}
+
+/**
+ * Return the blur value required by some image manipulation methods.
+ *
+ * @return int
+ *   A value between 0 and 200, which needs to be divided by 100, to be used in
+ *   Gmagick methods that use a blur value, as they expect a float value.
+ */
+function graphicsmagick_toolkit_get_image_blur() {
+  $config = config('system.core');
+  $value = $config->get('graphicsmagick_toolkit_image_blur');
+
+  // If the blur value hasn't been set, return 100 instead of 0.
+  return isset($value) ? $value : 100;
+}
+
+/**
+ * Return the filter to use in some image manipulation methods.
+ *
+ * @return int
+ *   The filter value set in the settings form. It uses the
+ *   Gmagick::FILTER_* constants.
+ */
+function graphicsmagick_toolkit_get_image_filter() {
+  $config = config('system.core');
+  $value = $config->get('graphicsmagick_toolkit_image_filter');
+
+  // If  the filter value hasn't been set, return Gmagick::FILTER_UNDEFINED.
+  return isset($value) ? $value : Gmagick::FILTER_UNDEFINED;
+}
+
+/**
+ * Verify the methods used from the GraphicsMagick toolkit can be used.
+ *
+ * This function could be used from the modules that need to use the Gmagick
+ * extension to alter images, as the methods this function checks are necessary
+ * to handle animated images.
  *
  * @return bool
- *   TRUE when the GraphicsMagick toolkit can be used.
+ *   TRUE when the Gmagick PHP extension is loaded, the Gmagick class it
+ *   implements is available, and that class implements the methods used by the
+ *   toolkit.
  */
 function graphicsmagick_available() {
   if (extension_loaded('gmagick') && class_exists('Gmagick')) {
@@ -670,7 +721,7 @@ function graphicsmagick_image_to_mime_type($format) {
  * @return GmagickPixel|null
  *   The GmagickPixel instance for that color, or NULL in case of error.
  */
-function graphicsmagick_color_string2object($color = NULL) {
+function graphicsmagick_color2object($color = NULL) {
   if (isset($color)) {
     if (is_int($color)) {
       $color = sprintf('%X', $color);
@@ -717,49 +768,4 @@ function graphicsmagick_color_string2object($color = NULL) {
 
     return NULL;
   }
-}
-
-/**
- * Return the image quality to use with JPEG images.
- *
- * @return int
- *   The image quality for JPEG images, a value between 0 and 100, where 95 is
- *   the default value.
- */
-function graphicsmagick_get_jpeg_quality() {
-  $config = config('system.core');
-  $value = $config->get('graphicsmagick_jpeg_quality');
-
-  // If the blur value hasn't been set, return 95.
-  return isset($value) ? $value : 95;
-}
-
-/**
- * Return the blur value required by some image manipulation methods.
- *
- * @return int
- *   A value between 0 and 200, which needs to be divided by 100, to be used in
- *   Gmagick methods that use a blur value, as they expect a float value.
- */
-function graphicsmagick_get_image_blur() {
-  $config = config('system.core');
-  $value = $config->get('graphicsmagick_image_blur');
-
-  // If the blur value hasn't been set, return 100 instead of 0.
-  return isset($value) ? $value : 100;
-}
-
-/**
- * Return the filter to use in some image manipulation methods.
- *
- * @return int
- *   The filter value set in the settings form. It uses the
- *   Gmagick::FILTER_* constants.
- */
-function graphicsmagick_get_image_filter() {
-  $config = config('system.core');
-  $value = $config->get('graphicsmagick_image_filter');
-
-  // If  the filter value hasn't been set, return Gmagick::FILTER_UNDEFINED.
-  return isset($value) ? $value : Gmagick::FILTER_UNDEFINED;
 }
