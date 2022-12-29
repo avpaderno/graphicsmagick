@@ -457,7 +457,7 @@ function image_graphicsmagick_toolkit_get_info(stdClass $image) {
     $format = $resource->getImageFormat();
 
     $details['extension'] = graphicsmagick_format_to_extension($format);
-    $details['mime_type'] = graphicsmagick_image_format_to_mime_type($format);
+    $details['mime_type'] = graphicsmagick_format_to_mime_type($format);
     $details['width'] = $resource->getImageWidth();
     $details['height'] = $resource->getImageHeight();
   }
