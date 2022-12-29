@@ -454,7 +454,7 @@ function image_graphicsmagick_toolkit_get_info(stdClass $image) {
     $resource = new Gmagick(backdrop_realpath($image->source));
     $format = $resource->getImageFormat();
 
-    $details['extension'] = graphicsmagick_image_format_to_extension($format);
+    $details['extension'] = graphicsmagick_format_to_extension($format);
     $details['mime_type'] = graphicsmagick_image_format_to_mime_type($format);
     $details['width'] = $resource->getImageWidth();
     $details['height'] = $resource->getImageHeight();
@@ -462,7 +462,7 @@ function image_graphicsmagick_toolkit_get_info(stdClass $image) {
   catch (GmagickException $e) {
     if (empty($details['extension'])) {
       // The file is not an image, the code failed before checking that, or
-      // graphicsmagick_image_format_to_extension() did not return a valid
+      // graphicsmagick_format_to_extension() did not return a valid
       // image extension.
       return FALSE;
     }
@@ -586,7 +586,7 @@ function graphicsmagick_image_filter_options() {
  * @return string
  *   The image extension used by default for that image format.
  */
-function graphicsmagick_image_format_to_extension($format) {
+function graphicsmagick_format_to_extension($format) {
   // The following list doesn't include all the file types recognized by the
   // GraphicsMagick library; it includes most of the image types, excluding
   // the raw images.
@@ -650,7 +650,7 @@ function graphicsmagick_image_format_to_extension($format) {
  * @return string
  *   The image MIME type.
  */
-function graphicsmagick_image_to_mime_type($format) {
+function graphicsmagick_format_to_mime_type($format) {
   // Since the Gmagick class doesn't provide a method to obtain an image MIME
   // type, differently from the Imagick class, this code maps the Gmagick
   // format to the MIME type using a literal array. There is no need to use
