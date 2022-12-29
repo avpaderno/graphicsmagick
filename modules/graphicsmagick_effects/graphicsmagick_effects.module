@@ -1,0 +1,121 @@
+<?php
+/**
+ * @file
+ * Hooks implementations for the GraphicsMagick Effects module.
+ */
+
+/**
+ * Implements hook_image_effect_info().
+ */
+function graphicsmagick_effects_info() {
+  $effects = [];
+
+  $effects['graphicsmagick_effects_blur'] = [
+    'label' => t('Blur'),
+    'help' => t('Bluring will make the image details less distinct.'),
+    'dimensions passthrough' => TRUE,
+    'form callback' => 'graphicsmagick_effects_blur_form',
+    'summary theme' => 'graphicsmagick_effects_blur_summary',
+    'effect callback' => 'graphicsmagick_effects_blur_effect',
+  ];
+
+  $effects['graphicsmagick_effects_charcoal'] = [
+    'label' => t('Charcoal'),
+    'help' => t('This effect will simulate a charcoal drawing.'),
+    'dimensions passthrough' => TRUE,
+    'form callback' => 'graphicsmagick_effects_charcoal_form',
+    'summary theme' => 'graphicsmagick_effects_charcoal_summary',
+    'effect callback' => 'graphicsmagick_effects_charcoal_effect',
+  ];
+
+  $effects['graphicsmagick_effects_edge'] = [
+    'label' => t('Edge'),
+    'help' => t('This effect will apply a convolution filter with the given radius.'),
+    'dimensions passthrough' => TRUE,
+    'form callback' => 'graphicsmagick_effects_edge_form',
+    'summary theme' => 'graphicsmagick_effects_edge_summary',
+    'effect callback' => 'graphicsmagick_effects_edge_effect',
+  ];
+
+  $effects['graphicsmagick_effects_emboss'] = [
+    'label' => t('Emboss'),
+    'help' => t('Embossing will convert the image to grayscale with a three-dimensional effect. A Gaussian operator with the given radius and standard deviation (sigma) will be applied.'),
+    'dimensions passthrough' => TRUE,
+    'form callback' => 'graphicsmagick_effects_emboss_form',
+    'summary theme' => 'graphicsmagick_effects_emboss_summary',
+    'effect callback' => 'graphicsmagick_effects_emboss_effect',
+  ];
+
+  $effects['graphicsmagick_effects_flip'] = [
+    'label' => t('Vertical mirror'),
+    'help' => t('This effect will create a vertical mirror image by reflecting the pixels around the central x-axis.'),
+    'effect callback' => 'graphicsmagick_effects_flip_effect',
+  ];
+
+  $effects['graphicsmagick_effects_flop'] = [
+    'label' => t('Horizontal mirror'),
+    'help' => t('This effect will create a horizontal mirror image by reflecting the pixels around the central y-axis.'),
+    'effect callback' => 'graphicsmagick_effects_flop_effect',
+  ];
+
+  $effects['graphicsmagick_effects_gamma'] = [
+    'label' => t('Gamma'),
+    'help' => t("This effect will change the gamma values. The same image viewed on different devices will have perceptual differences on intensity."),
+    'dimensions passthrough' => TRUE,
+    'form callback' => 'graphicsmagick_effects_gamma_form',
+    'summary theme' => 'graphicsmagick_effects_gamma_summary',
+    'effect callback' => 'graphicsmagick_effects_gamma_effect',
+  ];
+
+  $effects['graphicsmagick_effects_oil_paint'] = [
+    'label' => t('Oil paint'),
+    'help' => t('This effect will simulate an oil painting. Each pixel is replaced by the most frequent color occurring in a circular region defined by radius.'),
+    'dimensions passthrough' => TRUE,
+    'form callback' => 'graphicsmagick_effects_image_effect_oil_paint_form',
+    'summary theme' => 'graphicsmagick_effects_image_effect_oil_paint_summary',
+    'effect callback' => 'graphicsmagick_effects_image_effect_oil_paint_effect',
+  ];
+
+  $effects['graphicsmagick_effects_roll'] = [
+    'label' => t('Roll'),
+    'help' => t('This effect will offset the image as defined by x and y.'),
+    'form callback' => 'graphicsmagick_effects_roll_form',
+    'summary theme' => 'graphicsmagick_effects_options_summary',
+    'effect callback' => 'graphicsmagick_effects_roll_effect',
+  ];
+
+  $effects['graphicsmagick_effects_shear'] = [
+    'label' => t('Shear'),
+    'help' => t('Shearing will slide one edge of an image along the X or Y axis, creating a parallelogram. An X direction shear slides an edge along the X axis, while a Y direction shear slides an edge along the Y axis. Empty triangles left over from shearing the image are filled with the background color.'),
+    'form callback' => 'graphicsmagick_effects_shear_form',
+    'summary theme' => 'graphicsmagick_effects_shear_summary',
+    'effect callback' => 'graphicsmagick_effects_shear_effect',
+  ];
+
+  $effects['graphicsmagick_effects_solarize'] = [
+    'label' => t('Solarize'),
+    'help' => t('Solarizing will apply a special effect to the image, similar to the effect achieved in a photo darkroom by selectively exposing areas of photo sensitive paper to light.'),
+    'dimensions passthrough' => TRUE,
+    'form callback' => 'graphicsmagick_effects_solarize_form',
+    'summary theme' => 'graphicsmagick_effects_solarize_summary',
+    'effect callback' => 'graphicsmagick_effects_solarize_effect',
+  ];
+
+  $effects['graphicsmagick_effects_spread'] = [
+    'label' => t('Spread'),
+    'help' => t('Special effects method that randomly displaces each pixel in a block defined by the radius parameter.'),
+    'form callback' => 'graphicsmagick_effects_spread_form',
+    'summary theme' => 'graphicsmagick_effects_options_summary',
+    'effect callback' => 'graphicsmagick_effects_spread_effect',
+  ];
+
+  $effects['graphicsmagick_effects_swirl'] = [
+    'label' => t('Swirl'),
+    'help' => t('This effect will swirl the pixels about the center of the image, where degrees indicates the sweep of the arc through which each pixel is moved.'),
+    'form callback' => 'graphicsmagick_effects_swirl_form',
+    'summary theme' => 'graphicsmagick_effects_swirl_summary',
+    'effect callback' => 'graphicsmagick_effects_swirl_effect',
+  ];
+
+  return $effects;
+}
