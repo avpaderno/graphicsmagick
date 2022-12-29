@@ -49,7 +49,7 @@ function image_graphicsmagick_toolkit_settings() {
     '#open' => TRUE,
   ];
 
-  $form['graphicsmagick_save_settings']['graphicsmagick_jpeg_quality'] = [
+  $form['graphicsmagick_save_settings']['graphicsmagick_toolkit_jpeg_quality'] = [
     '#type' => 'number',
     '#title' => t('JPEG quality'),
     '#description' => t('The image quality for JPEG images (from 0 to 100). Higher values mean better image quality but bigger files.'),
@@ -86,8 +86,8 @@ function image_graphicsmagick_toolkit_resize(stdClass $image, $width, $height, $
   $clone = clone $image->resource;
   $filter = graphicsmagick_toolkit_get_image_filter();
 
-  // The value returned by graphicsmagick_toolkit_get_image_blur() is an integer from 0
-  // to 200 that needs to be converted to a float, as required by
+  // The value returned by graphicsmagick_toolkit_get_image_blur() is an integer
+  // from 0 to 200 that needs to be converted to a float, as required by
   // Gmagick::resizeImage().
   $blur = graphicsmagick_toolkit_get_image_blur() / 100;
 
@@ -387,6 +387,10 @@ function image_graphicsmagick_toolkit_load(stdClass $image) {
     $format = $resource->getImageFormat();
   }
   catch (GmagickException $e) {
+    // If either the the constructor or getImageFormat() returned an exception,
+    // report a failure to the calling function. An exception in those cases
+    // could mean the file doesn't contain an image, it doesn't contain an image
+    // recognized from the Gmagick class, or the file is corrupted.
     return FALSE;
   }
 
@@ -402,7 +406,7 @@ function image_graphicsmagick_toolkit_load(stdClass $image) {
  * @param stdClass $image
  *   An image object. The $image->resource value will changed by this call.
  * @param string $destination
- *   A string file URI or path where the image should be saved.
+ *   A URI or file path where the image should be saved.
  *
  * @return bool
  *   TRUE or FALSE, based on success.
@@ -410,8 +414,6 @@ function image_graphicsmagick_toolkit_load(stdClass $image) {
  * @see image_save()
  */
 function image_graphicsmagick_toolkit_save(stdClass $image, $destination) {
-  $config = config('system.core');
-
   try {
     if ($image->format == 'JPEG' || $image->format == 'JPEG') {
       $image->resource->setCompressionQuality(graphicsmagick_toolkit_get_jpeg_quality());
@@ -480,9 +482,10 @@ function image_graphicsmagick_toolkit_get_info(stdClass $image) {
  */
 function graphicsmagick_toolkit_get_jpeg_quality() {
   $config = config('system.core');
-  $value = $config->get('graphicsmagick_jpeg_quality');
+  $value = $config->get('graphicsmagick_toolkit_jpeg_quality');
 
-  // If the blur value hasn't been set, return 95.
+  // If the JPEG quality value hasn't been set, return 95 instead of 0, which
+  // would be a bad image quality to use by default.
   return isset($value) ? $value : 95;
 }
 
@@ -490,8 +493,8 @@ function graphicsmagick_toolkit_get_jpeg_quality() {
  * Return the blur value required by some image manipulation methods.
  *
  * @return int
- *   A value between 0 and 200, which needs to be divided by 100, to be used in
- *   Gmagick methods that use a blur value, as they expect a float value.
+ *   A value between 0 and 200, which needs to be divided by 100, where 100 is
+ *   the default value.
  */
 function graphicsmagick_toolkit_get_image_blur() {
   $config = config('system.core');
@@ -589,7 +592,7 @@ function graphicsmagick_image_filter_options() {
 function graphicsmagick_format_to_extension($format) {
   // The following list doesn't include all the file types recognized by the
   // GraphicsMagick library; it includes most of the image types, excluding
-  // the raw images.
+  // the raw images and those images the Gmagick class is not able to write.
   $extensions = [
     'BIGTIFF' => 'tif',
     'BMP' => 'bmp',
@@ -658,7 +661,7 @@ function graphicsmagick_format_to_mime_type($format) {
   // class already recognized the file type.
   // The following list doesn't include all the file types recognized by the
   // GraphicsMagick library; it includes most of the image types, excluding
-  // the raw images.
+  // the raw images and those images the Gmagick class is not able to write.
   $mime_types = [
     'BIGTIFF' => 'image/tiff',
     'BMP' => 'image/bmp',
