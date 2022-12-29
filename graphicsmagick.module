@@ -29,7 +29,7 @@ function image_graphicsmagick_settings() {
   $form['graphicsmagick_resize_settings']['graphicsmagick_image_blur'] = [
     '#type' => 'number',
     '#title' => t('Image blur'),
-    '#description' => t('The image blur (from 0 to 200). Values higher than 100 make the image blurry, while values lower than 100 make the image sharper. When the used image filter is Lanczos, it is probably better to use a blur value lower than 100.'),
+    '#description' => t('The image blur (from 0 to 200). Values higher than 100 make the image blurry, while values lower than 100 make the image sharper.'),
     '#min' => 0,
     '#max' => 200,
     '#default_value' => graphicsmagick_get_image_blur(),
@@ -85,7 +85,12 @@ function image_graphicsmagick_settings() {
 function image_graphicsmagick_resize(stdClass $image, $width, $height, $background = NULL) {
   $clone = clone $image->resource;
   $filter = graphicsmagick_get_image_filter();
+
+  // The value returned by graphicsmagick_get_image_blur() is an integer from 0
+  // to 200 that needs to be converted to a float, as required by
+  // Gmagick::resizeImage().
   $blur = graphicsmagick_get_image_blur() / 100;
+
   $color = graphicsmagick_color_string2object($background);
 
   if  (!isset($color)) {
@@ -740,8 +745,8 @@ function graphicsmagick_get_image_blur() {
   $config = config('system.core');
   $value = $config->get('graphicsmagick_image_blur');
 
-  // If the blur value hasn't been set, return 1 instead of 0.
-  return isset($value) ? $value : 1;
+  // If the blur value hasn't been set, return 100 instead of 0.
+  return isset($value) ? $value : 100;
 }
 
 /**
