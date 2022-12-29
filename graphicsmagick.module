@@ -57,10 +57,7 @@ function image_graphicsmagick_settings() {
   $form['graphicsmagick_resize_settings']['graphicsmagick_image_filter'] = [
     '#type' => 'select',
     '#title' => t('Image blur'),
-    '#options' => array(
-      0 => t('No'),
-      1 => t('Yes'),
-    ),
+    '#options' => $options,
     '#default_value' => graphicsmagick_get_image_filter(),
     '#description' => t('The image filter applied to the image. By default no filter is applied when an image is resized. For a better effect, choose Lanczos or Mitchell.'),
   ];
