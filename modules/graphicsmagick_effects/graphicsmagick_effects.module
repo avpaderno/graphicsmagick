@@ -7,54 +7,38 @@
 /**
  * Implements hook_image_effect_info().
  */
-function graphicsmagick_effects_info() {
+function graphicsmagick_effects_image_effect_info() {
   $effects = [];
 
   $effects['graphicsmagick_effects_blur'] = [
     'label' => t('Blur'),
-    'help' => t('Bluring will make the image details less distinct.'),
+    'help' => t('Bluring will make the image details less distinct. A Gaussian operator with the given radius and standard deviation (sigma) will be applied.'),
     'dimensions passthrough' => TRUE,
     'form callback' => 'graphicsmagick_effects_blur_form',
-    'summary theme' => 'graphicsmagick_effects_blur_summary',
     'effect callback' => 'graphicsmagick_effects_blur_effect',
-  ];
-
-  $effects['graphicsmagick_effects_charcoal'] = [
-    'label' => t('Charcoal'),
-    'help' => t('This effect will simulate a charcoal drawing.'),
-    'dimensions passthrough' => TRUE,
-    'form callback' => 'graphicsmagick_effects_charcoal_form',
-    'summary theme' => 'graphicsmagick_effects_charcoal_summary',
-    'effect callback' => 'graphicsmagick_effects_charcoal_effect',
-  ];
-
-  $effects['graphicsmagick_effects_edge'] = [
-    'label' => t('Edge'),
-    'help' => t('This effect will apply a convolution filter with the given radius.'),
-    'dimensions passthrough' => TRUE,
-    'form callback' => 'graphicsmagick_effects_edge_form',
-    'summary theme' => 'graphicsmagick_effects_edge_summary',
-    'effect callback' => 'graphicsmagick_effects_edge_effect',
+    'summary theme' => 'graphicsmagick_effects_blur_summary',
   ];
 
   $effects['graphicsmagick_effects_emboss'] = [
     'label' => t('Emboss'),
-    'help' => t('Embossing will convert the image to grayscale with a three-dimensional effect. A Gaussian operator with the given radius and standard deviation (sigma) will be applied.'),
+    'help' => t('Embossing will convolve the image with a Gaussian operator, giving to the image a three-dimensional effect.'),
     'dimensions passthrough' => TRUE,
     'form callback' => 'graphicsmagick_effects_emboss_form',
-    'summary theme' => 'graphicsmagick_effects_emboss_summary',
     'effect callback' => 'graphicsmagick_effects_emboss_effect',
+    'summary theme' => 'graphicsmagick_effects_emboss_summary',
   ];
 
   $effects['graphicsmagick_effects_flip'] = [
     'label' => t('Vertical mirror'),
     'help' => t('This effect will create a vertical mirror image by reflecting the pixels around the central x-axis.'),
+    'dimensions passthrough' => TRUE,
     'effect callback' => 'graphicsmagick_effects_flip_effect',
   ];
 
   $effects['graphicsmagick_effects_flop'] = [
     'label' => t('Horizontal mirror'),
     'help' => t('This effect will create a horizontal mirror image by reflecting the pixels around the central y-axis.'),
+    'dimensions passthrough' => TRUE,
     'effect callback' => 'graphicsmagick_effects_flop_effect',
   ];
 
@@ -63,8 +47,8 @@ function graphicsmagick_effects_info() {
     'help' => t("This effect will change the gamma values. The same image viewed on different devices will have perceptual differences on intensity."),
     'dimensions passthrough' => TRUE,
     'form callback' => 'graphicsmagick_effects_gamma_form',
-    'summary theme' => 'graphicsmagick_effects_gamma_summary',
     'effect callback' => 'graphicsmagick_effects_gamma_effect',
+    'summary theme' => 'graphicsmagick_effects_gamma_summary',
   ];
 
   $effects['graphicsmagick_effects_oil_paint'] = [
@@ -72,24 +56,8 @@ function graphicsmagick_effects_info() {
     'help' => t('This effect will simulate an oil painting. Each pixel is replaced by the most frequent color occurring in a circular region defined by radius.'),
     'dimensions passthrough' => TRUE,
     'form callback' => 'graphicsmagick_effects_image_effect_oil_paint_form',
-    'summary theme' => 'graphicsmagick_effects_image_effect_oil_paint_summary',
     'effect callback' => 'graphicsmagick_effects_image_effect_oil_paint_effect',
-  ];
-
-  $effects['graphicsmagick_effects_roll'] = [
-    'label' => t('Roll'),
-    'help' => t('This effect will offset the image as defined by x and y.'),
-    'form callback' => 'graphicsmagick_effects_roll_form',
-    'summary theme' => 'graphicsmagick_effects_options_summary',
-    'effect callback' => 'graphicsmagick_effects_roll_effect',
-  ];
-
-  $effects['graphicsmagick_effects_shear'] = [
-    'label' => t('Shear'),
-    'help' => t('Shearing will slide one edge of an image along the X or Y axis, creating a parallelogram. An X direction shear slides an edge along the X axis, while a Y direction shear slides an edge along the Y axis. Empty triangles left over from shearing the image are filled with the background color.'),
-    'form callback' => 'graphicsmagick_effects_shear_form',
-    'summary theme' => 'graphicsmagick_effects_shear_summary',
-    'effect callback' => 'graphicsmagick_effects_shear_effect',
+    'summary theme' => 'graphicsmagick_effects_image_effect_oil_paint_summary',
   ];
 
   $effects['graphicsmagick_effects_solarize'] = [
@@ -97,25 +65,421 @@ function graphicsmagick_effects_info() {
     'help' => t('Solarizing will apply a special effect to the image, similar to the effect achieved in a photo darkroom by selectively exposing areas of photo sensitive paper to light.'),
     'dimensions passthrough' => TRUE,
     'form callback' => 'graphicsmagick_effects_solarize_form',
-    'summary theme' => 'graphicsmagick_effects_solarize_summary',
     'effect callback' => 'graphicsmagick_effects_solarize_effect',
+    'summary theme' => 'graphicsmagick_effects_solarize_summary',
   ];
 
   $effects['graphicsmagick_effects_spread'] = [
     'label' => t('Spread'),
     'help' => t('Special effects method that randomly displaces each pixel in a block defined by the radius parameter.'),
     'form callback' => 'graphicsmagick_effects_spread_form',
-    'summary theme' => 'graphicsmagick_effects_options_summary',
     'effect callback' => 'graphicsmagick_effects_spread_effect',
+    'summary theme' => 'graphicsmagick_effects_options_summary',
   ];
 
   $effects['graphicsmagick_effects_swirl'] = [
     'label' => t('Swirl'),
     'help' => t('This effect will swirl the pixels about the center of the image, where degrees indicates the sweep of the arc through which each pixel is moved.'),
     'form callback' => 'graphicsmagick_effects_swirl_form',
-    'summary theme' => 'graphicsmagick_effects_swirl_summary',
     'effect callback' => 'graphicsmagick_effects_swirl_effect',
+    'summary theme' => 'graphicsmagick_effects_swirl_summary',
   ];
 
   return $effects;
+}
+
+/**
+ * Form structure for the blur effect.
+ *
+ * Note that this is not a complete form; it only contains the portion of the
+ * form for configuring the effect options. Therefore, it does not not need to
+ * include metadata about the effect, nor a submit button.
+ *
+ * @param array $data
+ *   The current configuration for this effect.
+ */
+function graphicsmagick_effects_blur_form(array $data) {
+  $form['radius'] = [
+    '#type' => 'number',
+    '#title' => t('Radius'),
+    '#description' => t('This value should typically be either 0, to let the effect choose the best value, or be twice the sigma value.'),
+    '#default_value' => isset($data['radius']) ? $data['radius'] : 0.0,
+    '#required' => TRUE,
+    '#min' => 0.0,
+    '#max' => 65355.0,
+    '#step' => 0.5,
+  ];
+  $form['sigma'] = [
+    '#type' => 'number',
+    '#title' => t('Sigma'),
+    '#description' => t('A large sigma value and a smallish radius value will introduce artifacts in the resulting image; small sigma values are typically only used to fuzz lines and smooth edges on images for which no anti-aliasing was used.'),
+    '#default_value' => isset($data['sigma']) ? $data['sigma'] : 1.0,
+    '#required' => TRUE,
+    '#min' => 0.0,
+    '#max' => 65355.0,
+    '#step' => 0.5,
+  ];
+
+  return $form;
+}
+
+/**
+ * Image effect callback; blur an image.
+ *
+ * @param object $image
+ *   An image object.
+ * @param array $data
+ *   An array of attributes to use when performing the bluring effect with the
+ *   following items:
+ *   - "radius": A float representing the Gaussian radius.
+ *   - "sigma": A float representing the Gaussian sigma.
+ *
+ * @return bool
+ *   TRUE on success, FALSE on failure to apply the effect.
+ */
+function graphicsmagick_effects_blur_effect($image, array $data) {
+  $effect = function ($handler, $data) {
+    return $handler->blurImage($data['radius'], $data['sigma']);
+  };
+
+  return graphicsmagick_image_effect($image, $effect, $data);
+}
+
+/**
+ * Form structure for the emboss effect.
+ *
+ * Note that this is not a complete form; it only contains the portion of the
+ * form for configuring the effect options. Therefore, it does not not need to
+ * include metadata about the effect, nor a submit button.
+ *
+ * @param array $data
+ *   The current configuration for this effect.
+ */
+function graphicsmagick_effects_emboss_form(array $data) {
+  $form['radius'] = [
+    '#type' => 'number',
+    '#title' => t('Radius'),
+    '#description' => t('For reasonable results, the radius value should be higher than the sigma value. Use a value of zero to let the effect choose the best value.'),
+    '#default_value' => isset($data['radius']) ? $data['radius'] : 0.0,
+    '#required' => TRUE,
+    '#min' => 0.0,
+    '#max' => 65355.0,
+    '#step' => 0.5,
+  ];
+  $form['sigma'] = [
+    '#type' => 'number',
+    '#title' => t('Sigma'),
+    '#description' => t('A large sigma value works well also with color image. It can remove color dominances, but it could also introduce artifacts, especially in JPEG images.'),
+    '#default_value' => isset($data['sigma']) ? $data['sigma'] : 1.0,
+    '#required' => TRUE,
+    '#min' => 0.0,
+    '#max' => 65355.0,
+    '#step' => 0.5,
+  ];
+
+  return $form;
+}
+
+/**
+ * Image effect callback; emboss an image.
+ *
+ * @param object $image
+ *   An image object.
+ * @param array $data
+ *   An array of attributes to use when performing the emboss effect with the
+ *   following items:
+ *   - "radius": A float representing the Gaussian radius.
+ *   - "sigma": A float representing the Gaussian sigma.
+ *
+ * @return bool
+ *   TRUE on success, FALSE on failure to apply the effect.
+ */
+function graphicsmagick_effects_emboss_effect($image, array $data) {
+  $effect = function ($handler, $data) {
+    return $handler->embossImage($data['radius'], $data['sigma']);
+  };
+
+  return graphicsmagick_image_effect($image, $effect, $data);
+}
+
+/**
+ * Image effect callback; create a vertical mirror image.
+ *
+ * @param object $image
+ *   An image object.
+ * @param array $data
+ *   An array of attributes to use when creating a vertical mirror image.
+ *
+ * @return bool
+ *   TRUE on success, FALSE on failure to blur the image.
+ */
+function graphicsmagick_effects_flip_effect($image, array $data) {
+  $effect = function ($handler, $data) {
+    return $handler->flipImage();
+  };
+
+  return graphicsmagick_image_effect($image, $effect, $data);
+}
+
+/**
+ * Image effect callback; create a horizontal mirror image.
+ *
+ * @param object $image
+ *   An image object.
+ * @param array $data
+ *   An array of attributes to use when creating a horizontal mirror image.
+ *
+ * @return bool
+ *   TRUE on success, FALSE on failure to apply the effect.
+ */
+function graphicsmagick_effects_flop_effect($image, array $data) {
+  $effect = function ($handler, $data) {
+    return $handler->flopImage();
+  };
+
+  return graphicsmagick_image_effect($image, $effect, $data);
+}
+
+/**
+ * Form structure for the gamma effect.
+ *
+ * Note that this is not a complete form; it only contains the portion of the
+ * form for configuring the effect options. Therefore, it does not not need to
+ * include metadata about the effect, nor a submit button.
+ *
+ * @param array $data
+ *   The current configuration for this effect.
+ */
+function graphicsmagick_effects_gamma_form(array $data) {
+  $form['gamma'] = [
+    '#type' => 'number',
+    '#title' => t('Gamma'),
+    '#description' => t('Values typically range from 0.8 to 2.3. Values lower than one make the image darker; values higher than one make the image lighter.'),
+    '#default_value' => isset($data['gamma']) ? $data['gamma'] : 0.8,
+    '#required' => TRUE,
+    '#min' => 0.0,
+    '#max' => 10.0,
+    '#step' => 0.2,
+  ];
+
+  return $form;
+}
+
+/**
+ * Image effect callback; change the image gamma value.
+ *
+ * @param object $image
+ *   An image object.
+ * @param array $data
+ *   An array of attributes to use when changing the gamma value with the
+ *   following items:
+ *   - "gamma": A float representing the new gamma value.
+ *
+ * @return bool
+ *   TRUE on success, FALSE on failure to apply the effect.
+ */
+function graphicsmagick_effects_gamma_effect($image, array $data) {
+  $effect = function ($handler, $data) {
+    return $handler->gammaImage($data['gamma']);
+  };
+
+  return graphicsmagick_image_effect($image, $effect, $data);
+}
+
+/**
+ * Form structure for the oil painting effect.
+ *
+ * Note that this is not a complete form; it only contains the portion of the
+ * form for configuring the effect options. Therefore, it does not not need to
+ * include metadata about the effect, nor a submit button.
+ *
+ * @param array $data
+ *   The current configuration for this effect.
+ */
+function graphicsmagick_effects_oil_paint_form(array $data) {
+  $form['radius'] = [
+    '#type' => 'number',
+    '#title' => t('Radius'),
+    '#description' => t('Each pixel is replaced by the most frequent color occurring in a circular region defined by the radius value.'),
+    '#default_value' => isset($data['radius']) ? $data['radius'] : 0.8,
+    '#required' => TRUE,
+    '#min' => 0.6,
+    '#max' => 50.0,
+    '#step' => 0.2,
+  ];
+
+  return $form;
+}
+
+/**
+ * Image effect callback; simulate an oil painting.
+ *
+ * @param object $image
+ *   An image object.
+ * @param array $data
+ *   An array of attributes to use when applying the effect with the
+ *   following items:
+ *   - "radius": A float representing the the radius of the circular region used
+ *     to calculate the most frequent color.
+ *
+ * @return bool
+ *   TRUE on success, FALSE on failure to apply the effect.
+ */
+function graphicsmagick_effects_oil_paint_effect($image, array $data) {
+  $effect = function ($handler, $data) {
+    return $handler->oilPaintImage($data['radius']);
+  };
+
+  return graphicsmagick_image_effect($image, $effect, $data);
+}
+
+/**
+ * Form structure for the solarize effect.
+ *
+ * Note that this is not a complete form; it only contains the portion of the
+ * form for configuring the effect options. Therefore, it does not not need to
+ * include metadata about the effect, nor a submit button.
+ *
+ * @param array $data
+ *   The current configuration for this effect.
+ */
+function graphicsmagick_effects_solarize_form(array $data) {
+  try {
+    $gmagick = new Gmagick();
+    $quantum_level = $gmagick->getQuantumDepth()['quantumDepthLong'];
+  }
+  catch (Exception $e) {
+    // As getting the quantum dept value failed, assume its value is 8.
+    $quantum_level = 8;
+  }
+
+  $level = isset($data['level']) ? $data['level'] : 1 << (($quantum_level / 2) - 2);
+
+  $form['level'] = [
+    '#type' => 'number',
+    '#title' => t('Level'),
+    '#description' => t('The effect level.'),
+    '#default_value' => $level,
+    '#required' => TRUE,
+    '#min' => 0,
+    '#max' => 1 << $quantum_level,
+    '#step' => 1,
+  ];
+
+  return $form;
+}
+
+/**
+ * Image effect callback; simulate a solarize effect.
+ *
+ * @param object $image
+ *   An image object.
+ * @param array $data
+ *   An array of attributes to use when applying the effect with the
+ *   following items:
+ *   - "level": An integer representing the level of the effect.
+ *
+ * @return bool
+ *   TRUE on success, FALSE on failure to apply the effect.
+ */
+function graphicsmagick_effects_solarize_effect($image, array $data) {
+  $effect = function ($handler, $data) {
+    return $handler->solarizeImage($data['level']);
+  };
+
+  return graphicsmagick_image_effect($image, $effect, $data);
+}
+
+/**
+ * Form structure for the spread effect.
+ *
+ * Note that this is not a complete form; it only contains the portion of the
+ * form for configuring the effect options. Therefore, it does not not need to
+ * include metadata about the effect, nor a submit button.
+ *
+ * @param array $data
+ *   The current configuration for this effect.
+ */
+function graphicsmagick_effects_spread_form(array $data) {
+  $form['radius'] = [
+    '#type' => 'number',
+    '#title' => t('Radius'),
+    '#description' => t('Each pixel in a block defined by the radius parameter is randomly displaced.'),
+    '#default_value' => isset($data['radius']) ? $data['radius'] : 2.0,
+    '#required' => TRUE,
+    '#min' => 0.0,
+    '#max' => 50.0,
+    '#step' => 0.4,
+  ];
+
+  return $form;
+}
+
+/**
+ * Image effect callback; randomly displace each pixel in a circular region.
+ *
+ * @param object $image
+ *   An image object.
+ * @param array $data
+ *   An array of attributes to use when applying the effect with the
+ *   following items:
+ *   - "radius":  A float representing the the radius of the circular region
+ *     where the pixels are randomly displaced.
+ *
+ * @return bool
+ *   TRUE on success, FALSE on failure to apply the effect.
+ */
+function graphicsmagick_effects_spread($image, array $data) {
+  $effect = function ($handler, $data) {
+    return $handler->spreadImage($data['radius']);
+  };
+
+  return graphicsmagick_image_effect($image, $effect, $data);
+}
+
+/**
+ * Form structure for the swirl effect.
+ *
+ * Note that this is not a complete form; it only contains the portion of the
+ * form for configuring the effect options. Therefore, it does not not need to
+ * include metadata about the effect, nor a submit button.
+ *
+ * @param array $data
+ *   The current configuration for this effect.
+ */
+function graphicsmagick_effects_swirl_form(array $data) {
+  $form['degrees'] = [
+    '#type' => 'number',
+    '#title' => t('Degrees'),
+    '#description' => t('The sweep of the arc through which each pixel is moved.'),
+    '#default_value' => isset($data['radius']) ? $data['radius'] : 10.0,
+    '#required' => TRUE,
+    '#min' => 0.0,
+    '#max' => 360.0,
+    '#step' => 2.0,
+  ];
+
+  return $form;
+}
+
+/**
+ * Image effect callback; randomly displace each pixel in a circular region.
+ *
+ * @param object $image
+ *   An image object.
+ * @param array $data
+ *   An array of attributes to use when applying the effect with the
+ *   following items:
+ *   - "degrees":  A float representing the sweep of the arc through which each
+ *     pixel is moved.
+ *
+ * @return bool
+ *   TRUE on success, FALSE on failure to apply the effect.
+ */
+function graphicsmagick_effects_swirl($image, array $data) {
+  $effect = function ($handler, $data) {
+    return $handler->swirlImage($data['degrees']);
+  };
+
+  return graphicsmagick_image_effect($image, $effect, $data);
 }
