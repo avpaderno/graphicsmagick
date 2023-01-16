@@ -55,9 +55,9 @@ function graphicsmagick_effects_image_effect_info() {
     'label' => t('Oil paint'),
     'help' => t('This effect will simulate an oil painting. Each pixel is replaced by the most frequent color occurring in a circular region defined by radius.'),
     'dimensions passthrough' => TRUE,
-    'form callback' => 'graphicsmagick_effects_image_effect_oil_paint_form',
-    'effect callback' => 'graphicsmagick_effects_image_effect_oil_paint_effect',
-    'summary theme' => 'graphicsmagick_effects_image_effect_oil_paint_summary',
+    'form callback' => 'graphicsmagick_effects_oil_paint_form',
+    'effect callback' => 'graphicsmagick_effects_oil_paint_effect',
+    'summary theme' => 'graphicsmagick_effects_oil_paint_summary',
   ];
 
   $effects['graphicsmagick_effects_solarize'] = [
@@ -74,7 +74,7 @@ function graphicsmagick_effects_image_effect_info() {
     'help' => t('Special effects method that randomly displaces each pixel in a block defined by the radius parameter.'),
     'form callback' => 'graphicsmagick_effects_spread_form',
     'effect callback' => 'graphicsmagick_effects_spread_effect',
-    'summary theme' => 'graphicsmagick_effects_options_summary',
+    'summary theme' => 'graphicsmagick_effects_spread_summary',
   ];
 
   $effects['graphicsmagick_effects_swirl'] = [
@@ -86,6 +86,26 @@ function graphicsmagick_effects_image_effect_info() {
   ];
 
   return $effects;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function graphicsmagick_effects_theme() {
+  $summary_base = [
+    'variables' => [ 'data' => NULL],
+    'file' => 'includes/graphicsmagick_effects.theme.inc',
+  ];
+
+  return [
+    'graphicsmagick_effects_blur_summary' => $summary_base,
+    'graphicsmagick_effects_emboss_summary' => $summary_base,
+    'graphicsmagick_effects_gamma_summary' => $summary_base,
+    'graphicsmagick_effects_oil_paint_summary' => $summary_base,
+    'graphicsmagick_effects_solarize_summary' => $summary_base,
+    'graphicsmagick_effects_spread_summary' => $summary_base,
+    'graphicsmagick_effects_swirl_summary' => $summary_base,
+  ];
 }
 
 /**
@@ -452,7 +472,7 @@ function graphicsmagick_effects_swirl_form(array $data) {
     '#type' => 'number',
     '#title' => t('Degrees'),
     '#description' => t('The sweep of the arc through which each pixel is moved.'),
-    '#default_value' => isset($data['radius']) ? $data['radius'] : 10.0,
+    '#default_value' => isset($data['degrees']) ? $data['degrees'] : 10.0,
     '#required' => TRUE,
     '#min' => 0.0,
     '#max' => 360.0,
