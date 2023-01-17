@@ -7,7 +7,7 @@
 /**
  * Implements hook_image_effect_info().
  */
-function graphicsmagick_effects_image_effect_info() {
+function graphicsmagick_effects_image_info() {
   $effects = [];
 
   $effects['graphicsmagick_effects_blur'] = [
@@ -15,8 +15,15 @@ function graphicsmagick_effects_image_effect_info() {
     'help' => t('Bluring will make the image details less distinct. A Gaussian operator with the given radius and standard deviation (sigma) will be applied.'),
     'dimensions passthrough' => TRUE,
     'form callback' => 'graphicsmagick_effects_blur_form',
-    'effect callback' => 'graphicsmagick_effects_blur_effect',
+    'effect callback' => 'graphicsmagick_effects_blur',
     'summary theme' => 'graphicsmagick_effects_blur_summary',
+  ];
+
+  $effects['graphicsmagick_effects_despeckle'] = [
+    'label' => t('Despeckle'),
+    'help' => t('Despeckling will reduce the speckle noise in an image while preserving the original image edges.'),
+    'dimensions passthrough' => TRUE,
+    'effect callback' => 'graphicsmagick_effects_despeckle',
   ];
 
   $effects['graphicsmagick_effects_emboss'] = [
@@ -24,22 +31,36 @@ function graphicsmagick_effects_image_effect_info() {
     'help' => t('Embossing will convolve the image with a Gaussian operator, giving to the image a three-dimensional effect.'),
     'dimensions passthrough' => TRUE,
     'form callback' => 'graphicsmagick_effects_emboss_form',
-    'effect callback' => 'graphicsmagick_effects_emboss_effect',
+    'effect callback' => 'graphicsmagick_effects_emboss',
     'summary theme' => 'graphicsmagick_effects_emboss_summary',
+  ];
+
+  $effects['graphicsmagick_effects_enhance'] = [
+    'label' => t('Enhance'),
+    'help' => t('Enhancing an image will improve the quality of a noisy image.'),
+    'dimensions passthrough' => TRUE,
+    'effect callback' => 'graphicsmagick_effects_enhance',
+  ];
+
+  $effects['graphicsmagick_effects_equalize'] = [
+    'label' => t('Equalize'),
+    'help' => t('Equalizing an image will enhance the image contrast.'),
+    'dimensions passthrough' => TRUE,
+    'effect callback' => 'graphicsmagick_effects_enhance',
   ];
 
   $effects['graphicsmagick_effects_flip'] = [
     'label' => t('Vertical mirror'),
     'help' => t('This effect will create a vertical mirror image by reflecting the pixels around the central x-axis.'),
     'dimensions passthrough' => TRUE,
-    'effect callback' => 'graphicsmagick_effects_flip_effect',
+    'effect callback' => 'graphicsmagick_effects_flip',
   ];
 
   $effects['graphicsmagick_effects_flop'] = [
     'label' => t('Horizontal mirror'),
     'help' => t('This effect will create a horizontal mirror image by reflecting the pixels around the central y-axis.'),
     'dimensions passthrough' => TRUE,
-    'effect callback' => 'graphicsmagick_effects_flop_effect',
+    'effect callback' => 'graphicsmagick_effects_flop',
   ];
 
   $effects['graphicsmagick_effects_gamma'] = [
@@ -47,8 +68,17 @@ function graphicsmagick_effects_image_effect_info() {
     'help' => t("This effect will change the gamma values. The same image viewed on different devices will have perceptual differences on intensity."),
     'dimensions passthrough' => TRUE,
     'form callback' => 'graphicsmagick_effects_gamma_form',
-    'effect callback' => 'graphicsmagick_effects_gamma_effect',
+    'effect callback' => 'graphicsmagick_effects_gamma',
     'summary theme' => 'graphicsmagick_effects_gamma_summary',
+  ];
+
+  $effects['graphicsmagick_effects_noise'] = [
+    'label' => t('Add noise'),
+    'help' => t("This effect will add random noise to the image."),
+    'dimensions passthrough' => TRUE,
+    'form callback' => 'graphicsmagick_effects_noise_form',
+    'effect callback' => 'graphicsmagick_effects_noise',
+    'summary theme' => 'graphicsmagick_effects_noise_summary',
   ];
 
   $effects['graphicsmagick_effects_oil_paint'] = [
@@ -56,7 +86,7 @@ function graphicsmagick_effects_image_effect_info() {
     'help' => t('This effect will simulate an oil painting. Each pixel is replaced by the most frequent color occurring in a circular region defined by radius.'),
     'dimensions passthrough' => TRUE,
     'form callback' => 'graphicsmagick_effects_oil_paint_form',
-    'effect callback' => 'graphicsmagick_effects_oil_paint_effect',
+    'effect callback' => 'graphicsmagick_effects_oil_paint',
     'summary theme' => 'graphicsmagick_effects_oil_paint_summary',
   ];
 
@@ -65,7 +95,7 @@ function graphicsmagick_effects_image_effect_info() {
     'help' => t('Solarizing will apply a special effect to the image, similar to the effect achieved in a photo darkroom by selectively exposing areas of photo sensitive paper to light.'),
     'dimensions passthrough' => TRUE,
     'form callback' => 'graphicsmagick_effects_solarize_form',
-    'effect callback' => 'graphicsmagick_effects_solarize_effect',
+    'effect callback' => 'graphicsmagick_effects_solarize',
     'summary theme' => 'graphicsmagick_effects_solarize_summary',
   ];
 
@@ -73,7 +103,7 @@ function graphicsmagick_effects_image_effect_info() {
     'label' => t('Spread'),
     'help' => t('Special effects method that randomly displaces each pixel in a block defined by the radius parameter.'),
     'form callback' => 'graphicsmagick_effects_spread_form',
-    'effect callback' => 'graphicsmagick_effects_spread_effect',
+    'effect callback' => 'graphicsmagick_effects_spread',
     'summary theme' => 'graphicsmagick_effects_spread_summary',
   ];
 
@@ -81,7 +111,7 @@ function graphicsmagick_effects_image_effect_info() {
     'label' => t('Swirl'),
     'help' => t('This effect will swirl the pixels about the center of the image, where degrees indicates the sweep of the arc through which each pixel is moved.'),
     'form callback' => 'graphicsmagick_effects_swirl_form',
-    'effect callback' => 'graphicsmagick_effects_swirl_effect',
+    'effect callback' => 'graphicsmagick_effects_swirl',
     'summary theme' => 'graphicsmagick_effects_swirl_summary',
   ];
 
@@ -101,6 +131,7 @@ function graphicsmagick_effects_theme() {
     'graphicsmagick_effects_blur_summary' => $summary_base,
     'graphicsmagick_effects_emboss_summary' => $summary_base,
     'graphicsmagick_effects_gamma_summary' => $summary_base,
+    'graphicsmagick_effects_noise_summary' => $summary_base,
     'graphicsmagick_effects_oil_paint_summary' => $summary_base,
     'graphicsmagick_effects_solarize_summary' => $summary_base,
     'graphicsmagick_effects_spread_summary' => $summary_base,
@@ -157,9 +188,29 @@ function graphicsmagick_effects_blur_form(array $data) {
  * @return bool
  *   TRUE on success, FALSE on failure to apply the effect.
  */
-function graphicsmagick_effects_blur_effect($image, array $data) {
+function graphicsmagick_effects_blur($image, array $data) {
   $effect = function ($handler, $data) {
     return $handler->blurImage($data['radius'], $data['sigma']);
+  };
+
+  return graphicsmagick_image_effect($image, $effect, $data);
+}
+
+/**
+ * Image effect callback; emboss an image.
+ *
+ * @param object $image
+ *   An image object.
+ * @param array $data
+ *   An array of attributes to use when despeckling the image. No attributes are
+ *   currently used for this effect.
+ *
+ * @return bool
+ *   TRUE on success, FALSE on failure to apply the effect.
+ */
+function graphicsmagick_effects_despeckle($image, array $data) {
+  $effect = function ($handler, $data) {
+    return $handler->despeckleImage();
   };
 
   return graphicsmagick_image_effect($image, $effect, $data);
@@ -214,9 +265,49 @@ function graphicsmagick_effects_emboss_form(array $data) {
  * @return bool
  *   TRUE on success, FALSE on failure to apply the effect.
  */
-function graphicsmagick_effects_emboss_effect($image, array $data) {
+function graphicsmagick_effects_emboss($image, array $data) {
   $effect = function ($handler, $data) {
     return $handler->embossImage($data['radius'], $data['sigma']);
+  };
+
+  return graphicsmagick_image_effect($image, $effect, $data);
+}
+
+/**
+ * Image effect callback; enhance an image.
+ *
+ * @param object $image
+ *   An image object.
+ * @param array $data
+ *   An array of attributes to use when enhancing an image. No attributes are
+ *   currently used for this effect.
+ *
+ * @return bool
+ *   TRUE on success, FALSE on failure to blur the image.
+ */
+function graphicsmagick_effects_enhance($image, array $data) {
+  $effect = function ($handler, $data) {
+    return $handler->enhanceImage();
+  };
+
+  return graphicsmagick_image_effect($image, $effect, $data);
+}
+
+/**
+ * Image effect callback; equalize an image.
+ *
+ * @param object $image
+ *   An image object.
+ * @param array $data
+ *   An array of attributes to use when equalizing an image. No attributes are
+ *   currently used for this effect.
+ *
+ * @return bool
+ *   TRUE on success, FALSE on failure to blur the image.
+ */
+function graphicsmagick_effects_equalize($image, array $data) {
+  $effect = function ($handler, $data) {
+    return $handler->equalizeImage();
   };
 
   return graphicsmagick_image_effect($image, $effect, $data);
@@ -228,12 +319,13 @@ function graphicsmagick_effects_emboss_effect($image, array $data) {
  * @param object $image
  *   An image object.
  * @param array $data
- *   An array of attributes to use when creating a vertical mirror image.
+ *   An array of attributes to use when creating a vertical mirror image. No
+ *   attributes are currently used for this effect.
  *
  * @return bool
  *   TRUE on success, FALSE on failure to blur the image.
  */
-function graphicsmagick_effects_flip_effect($image, array $data) {
+function graphicsmagick_effects_flip($image, array $data) {
   $effect = function ($handler, $data) {
     return $handler->flipImage();
   };
@@ -247,12 +339,13 @@ function graphicsmagick_effects_flip_effect($image, array $data) {
  * @param object $image
  *   An image object.
  * @param array $data
- *   An array of attributes to use when creating a horizontal mirror image.
+ *   An array of attributes to use when creating a horizontal mirror image. No
+ *   attributes are currently used for this effect.
  *
  * @return bool
  *   TRUE on success, FALSE on failure to apply the effect.
  */
-function graphicsmagick_effects_flop_effect($image, array $data) {
+function graphicsmagick_effects_flop($image, array $data) {
   $effect = function ($handler, $data) {
     return $handler->flopImage();
   };
@@ -298,9 +391,53 @@ function graphicsmagick_effects_gamma_form(array $data) {
  * @return bool
  *   TRUE on success, FALSE on failure to apply the effect.
  */
-function graphicsmagick_effects_gamma_effect($image, array $data) {
+function graphicsmagick_effects_gamma($image, array $data) {
   $effect = function ($handler, $data) {
     return $handler->gammaImage($data['gamma']);
+  };
+
+  return graphicsmagick_image_effect($image, $effect, $data);
+}
+
+/**
+ * Form structure for the noise effect.
+ *
+ * Note that this is not a complete form; it only contains the portion of the
+ * form for configuring the effect options. Therefore, it does not not need to
+ * include metadata about the effect, nor a submit button.
+ *
+ * @param array $data
+ *   The current configuration for this effect.
+ */
+function graphicsmagick_effects_noise_form(array $data) {
+  $form['noise'] = [
+    '#type' => 'select',
+    '#title' => t('Noise type'),
+    '#description' => t('The noise type changes for which pixels the color is randomly changed.'),
+    '#options' => graphicsmagick_image_noise_options(),
+    '#default_value' => isset($data['noise']) ? $data['noise'] : Gmagick::NOISE_UNIFORM,
+    '#required' => TRUE,
+  ];
+
+  return $form;
+}
+
+/**
+ * Image effect callback; add random noise.
+ *
+ * @param object $image
+ *   An image object.
+ * @param array $data
+ *   An array of attributes to use when applying the effect with the
+ *   following items:
+ *   - "noise": The noise type.
+ *
+ * @return bool
+ *   TRUE on success, FALSE on failure to apply the effect.
+ */
+function graphicsmagick_effects_noise($image, array $data) {
+  $effect = function ($handler, $data) {
+    return $handler->addNoiseImage($data['radius']);
   };
 
   return graphicsmagick_image_effect($image, $effect, $data);
@@ -345,7 +482,7 @@ function graphicsmagick_effects_oil_paint_form(array $data) {
  * @return bool
  *   TRUE on success, FALSE on failure to apply the effect.
  */
-function graphicsmagick_effects_oil_paint_effect($image, array $data) {
+function graphicsmagick_effects_oil_paint($image, array $data) {
   $effect = function ($handler, $data) {
     return $handler->oilPaintImage($data['radius']);
   };
@@ -402,7 +539,7 @@ function graphicsmagick_effects_solarize_form(array $data) {
  * @return bool
  *   TRUE on success, FALSE on failure to apply the effect.
  */
-function graphicsmagick_effects_solarize_effect($image, array $data) {
+function graphicsmagick_effects_solarize($image, array $data) {
   $effect = function ($handler, $data) {
     return $handler->solarizeImage($data['level']);
   };

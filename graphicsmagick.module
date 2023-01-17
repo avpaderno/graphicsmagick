@@ -602,6 +602,23 @@ function graphicsmagick_image_filter_options() {
 }
 
 /**
+ * Return the option array for the noise types implemented by the Gmagick class.
+ *
+ * @return array
+ *   An array whose keys are the Gmagick::NOISE_* constants and the values are
+ *   the noise names to shown in forms.
+ */
+function graphicsmagick_image_noise_options() {
+  return [
+    Gmagick::NOISE_UNIFORM => t('Uniform'),
+    Gmagick::NOISE_GAUSSIAN => t('Gaussian'),
+    Gmagick::NOISE_MULTIPLICATIVEGAUSSIAN => t('Multiplicative Gaussian'),
+    Gmagick::NOISE_LAPLACIAN => t('Laplacian'),
+    Gmagick::NOISE_POISSON => t('Poisson'),
+  ];
+}
+
+/**
  * Convert the format returned by the Gmagick class in the image extension.
  *
  * Modules can get the image format required from this function using

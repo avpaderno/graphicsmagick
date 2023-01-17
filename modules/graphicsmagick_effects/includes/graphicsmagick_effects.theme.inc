@@ -61,6 +61,27 @@ function theme_graphicsmagick_effects_gamma_summary(array $variables) {
 }
 
 /**
+ * Returns HTML for the summary of the image noise effect.
+ *
+ * @param array $variables
+ *   An associative array containing:
+ *   - data: The current configuration for the noise effect.
+ *
+ * @ingroup themeable
+ */
+function theme_graphicsmagick_effects_noise_summary(array $variables) {
+  $data = $variables['data'];
+  $options = graphicsmagick_image_noise_options();
+  $summary = '';
+
+  if ($data['noise'] && isset($options[$data['noise']])) {
+    $summary = t('noise @noise', ['@noise' => $options[$data['noise']]]);
+  }
+
+  return $summary;
+}
+
+/**
  * Returns HTML for the summary of the image oil paint effect.
  *
  * @param array $variables
