@@ -900,7 +900,7 @@ function graphicsmagick_image_save($image, $destination) {
   }
 
   try {
-    if ($image->format == 'JPEG' || $image->format == 'JPEG') {
+    if ($image->format == 'JPEG' || $image->format == 'JPG') {
       $image->handler->setCompressionQuality(graphicsmagick_toolkit_get_jpeg_quality());
     }
 
