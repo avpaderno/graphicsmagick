@@ -24,7 +24,7 @@ these requirements.
 
 - Visit the configuration page under Administration > Configuration > Media >
   Image toolkit (admin/config/media/image-toolkit) and change the image toolkit
-  to GraphicsMagick image manipulation toolkit.
+  to GraphicsMagick toolkit.
 
 
 ## Issues
