@@ -26,6 +26,15 @@ function graphicsmagick_effects_image_info() {
     'effect callback' => 'graphicsmagick_effects_despeckle',
   ];
 
+  $effects['graphicsmagick_effects_edge'] = [
+    'label' => t('Edge enhance'),
+    'help' => t('This effect will enhance edges within the image with a convolution filter.'),
+    'dimensions passthrough' => TRUE,
+    'form callback' => 'graphicsmagick_effects_edge_form',
+    'effect callback' => 'graphicsmagick_effects_edge',
+    'summary theme' => 'graphicsmagick_effects_oil_paint_summary',
+  ];
+
   $effects['graphicsmagick_effects_emboss'] = [
     'label' => t('Emboss'),
     'help' => t('Embossing will convolve the image with a Gaussian operator, giving to the image a three-dimensional effect.'),
@@ -129,6 +138,7 @@ function graphicsmagick_effects_theme() {
 
   return [
     'graphicsmagick_effects_blur_summary' => $summary_base,
+    'graphicsmagick_effects_edge_summary' => $summary_base,
     'graphicsmagick_effects_emboss_summary' => $summary_base,
     'graphicsmagick_effects_gamma_summary' => $summary_base,
     'graphicsmagick_effects_noise_summary' => $summary_base,
@@ -211,6 +221,52 @@ function graphicsmagick_effects_blur($image, array $data) {
 function graphicsmagick_effects_despeckle($image, array $data) {
   $effect = function ($handler, $data) {
     return $handler->despeckleImage();
+  };
+
+  return graphicsmagick_image_effect($image, $effect, $data);
+}
+
+/**
+ * Form structure for the edge effect.
+ *
+ * Note that this is not a complete form; it only contains the portion of the
+ * form for configuring the effect options. Therefore, it does not not need to
+ * include metadata about the effect, nor a submit button.
+ *
+ * @param array $data
+ *   The current configuration for this effect.
+ */
+function graphicsmagick_effects_edge_form(array $data) {
+  $form['radius'] = [
+    '#type' => 'number',
+    '#title' => t('Radius'),
+    '#description' => t('Use a value of zero to let the effect choose the best value.'),
+    '#default_value' => isset($data['radius']) ? $data['radius'] : 0.0,
+    '#required' => TRUE,
+    '#min' => 0.0,
+    '#max' => 65355.0,
+    '#step' => 0.5,
+  ];
+
+  return $form;
+}
+
+/**
+ * Image effect callback; enhance the image edges.
+ *
+ * @param object $image
+ *   An image object.
+ * @param array $data
+ *   An array of attributes to use when performing the emboss effect with the
+ *   following items:
+ *   - "radius": The operation radius.
+ *
+ * @return bool
+ *   TRUE on success, FALSE on failure to apply the effect.
+ */
+function graphicsmagick_effects_edge($image, array $data) {
+  $effect = function ($handler, $data) {
+    return $handler->edgeImage($data['radius']);
   };
 
   return graphicsmagick_image_effect($image, $effect, $data);
