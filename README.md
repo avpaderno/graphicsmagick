@@ -29,7 +29,7 @@ these requirements.
 
 ## Issues
 
-Bugs and Feature requests should be reported in the [Issue Queue](https://github.com/backdrop-contrib/graphicsmagick/issues).
+Bugs and Feature requests should be reported in the [issue queue](https://github.com/backdrop-contrib/graphicsmagick/issues).
 
 
 ## Current Maintainers

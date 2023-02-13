@@ -1,7 +1,7 @@
 # Ignore the vendor directory.
 /vendor/
 
-#Ignore the directories used from frontend tools.
+# Ignore the directories used from frontend tools.
 node_modules/
 bower_components/
 
