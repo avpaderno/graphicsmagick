@@ -20,13 +20,7 @@ function graphicsmagick_image_toolkits() {
  * Retrieve settings for the GraphicsMagick toolkit.
  */
 function image_graphicsmagick_toolkit_settings() {
-  $form['graphicsmagick_toolkit_resize_settings'] = [
-    '#type' => 'fieldset',
-    '#title' => t('Resize settings'),
-    '#collapsible' => FALSE,
-  ];
-
-  $form['graphicsmagick_toolkit_resize_settings']['graphicsmagick_toolkit_image_blur'] = [
+  $form['graphicsmagick_toolkit_image_blur'] = [
     '#type' => 'number',
     '#title' => t('Image blur'),
     '#description' => t('The image blur (from 0.0 to 2.0). Values higher than 1.0 make the image blurry, while values lower than 1.0 make the image sharper.'),
@@ -36,21 +30,15 @@ function image_graphicsmagick_toolkit_settings() {
     '#step' => 0.2,
   ];
 
-  $form['graphicsmagick_toolkit_resize_settings']['graphicsmagick_toolkit_image_filter'] = [
+  $form['graphicsmagick_toolkit_image_filter'] = [
     '#type' => 'select',
     '#title' => t('Image filter'),
-    '#description' => t('The image filter applied to the image. The default applied filter is Lanczos. For better effects, either Lanczos or Mitchell are suggested.'),
+    '#description' => t('The image filter applied to the image. By default no filter is applied when an image is resized. For a better effect, choose Lanczos or Mitchell.'),
     '#options' => graphicsmagick_image_filter_options(),
     '#default_value' => graphicsmagick_toolkit_get_image_filter(),
   ];
 
-  $form['graphicsmagick_toolkit_save_settings'] = [
-    '#type' => 'fieldset',
-    '#title' => t('Save settings'),
-    '#collapsible' => FALSE,
-  ];
-
-  $form['graphicsmagick_toolkit_save_settings']['graphicsmagick_toolkit_jpeg_quality'] = [
+  $form['graphicsmagick_toolkit_jpeg_quality'] = [
     '#type' => 'number',
     '#title' => t('JPEG quality'),
     '#description' => t('The image quality for JPEG images (from 0 to 100). Higher values mean better image quality but bigger files.'),
