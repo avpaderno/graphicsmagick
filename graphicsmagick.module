@@ -39,7 +39,7 @@ function image_graphicsmagick_toolkit_settings() {
   $form['graphicsmagick_toolkit_resize_settings']['graphicsmagick_toolkit_image_filter'] = [
     '#type' => 'select',
     '#title' => t('Image filter'),
-    '#description' => t('The image filter applied to the image. By default no filter is applied when an image is resized. For a better effect, choose Lanczos or Mitchell.'),
+    '#description' => t('The image filter applied to the image. The default applied filter is Lanczos. For better effects, either Lanczos or Mitchell are suggested.'),
     '#options' => graphicsmagick_image_filter_options(),
     '#default_value' => graphicsmagick_toolkit_get_image_filter(),
   ];
