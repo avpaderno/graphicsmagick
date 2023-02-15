@@ -15,13 +15,13 @@ function graphicsmagick_requirements($phase) {
 
   if (extension_loaded('gmagick') && class_exists('Gmagick')) {
     try {
-      $resource = new Gmagick();
+      $handler = new Gmagick();
 
       // Verify the undocumented methods use by the toolkit are implemented.
       $missing_methods = FALSE;
-      $missing_methods |= !method_exists($resource, 'getNumberImages');
-      $missing_methods |= !method_exists($resource, 'coalesceImages');
-      $missing_methods |= !method_exists($resource, 'deconstructImages');
+      $missing_methods |= !method_exists($handler, 'getNumberImages');
+      $missing_methods |= !method_exists($handler, 'coalesceImages');
+      $missing_methods |= !method_exists($handler, 'deconstructImages');
 
       if ($missing_methods) {
         $requirements['graphicsmagick_extension'] = [
@@ -34,7 +34,7 @@ function graphicsmagick_requirements($phase) {
         return $requirements;
       }
 
-      if ($version = $resource->getVersion()) {
+      if ($version = $handler->getVersion()) {
         $requirements['graphicsmagick_extension'] = [
           'title' => $t('Gmagick extension'),
           'value' => $t('GraphicsMagick library version %version (%full_version)', [
