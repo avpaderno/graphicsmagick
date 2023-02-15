@@ -21,9 +21,9 @@ function graphicsmagick_image_toolkits() {
  */
 function image_graphicsmagick_toolkit_settings() {
   $form['graphicsmagick_toolkit_resize_settings'] = [
-    '#type' => 'details',
-    '#summary' => t('Resize settings'),
-    '#open' => TRUE,
+    '#type' => 'fieldset',
+    '#title' => t('Resize settings'),
+    '#collapsible' => FALSE,
   ];
 
   $form['graphicsmagick_toolkit_resize_settings']['graphicsmagick_toolkit_image_blur'] = [
@@ -38,16 +38,16 @@ function image_graphicsmagick_toolkit_settings() {
 
   $form['graphicsmagick_toolkit_resize_settings']['graphicsmagick_toolkit_image_filter'] = [
     '#type' => 'select',
-    '#title' => t('Image blur'),
+    '#title' => t('Image filter'),
     '#description' => t('The image filter applied to the image. By default no filter is applied when an image is resized. For a better effect, choose Lanczos or Mitchell.'),
     '#options' => graphicsmagick_image_filter_options(),
     '#default_value' => graphicsmagick_toolkit_get_image_filter(),
   ];
 
   $form['graphicsmagick_toolkit_save_settings'] = [
-    '#type' => 'details',
-    '#summary' => t('Save settings'),
-    '#open' => TRUE,
+    '#type' => 'fieldset',
+    '#title' => t('Save settings'),
+    '#collapsible' => FALSE,
   ];
 
   $form['graphicsmagick_toolkit_save_settings']['graphicsmagick_toolkit_jpeg_quality'] = [
