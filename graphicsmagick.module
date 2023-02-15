@@ -332,8 +332,7 @@ function image_graphicsmagick_toolkit_get_info($image) {
  *   the default value.
  */
 function graphicsmagick_toolkit_get_jpeg_quality() {
-  $config = config('system.core');
-  $value = $config->get('graphicsmagick_toolkit_jpeg_quality');
+  $value = config_get('graphicsmagick_toolkit_jpeg_quality');
 
   // If the JPEG quality value hasn't been set, return 95 instead of 0, which
   // would be a bad image quality to use by default.
@@ -348,8 +347,7 @@ function graphicsmagick_toolkit_get_jpeg_quality() {
  *   the default value.
  */
 function graphicsmagick_toolkit_get_image_blur() {
-  $config = config('system.core');
-  $value = $config->get('graphicsmagick_toolkit_image_blur');
+  $value = config_get('graphicsmagick_toolkit_image_blur');
 
   // If the blur value hasn't been set, return 1.0 instead of 0.
   return isset($value) ? $value : 1.0;
@@ -363,8 +361,7 @@ function graphicsmagick_toolkit_get_image_blur() {
  *   Gmagick::FILTER_* constants.
  */
 function graphicsmagick_toolkit_get_image_filter() {
-  $config = config('system.core');
-  $value = $config->get('graphicsmagick_toolkit_image_filter');
+  $value = config_get('graphicsmagick_toolkit_image_filter');
 
   // If  the filter value hasn't been set, return Gmagick::FILTER_UNDEFINED.
   return isset($value) ? $value : Gmagick::FILTER_UNDEFINED;
