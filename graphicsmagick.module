@@ -363,8 +363,8 @@ function graphicsmagick_toolkit_get_image_blur() {
 function graphicsmagick_toolkit_get_image_filter() {
   $value = config_get('graphicsmagick_toolkit_image_filter');
 
-  // If  the filter value hasn't been set, return Gmagick::FILTER_UNDEFINED.
-  return isset($value) ? $value : Gmagick::FILTER_UNDEFINED;
+  // If  the filter value hasn't been set, return Gmagick::FILTER_LANCZOS.
+  return isset($value) ? $value : Gmagick::FILTER_LANCZOS;
 }
 
 /**
