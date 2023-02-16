@@ -42,10 +42,19 @@ function image_graphicsmagick_toolkit_settings() {
     '#type' => 'number',
     '#title' => t('JPEG quality'),
     '#description' => t('The image quality for JPEG images (from 0 to 100). Higher values mean better image quality but bigger files.'),
-    '#field_suffix' => t('%'),
     '#default_value' => graphicsmagick_toolkit_get_jpeg_quality(),
     '#min' => 0,
     '#max' => 100,
+    '#step' => 1,
+  ];
+
+  $form['graphicsmagick_toolkit_png_compression'] = [
+    '#type' => 'number',
+    '#title' => t('PNG compression'),
+    '#description' => t('The PNG compression (from 0 to 99). Higher values do not mean better compression, although 99 usually compresses a PNG image more than other values. Verify the file size once the image has been saved.'),
+    '#default_value' => graphicsmagick_toolkit_get_png_compression(),
+    '#min' => 0,
+    '#max' => 99,
     '#step' => 1,
   ];
 
@@ -328,6 +337,21 @@ function graphicsmagick_toolkit_get_jpeg_quality() {
 }
 
 /**
+ * Return the compression value to use with PNG images.
+ *
+ * @return int
+ *   The compression value for PNG images, a value between 0 and 99, where 99 is
+ *   the default value.
+ */
+function graphicsmagick_toolkit_get_png_compression() {
+  $value = config_get('graphicsmagick_toolkit_png_compression');
+
+  // If the PNG compression value hasn't been set, return 99 instead of 0, which
+  // is a better compression value to use by default.
+  return isset($value) ? $value : 99;
+}
+
+/**
  * Return the blur value required by some image manipulation methods.
  *
  * @return float
@@ -460,8 +484,8 @@ function graphicsmagick_color_to_object($color = NULL) {
  * return FALSE.
  *
  * @param object $image
- *   An image object. The $image->handler and $image->format values will be
- *   populated by this call.
+ *   An image object. The $image->handler, and $image->format, and
+ *   $image->mimeType values will be populated by this call.
  *
  * @return bool
  *   TRUE or FALSE, based on success.
@@ -506,6 +530,7 @@ function graphicsmagick_image_load($image) {
 
   $image->handler = $handler;
   $image->format = $format;
+  $image->mimeType = graphicsmagick_image_format_to_mime_type($format);
 
   return TRUE;
 }
@@ -885,8 +910,14 @@ function graphicsmagick_image_save($image, $destination) {
   }
 
   try {
-    if ($image->format == 'JPEG' || $image->format == 'JPG') {
-      $image->handler->setCompressionQuality(graphicsmagick_toolkit_get_jpeg_quality());
+    switch ($image->mimeType) {
+      case 'image/jpeg':
+        $image->handler->setCompressionQuality(graphicsmagick_toolkit_get_jpeg_quality());
+        break;
+
+      case 'image/png';
+        $image->handler->setCompressionQuality(graphicsmagick_toolkit_get_png_compression());
+        break;
     }
 
     $image->handler->writeImage(backdrop_realpath($destination), $image->handler->getNumberImages() > 1);
