@@ -39,9 +39,10 @@ Bugs and Feature requests should be reported in the [issue queue](https://github
 
 ## Credits
 
-- Ported to Backdrop CMS by [kiamlaluno](https://github.com/kiamlaluno), one of
-  the maintainers for the Drupal module.
-- Originally written for Drupal by [Andor](https://www.drupal.org/u/Sweetchuck).
+- Ported to Backdrop CMS by [Alberto Paderno](https://www.drupal.org/u/apaderno),
+  co-maintainer of the Drupal module.
+- Originally written for Drupal by [Andor](https://www.drupal.org/u/Sweetchuck),
+  project owner and maintainer of the Drupal module.
 
 
 ## License
