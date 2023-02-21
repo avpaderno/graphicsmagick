@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Install, update, and uninstall functions for the GraphicsMagick module.
+ * Install, update, and uninstall hooks for the GraphicsMagick module.
  */
 
 /**
@@ -37,8 +37,8 @@ function graphicsmagick_requirements($phase) {
       if ($version = $handler->getVersion()) {
         $requirements['graphicsmagick_extension'] = [
           'title' => $t('Gmagick extension'),
-          'value' => $t('GraphicsMagick library version %version (%full_version)', [
-            '%version' => $version['versionNumber'], '%full_version' => $version['versionString'],
+          'value' => $t('Installed (GraphicsMagick library version %version, %full_version)', ['%version' => $version['versionNumber'],
+            '%full_version' => $version['versionString'],
           ]),
           'severity' => REQUIREMENT_OK,
         ];
@@ -48,7 +48,7 @@ function graphicsmagick_requirements($phase) {
 
       $requirements['graphicsmagick_extension'] = [
         'title' => $t('Gmagick extension'),
-        'value' => $t('Installed'),
+        'value' => $t('Installed (GraphicsMagick library version %version)', ['%version' => $t('unknown')]),
         'severity' => REQUIREMENT_OK,
       ];
 
@@ -70,7 +70,7 @@ function graphicsmagick_requirements($phase) {
     'title' => $t('Gmagick extension'),
     'value' => $t('Missing'),
     'severity' => REQUIREMENT_ERROR,
-    'description' => $t('The <a href="@gmagick_php">Gmagick</a> extension is required from the GraphicsMagick module.', [
+    'description' => $t('The <a href="@gmagick_php">Gmagick</a> extension is required by the GraphicsMagick module.', [
       '@gmagick_php' => 'https://www.php.net/manual/book.gmagick.php',
     ]),
   ];
