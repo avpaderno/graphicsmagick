@@ -8,121 +8,120 @@
  * Implements hook_image_effect_info().
  */
 function graphicsmagick_effects_image_info() {
-  $effects = [];
+  $effects = array();
 
-  $effects['graphicsmagick_effects_blur'] = [
+  $effects['graphicsmagick_effects_blur'] = array(
     'label' => t('Blur'),
     'help' => t('Bluring will make the image details less distinct. A Gaussian operator with the given radius and standard deviation (sigma) will be applied.'),
     'dimensions passthrough' => TRUE,
     'form callback' => 'graphicsmagick_effects_blur_form',
     'effect callback' => 'graphicsmagick_effects_blur',
     'summary theme' => 'graphicsmagick_effects_blur_summary',
-  ];
+  );
 
-  $effects['graphicsmagick_effects_despeckle'] = [
+  $effects['graphicsmagick_effects_despeckle'] = array(
     'label' => t('Despeckle'),
     'help' => t('Despeckling will reduce the speckle noise in an image while preserving the original image edges.'),
     'dimensions passthrough' => TRUE,
     'effect callback' => 'graphicsmagick_effects_despeckle',
-  ];
+  );
 
-  $effects['graphicsmagick_effects_edge'] = [
+  $effects['graphicsmagick_effects_edge'] = array(
     'label' => t('Edge enhance'),
     'help' => t('This effect will enhance edges within the image with a convolution filter.'),
     'dimensions passthrough' => TRUE,
     'form callback' => 'graphicsmagick_effects_edge_form',
     'effect callback' => 'graphicsmagick_effects_edge',
     'summary theme' => 'graphicsmagick_effects_oil_paint_summary',
-  ];
+  );
 
-  $effects['graphicsmagick_effects_emboss'] = [
+  $effects['graphicsmagick_effects_emboss'] = array(
     'label' => t('Emboss'),
     'help' => t('Embossing will convolve the image with a Gaussian operator, giving to the image a three-dimensional effect.'),
     'dimensions passthrough' => TRUE,
     'form callback' => 'graphicsmagick_effects_emboss_form',
     'effect callback' => 'graphicsmagick_effects_emboss',
     'summary theme' => 'graphicsmagick_effects_emboss_summary',
-  ];
+  );
 
-  $effects['graphicsmagick_effects_enhance'] = [
+  $effects['graphicsmagick_effects_enhance'] = array(
     'label' => t('Enhance'),
     'help' => t('Enhancing an image will improve the quality of a noisy image.'),
     'dimensions passthrough' => TRUE,
     'effect callback' => 'graphicsmagick_effects_enhance',
-  ];
+  );
 
-  $effects['graphicsmagick_effects_equalize'] = [
+  $effects['graphicsmagick_effects_equalize'] = array(
     'label' => t('Equalize'),
     'help' => t('Equalizing an image will enhance the image contrast.'),
     'dimensions passthrough' => TRUE,
     'effect callback' => 'graphicsmagick_effects_enhance',
-  ];
+  );
 
-  $effects['graphicsmagick_effects_flip'] = [
+  $effects['graphicsmagick_effects_flip'] = array(
     'label' => t('Vertical mirror'),
     'help' => t('This effect will create a vertical mirror image by reflecting the pixels around the central x-axis.'),
     'dimensions passthrough' => TRUE,
     'effect callback' => 'graphicsmagick_effects_flip',
-  ];
+  );
 
-  $effects['graphicsmagick_effects_flop'] = [
-    'label' => t('Horizontal mirror'),
+  $effects['graphicsmagick_effects_flop'] = array(
     'help' => t('This effect will create a horizontal mirror image by reflecting the pixels around the central y-axis.'),
     'dimensions passthrough' => TRUE,
     'effect callback' => 'graphicsmagick_effects_flop',
-  ];
+  );
 
-  $effects['graphicsmagick_effects_gamma'] = [
+  $effects['graphicsmagick_effects_gamma'] = array(
     'label' => t('Gamma'),
     'help' => t("This effect will change the gamma values. The same image viewed on different devices will have perceptual differences on intensity."),
     'dimensions passthrough' => TRUE,
     'form callback' => 'graphicsmagick_effects_gamma_form',
     'effect callback' => 'graphicsmagick_effects_gamma',
     'summary theme' => 'graphicsmagick_effects_gamma_summary',
-  ];
+  );
 
-  $effects['graphicsmagick_effects_noise'] = [
+  $effects['graphicsmagick_effects_noise'] = array(
     'label' => t('Add noise'),
     'help' => t("This effect will add random noise to the image."),
     'dimensions passthrough' => TRUE,
     'form callback' => 'graphicsmagick_effects_noise_form',
     'effect callback' => 'graphicsmagick_effects_noise',
     'summary theme' => 'graphicsmagick_effects_noise_summary',
-  ];
+  );
 
-  $effects['graphicsmagick_effects_oil_paint'] = [
+  $effects['graphicsmagick_effects_oil_paint'] = array(
     'label' => t('Oil paint'),
     'help' => t('This effect will simulate an oil painting. Each pixel is replaced by the most frequent color occurring in a circular region defined by radius.'),
     'dimensions passthrough' => TRUE,
     'form callback' => 'graphicsmagick_effects_oil_paint_form',
     'effect callback' => 'graphicsmagick_effects_oil_paint',
     'summary theme' => 'graphicsmagick_effects_oil_paint_summary',
-  ];
+  );
 
-  $effects['graphicsmagick_effects_solarize'] = [
+  $effects['graphicsmagick_effects_solarize'] = array(
     'label' => t('Solarize'),
     'help' => t('Solarizing will apply a special effect to the image, similar to the effect achieved in a photo darkroom by selectively exposing areas of photo sensitive paper to light.'),
     'dimensions passthrough' => TRUE,
     'form callback' => 'graphicsmagick_effects_solarize_form',
     'effect callback' => 'graphicsmagick_effects_solarize',
     'summary theme' => 'graphicsmagick_effects_solarize_summary',
-  ];
+  );
 
-  $effects['graphicsmagick_effects_spread'] = [
+  $effects['graphicsmagick_effects_spread'] = array(
     'label' => t('Spread'),
     'help' => t('Special effects method that randomly displaces each pixel in a block defined by the radius parameter.'),
     'form callback' => 'graphicsmagick_effects_spread_form',
     'effect callback' => 'graphicsmagick_effects_spread',
     'summary theme' => 'graphicsmagick_effects_spread_summary',
-  ];
+  );
 
-  $effects['graphicsmagick_effects_swirl'] = [
+  $effects['graphicsmagick_effects_swirl'] = array(
     'label' => t('Swirl'),
     'help' => t('This effect will swirl the pixels about the center of the image, where degrees indicates the sweep of the arc through which each pixel is moved.'),
     'form callback' => 'graphicsmagick_effects_swirl_form',
     'effect callback' => 'graphicsmagick_effects_swirl',
     'summary theme' => 'graphicsmagick_effects_swirl_summary',
-  ];
+  );
 
   return $effects;
 }
@@ -131,12 +130,12 @@ function graphicsmagick_effects_image_info() {
  * Implements hook_theme().
  */
 function graphicsmagick_effects_theme() {
-  $summary_base = [
-    'variables' => [ 'data' => NULL],
+  $summary_base = array(
+    'variables' => array( 'data' => NULL),
     'file' => 'includes/graphicsmagick_effects.theme.inc',
-  ];
+  );
 
-  return [
+  return array(
     'graphicsmagick_effects_blur_summary' => $summary_base,
     'graphicsmagick_effects_edge_summary' => $summary_base,
     'graphicsmagick_effects_emboss_summary' => $summary_base,
@@ -146,7 +145,7 @@ function graphicsmagick_effects_theme() {
     'graphicsmagick_effects_solarize_summary' => $summary_base,
     'graphicsmagick_effects_spread_summary' => $summary_base,
     'graphicsmagick_effects_swirl_summary' => $summary_base,
-  ];
+  );
 }
 
 /**
@@ -160,7 +159,7 @@ function graphicsmagick_effects_theme() {
  *   The current configuration for this effect.
  */
 function graphicsmagick_effects_blur_form(array $data) {
-  $form['radius'] = [
+  $form['radius'] = array(
     '#type' => 'number',
     '#title' => t('Radius'),
     '#description' => t('This value should typically be either 0, to let the effect choose the best value, or be twice the sigma value.'),
@@ -169,8 +168,8 @@ function graphicsmagick_effects_blur_form(array $data) {
     '#min' => 0.0,
     '#max' => 65355.0,
     '#step' => 0.5,
-  ];
-  $form['sigma'] = [
+  );
+  $form['sigma'] = array(
     '#type' => 'number',
     '#title' => t('Sigma'),
     '#description' => t('A large sigma value and a smallish radius value will introduce artifacts in the resulting image; small sigma values are typically only used to fuzz lines and smooth edges on images for which no anti-aliasing was used.'),
@@ -179,7 +178,7 @@ function graphicsmagick_effects_blur_form(array $data) {
     '#min' => 0.0,
     '#max' => 65355.0,
     '#step' => 0.5,
-  ];
+  );
 
   return $form;
 }
@@ -237,7 +236,7 @@ function graphicsmagick_effects_despeckle($image, array $data) {
  *   The current configuration for this effect.
  */
 function graphicsmagick_effects_edge_form(array $data) {
-  $form['radius'] = [
+  $form['radius'] = array(
     '#type' => 'number',
     '#title' => t('Radius'),
     '#description' => t('Use a value of zero to let the effect choose the best value.'),
@@ -246,7 +245,7 @@ function graphicsmagick_effects_edge_form(array $data) {
     '#min' => 0.0,
     '#max' => 65355.0,
     '#step' => 0.5,
-  ];
+  );
 
   return $form;
 }
@@ -283,7 +282,7 @@ function graphicsmagick_effects_edge($image, array $data) {
  *   The current configuration for this effect.
  */
 function graphicsmagick_effects_emboss_form(array $data) {
-  $form['radius'] = [
+  $form['radius'] = array(
     '#type' => 'number',
     '#title' => t('Radius'),
     '#description' => t('For reasonable results, the radius value should be higher than the sigma value. Use a value of zero to let the effect choose the best value.'),
@@ -292,8 +291,8 @@ function graphicsmagick_effects_emboss_form(array $data) {
     '#min' => 0.0,
     '#max' => 65355.0,
     '#step' => 0.5,
-  ];
-  $form['sigma'] = [
+  );
+  $form['sigma'] = array(
     '#type' => 'number',
     '#title' => t('Sigma'),
     '#description' => t('A large sigma value works well also with color image. It can remove color dominances, but it could also introduce artifacts, especially in JPEG images.'),
@@ -302,7 +301,7 @@ function graphicsmagick_effects_emboss_form(array $data) {
     '#min' => 0.0,
     '#max' => 65355.0,
     '#step' => 0.5,
-  ];
+  );
 
   return $form;
 }
@@ -420,7 +419,7 @@ function graphicsmagick_effects_flop($image, array $data) {
  *   The current configuration for this effect.
  */
 function graphicsmagick_effects_gamma_form(array $data) {
-  $form['gamma'] = [
+  $form['gamma'] = array(
     '#type' => 'number',
     '#title' => t('Gamma'),
     '#description' => t('Values typically range from 0.8 to 2.3. Values lower than one make the image darker; values higher than one make the image lighter.'),
@@ -429,7 +428,7 @@ function graphicsmagick_effects_gamma_form(array $data) {
     '#min' => 0.0,
     '#max' => 10.0,
     '#step' => 0.2,
-  ];
+  );
 
   return $form;
 }
@@ -466,14 +465,14 @@ function graphicsmagick_effects_gamma($image, array $data) {
  *   The current configuration for this effect.
  */
 function graphicsmagick_effects_noise_form(array $data) {
-  $form['noise'] = [
+  $form['noise'] = array(
     '#type' => 'select',
     '#title' => t('Noise type'),
     '#description' => t('The noise type changes for which pixels the color is randomly changed.'),
     '#options' => graphicsmagick_image_noise_options(),
     '#default_value' => isset($data['noise']) ? $data['noise'] : Gmagick::NOISE_UNIFORM,
     '#required' => TRUE,
-  ];
+  );
 
   return $form;
 }
@@ -510,7 +509,7 @@ function graphicsmagick_effects_noise($image, array $data) {
  *   The current configuration for this effect.
  */
 function graphicsmagick_effects_oil_paint_form(array $data) {
-  $form['radius'] = [
+  $form['radius'] = array(
     '#type' => 'number',
     '#title' => t('Radius'),
     '#description' => t('Each pixel is replaced by the most frequent color occurring in a circular region defined by the radius value.'),
@@ -519,7 +518,7 @@ function graphicsmagick_effects_oil_paint_form(array $data) {
     '#min' => 0.6,
     '#max' => 50.0,
     '#step' => 0.2,
-  ];
+  );
 
   return $form;
 }
@@ -568,7 +567,7 @@ function graphicsmagick_effects_solarize_form(array $data) {
 
   $level = isset($data['level']) ? $data['level'] : 1 << (($quantum_level / 2) - 2);
 
-  $form['level'] = [
+  $form['level'] = array(
     '#type' => 'number',
     '#title' => t('Level'),
     '#description' => t('The effect level.'),
@@ -577,7 +576,7 @@ function graphicsmagick_effects_solarize_form(array $data) {
     '#min' => 0,
     '#max' => 1 << $quantum_level,
     '#step' => 1,
-  ];
+  );
 
   return $form;
 }
@@ -614,7 +613,7 @@ function graphicsmagick_effects_solarize($image, array $data) {
  *   The current configuration for this effect.
  */
 function graphicsmagick_effects_spread_form(array $data) {
-  $form['radius'] = [
+  $form['radius'] = array(
     '#type' => 'number',
     '#title' => t('Radius'),
     '#description' => t('Each pixel in a block defined by the radius parameter is randomly displaced.'),
@@ -623,7 +622,7 @@ function graphicsmagick_effects_spread_form(array $data) {
     '#min' => 0.0,
     '#max' => 50.0,
     '#step' => 0.4,
-  ];
+  );
 
   return $form;
 }
@@ -661,7 +660,7 @@ function graphicsmagick_effects_spread($image, array $data) {
  *   The current configuration for this effect.
  */
 function graphicsmagick_effects_swirl_form(array $data) {
-  $form['degrees'] = [
+  $form['degrees'] = array(
     '#type' => 'number',
     '#title' => t('Degrees'),
     '#description' => t('The sweep of the arc through which each pixel is moved.'),
@@ -670,7 +669,7 @@ function graphicsmagick_effects_swirl_form(array $data) {
     '#min' => 0.0,
     '#max' => 360.0,
     '#step' => 2.0,
-  ];
+  );
 
   return $form;
 }

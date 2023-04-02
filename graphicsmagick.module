@@ -8,19 +8,19 @@
  * Implements hook_image_toolkits().
  */
 function graphicsmagick_image_toolkits() {
-  return [
-    'graphicsmagick_toolkit' => [
+  return array(
+    'graphicsmagick_toolkit' => array(
       'title' => t('GraphicsMagick toolkit'),
       'available' => graphicsmagick_available(),
-    ],
-  ];
+    ),
+  );
 }
 
 /**
  * Retrieves settings for the GraphicsMagick toolkit.
  */
 function image_graphicsmagick_toolkit_settings() {
-  $form['graphicsmagick_toolkit_image_blur'] = [
+  $form['graphicsmagick_toolkit_image_blur'] = array(
     '#type' => 'number',
     '#title' => t('Image blur'),
     '#description' => t('The image blur (from 0.0 to 2.0). Values higher than 1.0 make the image blurry, while values lower than 1.0 make the image sharper.'),
@@ -28,17 +28,17 @@ function image_graphicsmagick_toolkit_settings() {
     '#min' => 0.0,
     '#max' => 2.0,
     '#step' => 0.2,
-  ];
+  );
 
-  $form['graphicsmagick_toolkit_image_filter'] = [
+  $form['graphicsmagick_toolkit_image_filter'] = array(
     '#type' => 'select',
     '#title' => t('Image filter'),
     '#description' => t('The image filter applied to the image. By default no filter is applied when an image is resized. For a better effect, choose Lanczos or Mitchell.'),
     '#options' => graphicsmagick_image_filter_options(),
     '#default_value' => graphicsmagick_toolkit_get_image_filter(),
-  ];
+  );
 
-  $form['graphicsmagick_toolkit_jpeg_quality'] = [
+  $form['graphicsmagick_toolkit_jpeg_quality'] = array(
     '#type' => 'number',
     '#title' => t('JPEG quality'),
     '#description' => t('The image quality for JPEG images (from 0 to 100). Higher values mean better image quality but bigger files.'),
@@ -46,9 +46,9 @@ function image_graphicsmagick_toolkit_settings() {
     '#min' => 0,
     '#max' => 100,
     '#step' => 1,
-  ];
+  );
 
-  $form['graphicsmagick_toolkit_png_compression'] = [
+  $form['graphicsmagick_toolkit_png_compression'] = array(
     '#type' => 'number',
     '#title' => t('PNG compression'),
     '#description' => t('The PNG compression (from 0 to 99). Higher values do not mean better compression, although 99 usually compresses a PNG image more than other values. Verify the file size once the image has been saved.'),
@@ -56,7 +56,7 @@ function image_graphicsmagick_toolkit_settings() {
     '#min' => 0,
     '#max' => 99,
     '#step' => 1,
-  ];
+  );
 
   return $form;
 }
@@ -95,9 +95,9 @@ function image_graphicsmagick_toolkit_resize($image, $width, $height, $backgroun
     return $handler->resizeImage($data['width'], $data['height'], $data['filter'], $data['blur']);
   };
 
-  $result = graphicsmagick_image_effect($image, $effect, ['width' => $width,
+  $result = graphicsmagick_image_effect($image, $effect, array('width' => $width,
     'height' => $height, 'background' => $color, 'blur' => $blur, 'filter' => $filter,
-  ]);
+  ));
 
   try {
     // The following methods could throw an exception. In the case they do, use
@@ -147,9 +147,9 @@ function image_graphicsmagick_toolkit_rotate($image, $degrees, $background = NUL
     return $handler->rotateImage($data['color'], $data['degrees']);
   };
 
-  return graphicsmagick_image_effect($image, $effect, ['color' => $color,
+  return graphicsmagick_image_effect($image, $effect, array('color' => $color,
     'degrees' => $degrees,
-  ]);
+  ));
 }
 
 /**
@@ -198,9 +198,9 @@ function image_graphicsmagick_toolkit_crop($image, $x, $y, $width, $height, $bac
     return $handler;
   };
 
-  $result = graphicsmagick_image_effect($image, $effect, ['background' => $color,
+  $result = graphicsmagick_image_effect($image, $effect, array('background' => $color,
     'width' => $width, 'height' => $height, 'x' => $x, 'y' => $y,
-  ]);
+  ));
 
   try {
     // The following methods could throw an exception. In the case they do, use
@@ -238,7 +238,7 @@ function image_graphicsmagick_toolkit_desaturate($image) {
     return $handler->setImageType(Gmagick::IMGTYPE_GRAYSCALE);
   };
 
-  return graphicsmagick_image_effect($image, $effect, []);
+  return graphicsmagick_image_effect($image, $effect, array());
 }
 
 /**
@@ -293,12 +293,12 @@ function image_graphicsmagick_toolkit_save($image, $destination) {
  * @see image_get_info()
  */
 function image_graphicsmagick_toolkit_get_info($image) {
-  $details = [
+  $details = array(
     'width' => 0,
     'height' => 0,
     'extension' => '',
     'mime_type' => '',
-  ];
+  );
 
   try {
     $handler = new Gmagick(backdrop_realpath($image->source));
@@ -591,7 +591,7 @@ function graphicsmagick_image_format($image) {
  *   the filter names to shown in forms.
  */
 function graphicsmagick_image_filter_options() {
-  return [
+  return array(
     Gmagick::FILTER_UNDEFINED => t('None'),
     Gmagick::FILTER_POINT => t('Point'),
     Gmagick::FILTER_BOX => t('Box'),
@@ -608,7 +608,7 @@ function graphicsmagick_image_filter_options() {
     Gmagick::FILTER_LANCZOS => t('Lanczos'),
     Gmagick::FILTER_BESSEL => t('Bessel'),
     Gmagick::FILTER_SINC => t('Sinc'),
-  ];
+  );
 }
 
 /**
@@ -619,13 +619,13 @@ function graphicsmagick_image_filter_options() {
  *   the noise names to shown in forms.
  */
 function graphicsmagick_image_noise_options() {
-  return [
+  return array(
     Gmagick::NOISE_UNIFORM => t('Uniform'),
     Gmagick::NOISE_GAUSSIAN => t('Gaussian'),
     Gmagick::NOISE_MULTIPLICATIVEGAUSSIAN => t('Multiplicative Gaussian'),
     Gmagick::NOISE_LAPLACIAN => t('Laplacian'),
     Gmagick::NOISE_POISSON => t('Poisson'),
-  ];
+  );
 }
 
 /**
@@ -647,7 +647,7 @@ function graphicsmagick_image_format_to_extension($format) {
   // The following list doesn't include all the file types recognized by the
   // GraphicsMagick library; it includes most of the image types, excluding
   // the raw images and those images the Gmagick class is not able to write.
-  $extensions = [
+  $extensions = array(
     'BIGTIFF' => 'tif',
     'BMP' => 'bmp',
     'CIN' => 'cin',
@@ -689,7 +689,7 @@ function graphicsmagick_image_format_to_extension($format) {
     'WBMP' => 'wbmp',
     'WEBP' => 'webp',
     'XBM' => 'xbm',
-  ];
+  );
 
   if (!isset($extensions[$format])) {
     // Return only the values present in this array, as
@@ -722,7 +722,7 @@ function graphicsmagick_image_format_to_mime_type($format) {
   // The following list doesn't include all the file types recognized by the
   // GraphicsMagick library; it includes most of the image types, excluding
   // the raw images and those images the Gmagick class is not able to write.
-  $mime_types = [
+  $mime_types = array(
     'BIGTIFF' => 'image/tiff',
     'BMP' => 'image/bmp',
     'CIN' => 'image/cineon',
@@ -764,7 +764,7 @@ function graphicsmagick_image_format_to_mime_type($format) {
     'WBMP' => 'image/vnd.wap.wbmp',
     'WEBP' => 'image/webp',
     'XBM' => 'image/x-xbitmap',
-  ];
+  );
 
   if (!isset($mime_types[$format])) {
     // Return only the values present in this array, as
