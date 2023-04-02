@@ -17,7 +17,7 @@ function graphicsmagick_image_toolkits() {
 }
 
 /**
- * Retrieve settings for the GraphicsMagick toolkit.
+ * Retrieves settings for the GraphicsMagick toolkit.
  */
 function image_graphicsmagick_toolkit_settings() {
   $form['graphicsmagick_toolkit_image_blur'] = [
@@ -62,7 +62,7 @@ function image_graphicsmagick_toolkit_settings() {
 }
 
 /**
- * Scale an image to the specified size using the GraphicsMagick library.
+ * Scales an image to the specified size using the GraphicsMagick library.
  *
  * @param object $image
  *   An image object. The $image->info['width'] and $image->info['height']
@@ -101,7 +101,7 @@ function image_graphicsmagick_toolkit_resize($image, $width, $height, $backgroun
 
   try {
     // The following methods could throw an exception. In the case they do, use
-    // The width and height values passed to the method.
+    // the width and height values passed to the method.
     $new_width = $image->handler->getImageWidth();
     $new_height = $image->handler->getImageHeight();
   }
@@ -117,7 +117,7 @@ function image_graphicsmagick_toolkit_resize($image, $width, $height, $backgroun
 }
 
 /**
- * Rotate an image the given number of degrees.
+ * Rotates an image the given number of degrees.
  *
  * @param object $image
  *   An image object. The $image->info['width'] and $image->info['height']
@@ -153,7 +153,7 @@ function image_graphicsmagick_toolkit_rotate($image, $degrees, $background = NUL
 }
 
 /**
- * Crop an image using the GraphicsMagick library.
+ * Crops an image using the GraphicsMagick library.
  *
  * @param object $image
  *   An image object. The $image->info['width'] and $image->info['height']
@@ -204,7 +204,7 @@ function image_graphicsmagick_toolkit_crop($image, $x, $y, $width, $height, $bac
 
   try {
     // The following methods could throw an exception. In the case they do, use
-    // The width and height values passed to the method.
+    // the width and height values passed to the method.
     $new_width = $image->handler->getImageWidth();
     $new_height = $image->handler->getImageHeight();
   }
@@ -221,7 +221,7 @@ function image_graphicsmagick_toolkit_crop($image, $x, $y, $width, $height, $bac
 }
 
 /**
- * Convert an image to grayscale.
+ * Converts an image to grayscale.
  *
  * @param object $image
  *   An image object.
@@ -242,7 +242,7 @@ function image_graphicsmagick_toolkit_desaturate($image) {
 }
 
 /**
- * Load an image from a file.
+ * Loads an image from a file.
  *
  * @param object $image
  *   An image object. The $image->handler and $image->format values will be
@@ -259,7 +259,7 @@ function image_graphicsmagick_toolkit_load($image) {
 }
 
 /**
- * Write an image to a destination file.
+ * Writes an image to a destination file.
  *
  * @param object $image
  *   An image object. The $image->handler value will changed by this call.
@@ -277,7 +277,7 @@ function image_graphicsmagick_toolkit_save($image, $destination) {
 }
 
 /**
- * Get details about an image.
+ * Gets details about an image.
  *
  * @param object $image
  *   An image object.
@@ -322,7 +322,7 @@ function image_graphicsmagick_toolkit_get_info($image) {
 }
 
 /**
- * Return the image quality to use with JPEG images.
+ * Returns the image quality to use with JPEG images.
  *
  * @return int
  *   The image quality for JPEG images, a value between 0 and 100, where 95 is
@@ -337,7 +337,7 @@ function graphicsmagick_toolkit_get_jpeg_quality() {
 }
 
 /**
- * Return the compression value to use with PNG images.
+ * Returns the compression value to use with PNG images.
  *
  * @return int
  *   The compression value for PNG images, a value between 0 and 99, where 99 is
@@ -352,7 +352,7 @@ function graphicsmagick_toolkit_get_png_compression() {
 }
 
 /**
- * Return the blur value required by some image manipulation methods.
+ * Returns the blur value required by some image manipulation methods.
  *
  * @return float
  *   A value between 0.0 and 2.0 where 1.0 is
@@ -366,7 +366,7 @@ function graphicsmagick_toolkit_get_image_blur() {
 }
 
 /**
- * Return the filter to use in some image manipulation methods.
+ * Returns the filter to use in some image manipulation methods.
  *
  * @return int
  *   The filter value set in the settings form. It uses the
@@ -380,7 +380,7 @@ function graphicsmagick_toolkit_get_image_filter() {
 }
 
 /**
- * Verify the methods used from the GraphicsMagick toolkit can be used.
+ * Verifies the methods used from the GraphicsMagick toolkit can be used.
  *
  * This function could be used from the modules that need to use the Gmagick
  * extension to alter images, as the methods this function checks are necessary
@@ -413,7 +413,7 @@ function graphicsmagick_available() {
 }
 
 /**
- * Convert a value representing a color in a GmagickPixel instance.
+ * Converts a value representing a color in a GmagickPixel instance.
  *
  * @param string|int $color
  *   The value representing the color.
@@ -471,7 +471,7 @@ function graphicsmagick_color_to_object($color = NULL) {
 }
 
 /**
- * Helper function to load an image from a file.
+ * Loads an image from a file.
  *
  * This function can be used from any module that needs to use the effects
  * implemented by the GraphicsMagick Effects modules indendently from the
@@ -536,7 +536,7 @@ function graphicsmagick_image_load($image) {
 }
 
 /**
- * Retrieve the image format as defined by the Gmagick class.
+ * Retrieves the image format as defined by the Gmagick class.
  *
  * @param object $image
  *   The image object.
@@ -584,7 +584,7 @@ function graphicsmagick_image_format($image) {
 }
 
 /**
- * Return the option array for the filters implemented by the Gmagick class.
+ * Returns the option array for the filters implemented by the Gmagick class.
  *
  * @return array
  *   An array whose keys are the Gmagick::FILTER_* constants and the values are
@@ -612,7 +612,7 @@ function graphicsmagick_image_filter_options() {
 }
 
 /**
- * Return the option array for the noise types implemented by the Gmagick class.
+ * Returns the option array for noise types implemented by the Gmagick class.
  *
  * @return array
  *   An array whose keys are the Gmagick::NOISE_* constants and the values are
@@ -629,7 +629,7 @@ function graphicsmagick_image_noise_options() {
 }
 
 /**
- * Convert the format returned by the Gmagick class in the image extension.
+ * Converts the format returned by the Gmagick class in the image extension.
  *
  * Modules can get the image format required from this function using
  * graphicsmagick_image_format(), without accessing any method implemented by
@@ -699,7 +699,7 @@ function graphicsmagick_image_format_to_extension($format) {
 }
 
 /**
- * Convert the format returned by the Gmagick class in the image MIME type.
+ * Converts the format returned by the Gmagick class in the image MIME type.
  *
  * Modules can get the image format required from this function using
  * graphicsmagick_image_format(), without accessing any method implemented by
@@ -776,7 +776,7 @@ function graphicsmagick_image_format_to_mime_type($format) {
 }
 
 /**
- * Apply an effect to an image.
+ * Applies an effect to an image.
  *
  * @param object $image
  *   An image object. $image->handler should contain a Gmagick instance used
@@ -876,7 +876,7 @@ function graphicsmagick_image_effect($image, callable $effect, array $data) {
 }
 
 /**
- * Helper function to write an image to a destination file.
+ * Writes an image to a destination file.
  *
  * @param object $image
  *   An image object. $image->handler must be a Gmagick instance; the image will
