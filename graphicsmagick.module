@@ -72,9 +72,9 @@ function image_graphicsmagick_toolkit_settings() {
  * @param int $height
  *   The new height of the resized image, in pixels.
  * @param int|string $background
- *   An hexadecimal integer specifying the background color to use for the
+ *   A hexadecimal integer specifying the background color to use for the
  *   uncovered area of the image after the rotation, for example 0x000000 for
- *   black or 0xff00ff for magenta. The default value is #FFFFFF.
+ *   black or 0xff00ff for magenta. The default value is 0xFFFFFF.
  *
  * @return bool
  *   TRUE or FALSE, based on success.
@@ -125,7 +125,7 @@ function image_graphicsmagick_toolkit_resize($image, $width, $height, $backgroun
  * @param int $degrees
  *   The number of (clockwise) degrees to rotate the image.
  * @param int|string $background
- *   An hexadecimal value specifying the background color to use for the
+ *   A hexadecimal value specifying the background color to use for the
  *   uncovered area of the image after the rotation, for example 0x000000 for
  *   black or 0xff00ff for magenta. The default value is #FFFFFF.
  *
@@ -167,7 +167,7 @@ function image_graphicsmagick_toolkit_rotate($image, $degrees, $background = NUL
  * @param int $height
  *   The height of the cropped area, in pixels.
  * @param int|string $background
- *   An hexadecimal value specifying the background color to use for the
+ *   A hexadecimal value specifying the background color to use for the
  *   uncovered area of the image after the rotation, for example 0x000000 for
  *   black or 0xff00ff for magenta. The default value is #FFFFFF.
  *
@@ -262,7 +262,7 @@ function image_graphicsmagick_toolkit_load($image) {
  * Writes an image to a destination file.
  *
  * @param object $image
- *   An image object. The $image->handler value will changed by this call.
+ *   An image object. The $image->handler value will be changed by this call.
  * @param string $destination
  *   A URI or file path where the image should be saved.
  *
@@ -436,8 +436,8 @@ function graphicsmagick_color_to_object($color = NULL) {
       }
     }
 
-    // Verify the color is an hex string and normalize shorthand versions.
-    // 'FA3' becomes 'FFAA33', while 'FA37' becomes 'FFAA3377'.
+    // Verify the color is a hex string and normalize shorthand versions.
+    // 'AB3' becomes 'AABB33', while 'A371' becomes 'AA337711'.
     if (preg_match('/^[0-9A-F]{1,4}$/', $color)) {
       $color = preg_replace('|([0-9A-F])|', '\1\1', $color);
 
@@ -474,7 +474,7 @@ function graphicsmagick_color_to_object($color = NULL) {
  * Loads an image from a file.
  *
  * This function can be used from any module that needs to use the effects
- * implemented by the GraphicsMagick Effects modules indendently from the
+ * implemented by the GraphicsMagick Effects modules independently of the
  * toolkit set for the site. In the case the used toolkit is not
  * GraphicsMagick Toolkit, this function could cause the image to be loaded
  * again, with the consequence that the image data is loaded twice in memory.
@@ -520,7 +520,7 @@ function graphicsmagick_image_load($image) {
     $handler = new Gmagick(backdrop_realpath($image->source));
     $format = $handler->getImageFormat();
   } catch (GmagickException $e) {
-    // If either the the constructor or getImageFormat() returned an
+    // If either the constructor or getImageFormat() returned an
     // exception, report a failure to the calling function. An exception in
     // those cases could mean the file doesn't contain an image, it does not
     // contain an image recognized from the Gmagick class, or the file is
@@ -888,7 +888,7 @@ function graphicsmagick_image_effect($image, callable $effect, array $data) {
  *   TRUE or FALSE, based on success.
  *   The returned value will be FALSE even in the case the $image->handler value
  *   has been set, but it is not a Gmagick instance, or the $image->handler
- *   value has not been set and it is not possible to load the source image.
+ *   value has not been set, and it is not possible to load the source image.
  */
 function graphicsmagick_image_save($image, $destination) {
   if (isset($image->handler) && !is_a($image->handler, 'Gmagick')) {
