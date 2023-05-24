@@ -12,7 +12,7 @@ function graphicsmagick_effects_image_info() {
 
   $effects['graphicsmagick_effects_blur'] = array(
     'label' => t('Blur'),
-    'help' => t('Bluring will make the image details less distinct. A Gaussian operator with the given radius and standard deviation (sigma) will be applied.'),
+    'help' => t('This effect will make the image details less distinct. A Gaussian operator with the given radius and standard deviation (sigma) will be applied.'),
     'dimensions passthrough' => TRUE,
     'form callback' => 'graphicsmagick_effects_blur_form',
     'effect callback' => 'graphicsmagick_effects_blur',
@@ -21,7 +21,7 @@ function graphicsmagick_effects_image_info() {
 
   $effects['graphicsmagick_effects_despeckle'] = array(
     'label' => t('Despeckle'),
-    'help' => t('Despeckling will reduce the speckle noise in an image while preserving the original image edges.'),
+    'help' => t('This effect will reduce the speckle noise in an image while preserving the original image edges.'),
     'dimensions passthrough' => TRUE,
     'effect callback' => 'graphicsmagick_effects_despeckle',
   );
@@ -37,7 +37,7 @@ function graphicsmagick_effects_image_info() {
 
   $effects['graphicsmagick_effects_emboss'] = array(
     'label' => t('Emboss'),
-    'help' => t('Embossing will convolve the image with a Gaussian operator, giving to the image a three-dimensional effect.'),
+    'help' => t('This effect will convolve the image with a Gaussian operator, giving to the image a three-dimensional effect.'),
     'dimensions passthrough' => TRUE,
     'form callback' => 'graphicsmagick_effects_emboss_form',
     'effect callback' => 'graphicsmagick_effects_emboss',
@@ -46,14 +46,14 @@ function graphicsmagick_effects_image_info() {
 
   $effects['graphicsmagick_effects_enhance'] = array(
     'label' => t('Enhance'),
-    'help' => t('Enhancing an image will improve the quality of a noisy image.'),
+    'help' => t('This effect will improve the quality of a noisy image.'),
     'dimensions passthrough' => TRUE,
     'effect callback' => 'graphicsmagick_effects_enhance',
   );
 
   $effects['graphicsmagick_effects_equalize'] = array(
     'label' => t('Equalize'),
-    'help' => t('Equalizing an image will enhance the image contrast.'),
+    'help' => t('This effect will enhance the image contrast.'),
     'dimensions passthrough' => TRUE,
     'effect callback' => 'graphicsmagick_effects_enhance',
   );
@@ -100,7 +100,7 @@ function graphicsmagick_effects_image_info() {
 
   $effects['graphicsmagick_effects_solarize'] = array(
     'label' => t('Solarize'),
-    'help' => t('Solarizing will apply a special effect to the image, similar to the effect achieved in a photo darkroom by selectively exposing areas of photo sensitive paper to light.'),
+    'help' => t('Solarize will apply a special effect to the image, similar to the effect achieved in a photo darkroom by selectively exposing areas of photo sensitive paper to light.'),
     'dimensions passthrough' => TRUE,
     'form callback' => 'graphicsmagick_effects_solarize_form',
     'effect callback' => 'graphicsmagick_effects_solarize',
@@ -109,7 +109,7 @@ function graphicsmagick_effects_image_info() {
 
   $effects['graphicsmagick_effects_spread'] = array(
     'label' => t('Spread'),
-    'help' => t('Special effects method that randomly displaces each pixel in a block defined by the radius parameter.'),
+    'help' => t('This effect will randomly displace each pixel in a block defined by the radius parameter.'),
     'form callback' => 'graphicsmagick_effects_spread_form',
     'effect callback' => 'graphicsmagick_effects_spread',
     'summary theme' => 'graphicsmagick_effects_spread_summary',
