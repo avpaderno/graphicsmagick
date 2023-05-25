@@ -4,4 +4,4 @@ backdrop = 1.x
 package = Media
 tags[] = Images
 type = module
-dependencies[] = system (>=1.22.0)
+dependencies[] = system (>=1.25.0)

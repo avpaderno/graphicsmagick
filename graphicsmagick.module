@@ -62,6 +62,18 @@ function image_graphicsmagick_toolkit_settings() {
 }
 
 /**
+ * Retrieves the supported extensions for the GraphicsMagick toolkit.
+ */
+function image_graphicsmagick_toolkit_supported_extensions() {
+  // The returned extensions exclude raw images.
+  return array('tif', 'bmp', 'cin', 'dcx', 'dpx', 'pdf', 'epi', 'eps', 'fits',
+    'gif', 'icb', 'jpeg', 'jpg', 'pam', 'pbm', 'pdf', 'pgm', 'xpm', 'png',
+    'pnm', 'ppm', 'ps', 'tif', 'sgi', 'tga', 'tiff', 'vda', 'vst', 'wbmp',
+    'webp', 'xbm',
+  );
+}
+
+/**
  * Scales an image to the specified size using the GraphicsMagick library.
  *
  * @param object $image
