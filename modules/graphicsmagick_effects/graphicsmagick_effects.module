@@ -152,7 +152,7 @@ function graphicsmagick_effects_theme() {
  * Form structure for the blur effect.
  *
  * Note that this is not a complete form; it only contains the portion of the
- * form for configuring the effect options. Therefore, it does not not need to
+ * form for configuring the effect options. Therefore, it does not need to
  * include metadata about the effect, nor a submit button.
  *
  * @param array $data
@@ -229,7 +229,7 @@ function graphicsmagick_effects_despeckle($image, array $data) {
  * Form structure for the edge effect.
  *
  * Note that this is not a complete form; it only contains the portion of the
- * form for configuring the effect options. Therefore, it does not not need to
+ * form for configuring the effect options. Therefore, it does not need to
  * include metadata about the effect, nor a submit button.
  *
  * @param array $data
@@ -275,7 +275,7 @@ function graphicsmagick_effects_edge($image, array $data) {
  * Form structure for the emboss effect.
  *
  * Note that this is not a complete form; it only contains the portion of the
- * form for configuring the effect options. Therefore, it does not not need to
+ * form for configuring the effect options. Therefore, it does not need to
  * include metadata about the effect, nor a submit button.
  *
  * @param array $data
@@ -295,7 +295,7 @@ function graphicsmagick_effects_emboss_form(array $data) {
   $form['sigma'] = array(
     '#type' => 'number',
     '#title' => t('Sigma'),
-    '#description' => t('A large sigma value works well also with color image. It can remove color dominances, but it could also introduce artifacts, especially in JPEG images.'),
+    '#description' => t('A large sigma value works well also with color image. It can remove color dominance, but it could also introduce artifacts, especially in JPEG images.'),
     '#default_value' => isset($data['sigma']) ? $data['sigma'] : 1.0,
     '#required' => TRUE,
     '#min' => 0.0,
@@ -412,7 +412,7 @@ function graphicsmagick_effects_flop($image, array $data) {
  * Form structure for the gamma effect.
  *
  * Note that this is not a complete form; it only contains the portion of the
- * form for configuring the effect options. Therefore, it does not not need to
+ * form for configuring the effect options. Therefore, it does not need to
  * include metadata about the effect, nor a submit button.
  *
  * @param array $data
@@ -458,7 +458,7 @@ function graphicsmagick_effects_gamma($image, array $data) {
  * Form structure for the noise effect.
  *
  * Note that this is not a complete form; it only contains the portion of the
- * form for configuring the effect options. Therefore, it does not not need to
+ * form for configuring the effect options. Therefore, it does not need to
  * include metadata about the effect, nor a submit button.
  *
  * @param array $data
@@ -502,7 +502,7 @@ function graphicsmagick_effects_noise($image, array $data) {
  * Form structure for the oil painting effect.
  *
  * Note that this is not a complete form; it only contains the portion of the
- * form for configuring the effect options. Therefore, it does not not need to
+ * form for configuring the effect options. Therefore, it does not need to
  * include metadata about the effect, nor a submit button.
  *
  * @param array $data
@@ -531,7 +531,7 @@ function graphicsmagick_effects_oil_paint_form(array $data) {
  * @param array $data
  *   An array of attributes to use when applying the effect with the
  *   following items:
- *   - "radius": A float representing the the radius of the circular region used
+ *   - "radius": A float representing the radius of the circular region used
  *     to calculate the most frequent color.
  *
  * @return bool
@@ -549,7 +549,7 @@ function graphicsmagick_effects_oil_paint($image, array $data) {
  * Form structure for the solarize effect.
  *
  * Note that this is not a complete form; it only contains the portion of the
- * form for configuring the effect options. Therefore, it does not not need to
+ * form for configuring the effect options. Therefore, it does not need to
  * include metadata about the effect, nor a submit button.
  *
  * @param array $data
@@ -606,7 +606,7 @@ function graphicsmagick_effects_solarize($image, array $data) {
  * Form structure for the spread effect.
  *
  * Note that this is not a complete form; it only contains the portion of the
- * form for configuring the effect options. Therefore, it does not not need to
+ * form for configuring the effect options. Therefore, it does not need to
  * include metadata about the effect, nor a submit button.
  *
  * @param array $data
@@ -635,7 +635,7 @@ function graphicsmagick_effects_spread_form(array $data) {
  * @param array $data
  *   An array of attributes to use when applying the effect with the
  *   following items:
- *   - "radius":  A float representing the the radius of the circular region
+ *   - "radius":  A float representing the radius of the circular region
  *     where the pixels are randomly displaced.
  *
  * @return bool
@@ -653,7 +653,7 @@ function graphicsmagick_effects_spread($image, array $data) {
  * Form structure for the swirl effect.
  *
  * Note that this is not a complete form; it only contains the portion of the
- * form for configuring the effect options. Therefore, it does not not need to
+ * form for configuring the effect options. Therefore, it does not need to
  * include metadata about the effect, nor a submit button.
  *
  * @param array $data

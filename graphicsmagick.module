@@ -198,7 +198,7 @@ function image_graphicsmagick_toolkit_crop($image, $x, $y, $width, $height, $bac
     return $handler;
   };
 
-  $result = graphicsmagick_image_effect($image, $effect, array('background' => $color,
+    $result = graphicsmagick_image_effect($image, $effect, array('background' => $color,
     'width' => $width, 'height' => $height, 'x' => $x, 'y' => $y,
   ));
 
