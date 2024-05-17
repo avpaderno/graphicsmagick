@@ -163,7 +163,7 @@ function graphicsmagick_effects_blur_form(array $data) {
     '#type' => 'number',
     '#title' => t('Radius'),
     '#description' => t('This value should typically be either 0, to let the effect choose the best value, or be twice the sigma value.'),
-    '#default_value' => isset($data['radius']) ? $data['radius'] : 0.0,
+    '#default_value' => $data['radius'] ?? 0.0,
     '#required' => TRUE,
     '#min' => 0.0,
     '#max' => 65355.0,
@@ -173,7 +173,7 @@ function graphicsmagick_effects_blur_form(array $data) {
     '#type' => 'number',
     '#title' => t('Sigma'),
     '#description' => t('A large sigma value and a smallish radius value will introduce artifacts in the resulting image; small sigma values are typically only used to fuzz lines and smooth edges on images for which no anti-aliasing was used.'),
-    '#default_value' => isset($data['sigma']) ? $data['sigma'] : 1.0,
+    '#default_value' => $data['sigma'] ?? 1.0,
     '#required' => TRUE,
     '#min' => 0.0,
     '#max' => 65355.0,
@@ -244,7 +244,7 @@ function graphicsmagick_effects_edge_form(array $data) {
     '#type' => 'number',
     '#title' => t('Radius'),
     '#description' => t('Use a value of zero to let the effect choose the best value.'),
-    '#default_value' => isset($data['radius']) ? $data['radius'] : 0.0,
+    '#default_value' => $data['radius'] ?? 0.0,
     '#required' => TRUE,
     '#min' => 0.0,
     '#max' => 65355.0,
@@ -292,7 +292,7 @@ function graphicsmagick_effects_emboss_form(array $data) {
     '#type' => 'number',
     '#title' => t('Radius'),
     '#description' => t('For reasonable results, the radius value should be higher than the sigma value. Use a value of zero to let the effect choose the best value.'),
-    '#default_value' => isset($data['radius']) ? $data['radius'] : 0.0,
+    '#default_value' => $data['radius'] ?? 0.0,
     '#required' => TRUE,
     '#min' => 0.0,
     '#max' => 65355.0,
@@ -302,7 +302,7 @@ function graphicsmagick_effects_emboss_form(array $data) {
     '#type' => 'number',
     '#title' => t('Sigma'),
     '#description' => t('A large sigma value works well also with color image. It can remove color dominance, but it could also introduce artifacts, especially in JPEG images.'),
-    '#default_value' => isset($data['sigma']) ? $data['sigma'] : 1.0,
+    '#default_value' => $data['sigma'] ?? 1.0,
     '#required' => TRUE,
     '#min' => 0.0,
     '#max' => 65355.0,
@@ -439,7 +439,7 @@ function graphicsmagick_effects_gamma_form(array $data) {
     '#type' => 'number',
     '#title' => t('Gamma'),
     '#description' => t('Values typically range from 0.8 to 2.3. Values lower than one make the image darker; values higher than one make the image lighter.'),
-    '#default_value' => isset($data['gamma']) ? $data['gamma'] : 0.8,
+    '#default_value' => $data['gamma'] ?? 0.8,
     '#required' => TRUE,
     '#min' => 0.0,
     '#max' => 10.0,
@@ -488,7 +488,7 @@ function graphicsmagick_effects_noise_form(array $data) {
     '#title' => t('Noise type'),
     '#description' => t('The noise type changes for which pixels the color is randomly changed.'),
     '#options' => graphicsmagick_image_noise_options(),
-    '#default_value' => isset($data['noise']) ? $data['noise'] : Gmagick::NOISE_UNIFORM,
+    '#default_value' => $data['noise'] ??S Gmagick::NOISE_UNIFORM,
     '#required' => TRUE,
   );
 
@@ -533,7 +533,7 @@ function graphicsmagick_effects_oil_paint_form(array $data) {
     '#type' => 'number',
     '#title' => t('Radius'),
     '#description' => t('Each pixel is replaced by the most frequent color occurring in a circular region defined by the radius value.'),
-    '#default_value' => isset($data['radius']) ? $data['radius'] : 0.8,
+    '#default_value' => $data['radius'] ?? 0.8,
     '#required' => TRUE,
     '#min' => 0.6,
     '#max' => 50.0,
@@ -587,7 +587,7 @@ function graphicsmagick_effects_solarize_form(array $data) {
     $quantum_level = 8;
   }
 
-  $level = isset($data['level']) ? $data['level'] : 1 << (($quantum_level / 2) - 2);
+  $level = $data['level'] ?? 1 << (($quantum_level / 2) - 2);
 
   $form['level'] = array(
     '#type' => 'number',
@@ -641,7 +641,7 @@ function graphicsmagick_effects_spread_form(array $data) {
     '#type' => 'number',
     '#title' => t('Radius'),
     '#description' => t('Each pixel in a block defined by the radius parameter is randomly displaced.'),
-    '#default_value' => isset($data['radius']) ? $data['radius'] : 2.0,
+    '#default_value' => $data['radius'] ?? 2.0,
     '#required' => TRUE,
     '#min' => 0.0,
     '#max' => 50.0,
@@ -690,7 +690,7 @@ function graphicsmagick_effects_swirl_form(array $data) {
     '#type' => 'number',
     '#title' => t('Degrees'),
     '#description' => t('The sweep of the arc through which each pixel is moved.'),
-    '#default_value' => isset($data['degrees']) ? $data['degrees'] : 10.0,
+    '#default_value' => $data['degrees'] ?? 10.0,
     '#required' => TRUE,
     '#min' => 0.0,
     '#max' => 360.0,

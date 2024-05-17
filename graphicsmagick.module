@@ -155,20 +155,21 @@ function image_graphicsmagick_toolkit_resize($image, $width, $height, $backgroun
   $color = graphicsmagick_color_to_object($background);
   $filter = graphicsmagick_toolkit_get_image_filter();
 
-  if  (!isset($color)) {
-    // Creating the GmagickPixel instance failed. Use a literal string.
-    $color = '#FFFFFF';
-  }
-
   $effect = (new class {
     public function __invoke($handler, $data) {
       return $handler->resizeImage($data['width'], $data['height'], $data['filter'], $data['blur']);
     }
   });
 
-  $result = graphicsmagick_image_effect($image, $effect, array('width' => $width,
-    'height' => $height, 'background' => $color, 'blur' => $blur, 'filter' => $filter,
-  ));
+  $data = array(
+    'width' => $width,
+    'height' => $height,
+    // If creating the GmagickPixel instance failed, use white as default color.
+    'background' => $color ?? '#FFFFFF',
+    'blur' => $blur,
+    'filter' => $filter,
+  );
+  $result = graphicsmagick_image_effect($image, $effect, $data);
 
   try {
     // The following methods could throw an exception. In the case they do, use
@@ -207,21 +208,18 @@ function image_graphicsmagick_toolkit_resize($image, $width, $height, $backgroun
  */
 function image_graphicsmagick_toolkit_rotate($image, $degrees, $background = NULL) {
   $color = graphicsmagick_color_to_object($background);
-
-  if  (!isset($color)) {
-    // Creating the GmagickPixel instance failed. Use a literal string.
-    $color = '#FFFFFF';
-  }
-
+  $data = array(
+    // If creating the GmagickPixel instance failed, use white as default color.
+    'color' => $color ?? '#FFFFFF',
+    'degrees' => $degrees,
+  );
   $effect = (new class {
     public function __invoke($handler, $data) {
       return $handler->rotateImage($data['color'], $data['degrees']);
     }
   });
 
-  return graphicsmagick_image_effect($image, $effect, array('color' => $color,
-    'degrees' => $degrees,
-  ));
+  return graphicsmagick_image_effect($image, $effect, $data);
 }
 
 /**
@@ -250,12 +248,14 @@ function image_graphicsmagick_toolkit_rotate($image, $degrees, $background = NUL
  */
 function image_graphicsmagick_toolkit_crop($image, $x, $y, $width, $height, $background = NULL) {
   $color = graphicsmagick_color_to_object($background);
-
-  if  (!isset($color)) {
-    // Creating the GmagickPixel instance failed. Use a literal string.
-    $color = '#FFFFFF';
-  }
-
+  $data = array(
+    // If creating the GmagickPixel instance failed, use white as default color.
+    'background' => $color ?? '#FFFFFF',
+    'width' => $width,
+    'height' => $height,
+    'x' => $x,
+    'y' => $y,
+  );
   $effect = (new class {
     public function __invoke($handler, $data) {
       $handler = $handler->cropImage($data['width'], $data['height'], $data['x'], $data['y']);
@@ -271,9 +271,7 @@ function image_graphicsmagick_toolkit_crop($image, $x, $y, $width, $height, $bac
     }
   });
 
-  $result = graphicsmagick_image_effect($image, $effect, array('background' => $color,
-    'width' => $width, 'height' => $height, 'x' => $x, 'y' => $y,
-  ));
+  $result = graphicsmagick_image_effect($image, $effect, $data);
 
   try {
     // The following methods could throw an exception. In the case they do, use
@@ -406,7 +404,7 @@ function graphicsmagick_toolkit_get_jpeg_quality() {
 
   // If the JPEG quality value hasn't been set, return 95 instead of 0, which
   // would be a bad image quality to use by default.
-  return isset($value) ? $value : 95;
+  return value ?? 95;
 }
 
 /**
@@ -421,7 +419,7 @@ function graphicsmagick_toolkit_get_png_compression() {
 
   // If the PNG compression value hasn't been set, return 99 instead of 0, which
   // is a better compression value to use by default.
-  return isset($value) ? $value : 99;
+  return $value ?? 99;
 }
 
 /**
@@ -435,7 +433,7 @@ function graphicsmagick_toolkit_get_image_blur() {
   $value = config_get('graphicsmagick_toolkit_image_blur');
 
   // If the blur value hasn't been set, return 1.0 instead of 0.
-  return isset($value) ? $value : 1.0;
+  return $value ?? 1.0;
 }
 
 /**
@@ -449,7 +447,7 @@ function graphicsmagick_toolkit_get_image_filter() {
   $value = config_get('graphicsmagick_toolkit_image_filter');
 
   // If  the filter value hasn't been set, return Gmagick::FILTER_LANCZOS.
-  return isset($value) ? $value : Gmagick::FILTER_LANCZOS;
+  return $value ?? Gmagick::FILTER_LANCZOS;
 }
 
 /**
