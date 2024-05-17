@@ -103,9 +103,11 @@ function image_graphicsmagick_toolkit_resize($image, $width, $height, $backgroun
     $color = '#FFFFFF';
   }
 
-  $effect = function ($handler, $data) {
-    return $handler->resizeImage($data['width'], $data['height'], $data['filter'], $data['blur']);
-  };
+  $effect = (new class {
+    public function __invoke($handler, $data) {
+      return $handler->resizeImage($data['width'], $data['height'], $data['filter'], $data['blur']);
+    }
+  });
 
   $result = graphicsmagick_image_effect($image, $effect, array('width' => $width,
     'height' => $height, 'background' => $color, 'blur' => $blur, 'filter' => $filter,
@@ -147,7 +149,6 @@ function image_graphicsmagick_toolkit_resize($image, $width, $height, $backgroun
  * @see image_rotate()
  */
 function image_graphicsmagick_toolkit_rotate($image, $degrees, $background = NULL) {
-  $clone = clone $image->handler;
   $color = graphicsmagick_color_to_object($background);
 
   if  (!isset($color)) {
@@ -155,9 +156,11 @@ function image_graphicsmagick_toolkit_rotate($image, $degrees, $background = NUL
     $color = '#FFFFFF';
   }
 
-  $effect = function ($handler, $data) {
-    return $handler->rotateImage($data['color'], $data['degrees']);
-  };
+  $effect = (new class {
+    public function __invoke($handler, $data) {
+      return $handler->rotateImage($data['color'], $data['degrees']);
+    }
+  });
 
   return graphicsmagick_image_effect($image, $effect, array('color' => $color,
     'degrees' => $degrees,
@@ -189,7 +192,6 @@ function image_graphicsmagick_toolkit_rotate($image, $degrees, $background = NUL
  * @see image_crop()
  */
 function image_graphicsmagick_toolkit_crop($image, $x, $y, $width, $height, $background = NULL) {
-  $clone = clone $image->handler;
   $color = graphicsmagick_color_to_object($background);
 
   if  (!isset($color)) {
@@ -197,20 +199,22 @@ function image_graphicsmagick_toolkit_crop($image, $x, $y, $width, $height, $bac
     $color = '#FFFFFF';
   }
 
-  $effect = function ($handler, $data) {
-    $handler = $handler->cropImage($data['width'], $data['height'], $data['x'], $data['y']);
+  $effect = (new class {
+    public function __invoke($handler, $data) {
+      $handler = $handler->cropImage($data['width'], $data['height'], $data['x'], $data['y']);
 
-    // This method is not documented on
-    // https://www.php.net/manual/en/class.gmagick.php.
-    // Verify it is implemented before using it.
-    if (method_exists($handler, 'setImagePage')) {
-      $handler = $handler->setImagePage($data['width'], $data['height'], $data['x'], $data['y']);
+      // This method is not documented on
+      // https://www.php.net/manual/en/class.gmagick.php.
+      // Verify it is implemented before using it.
+      if (method_exists($handler, 'setImagePage')) {
+        $handler = $handler->setImagePage($data['width'], $data['height'], $data['x'], $data['y']);
+      }
+
+      return $handler;
     }
+  });
 
-    return $handler;
-  };
-
-    $result = graphicsmagick_image_effect($image, $effect, array('background' => $color,
+  $result = graphicsmagick_image_effect($image, $effect, array('background' => $color,
     'width' => $width, 'height' => $height, 'x' => $x, 'y' => $y,
   ));
 
@@ -244,11 +248,11 @@ function image_graphicsmagick_toolkit_crop($image, $x, $y, $width, $height, $bac
  * @see image_desaturate()
  */
 function image_graphicsmagick_toolkit_desaturate($image) {
-  $clone = clone $image->handler;
-
-  $effect = function ($handler, $data) {
-    return $handler->setImageType(Gmagick::IMGTYPE_GRAYSCALE);
-  };
+  $effect = (new class {
+    public function __invoke($handler, $data) {
+      return $handler->setImageType(Gmagick::IMGTYPE_GRAYSCALE);
+    }
+  });
 
   return graphicsmagick_image_effect($image, $effect, array());
 }

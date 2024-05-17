@@ -198,9 +198,11 @@ function graphicsmagick_effects_blur_form(array $data) {
  *   TRUE on success, FALSE on failure to apply the effect.
  */
 function graphicsmagick_effects_blur($image, array $data) {
-  $effect = function ($handler, $data) {
-    return $handler->blurImage($data['radius'], $data['sigma']);
-  };
+  $effect = (new class {
+    public function __invoke($handler, $data) {
+      return $handler->blurImage($data['radius'], $data['sigma']);
+    }
+  });
 
   return graphicsmagick_image_effect($image, $effect, $data);
 }
@@ -218,9 +220,11 @@ function graphicsmagick_effects_blur($image, array $data) {
  *   TRUE on success, FALSE on failure to apply the effect.
  */
 function graphicsmagick_effects_despeckle($image, array $data) {
-  $effect = function ($handler, $data) {
-    return $handler->despeckleImage();
-  };
+  $effect = (new class {
+    public function __invoke($handler, $data) {
+      return $handler->despeckleImage();
+    }
+  });
 
   return graphicsmagick_image_effect($image, $effect, $data);
 }
@@ -264,9 +268,11 @@ function graphicsmagick_effects_edge_form(array $data) {
  *   TRUE on success, FALSE on failure to apply the effect.
  */
 function graphicsmagick_effects_edge($image, array $data) {
-  $effect = function ($handler, $data) {
-    return $handler->edgeImage($data['radius']);
-  };
+  $effect = (new class {
+    public function __invoke($handler, $data) {
+      return $handler->edgeImage($data['radius']);
+    }
+  });
 
   return graphicsmagick_image_effect($image, $effect, $data);
 }
@@ -321,9 +327,11 @@ function graphicsmagick_effects_emboss_form(array $data) {
  *   TRUE on success, FALSE on failure to apply the effect.
  */
 function graphicsmagick_effects_emboss($image, array $data) {
-  $effect = function ($handler, $data) {
-    return $handler->embossImage($data['radius'], $data['sigma']);
-  };
+  $effect = (new class {
+    public function __invoke($handler, $data) {
+      return $handler->embossImage($data['radius'], $data['sigma']);
+    }
+  });
 
   return graphicsmagick_image_effect($image, $effect, $data);
 }
@@ -341,9 +349,11 @@ function graphicsmagick_effects_emboss($image, array $data) {
  *   TRUE on success, FALSE on failure to blur the image.
  */
 function graphicsmagick_effects_enhance($image, array $data) {
-  $effect = function ($handler, $data) {
-    return $handler->enhanceImage();
-  };
+  $effect = (new class {
+    public function __invoke($handler, $data) {
+      return $handler->enhanceImage();
+    }
+  });
 
   return graphicsmagick_image_effect($image, $effect, $data);
 }
@@ -361,9 +371,11 @@ function graphicsmagick_effects_enhance($image, array $data) {
  *   TRUE on success, FALSE on failure to blur the image.
  */
 function graphicsmagick_effects_equalize($image, array $data) {
-  $effect = function ($handler, $data) {
-    return $handler->equalizeImage();
-  };
+  $effect = (new class {
+    public function __invoke($handler, $data) {
+      return $handler->equalizeImage();
+    }
+  });
 
   return graphicsmagick_image_effect($image, $effect, $data);
 }
@@ -381,9 +393,11 @@ function graphicsmagick_effects_equalize($image, array $data) {
  *   TRUE on success, FALSE on failure to blur the image.
  */
 function graphicsmagick_effects_flip($image, array $data) {
-  $effect = function ($handler, $data) {
-    return $handler->flipImage();
-  };
+  $effect = (new class {
+    public function __invoke($handler, $data) {
+      return $handler->flipImage();
+    }
+  });
 
   return graphicsmagick_image_effect($image, $effect, $data);
 }
@@ -401,9 +415,11 @@ function graphicsmagick_effects_flip($image, array $data) {
  *   TRUE on success, FALSE on failure to apply the effect.
  */
 function graphicsmagick_effects_flop($image, array $data) {
-  $effect = function ($handler, $data) {
-    return $handler->flopImage();
-  };
+  $effect = (new class {
+    public function __invoke($handler, $data) {
+      return $handler->flopImage();
+    }
+  });
 
   return graphicsmagick_image_effect($image, $effect, $data);
 }
@@ -447,9 +463,11 @@ function graphicsmagick_effects_gamma_form(array $data) {
  *   TRUE on success, FALSE on failure to apply the effect.
  */
 function graphicsmagick_effects_gamma($image, array $data) {
-  $effect = function ($handler, $data) {
-    return $handler->gammaImage($data['gamma']);
-  };
+  $effect = (new class {
+    public function __invoke($handler, $data) {
+      return $handler->gammaImage($data['gamma']);
+    }
+  });
 
   return graphicsmagick_image_effect($image, $effect, $data);
 }
@@ -491,9 +509,11 @@ function graphicsmagick_effects_noise_form(array $data) {
  *   TRUE on success, FALSE on failure to apply the effect.
  */
 function graphicsmagick_effects_noise($image, array $data) {
-  $effect = function ($handler, $data) {
-    return $handler->addNoiseImage($data['radius']);
-  };
+  $effect = (new class {
+    public function __invoke($handler, $data) {
+      return $handler->addNoiseImage($data['radius']);
+    }
+  });
 
   return graphicsmagick_image_effect($image, $effect, $data);
 }
@@ -538,9 +558,11 @@ function graphicsmagick_effects_oil_paint_form(array $data) {
  *   TRUE on success, FALSE on failure to apply the effect.
  */
 function graphicsmagick_effects_oil_paint($image, array $data) {
-  $effect = function ($handler, $data) {
-    return $handler->oilPaintImage($data['radius']);
-  };
+  $effect = (new class {
+    public function __invoke($handler, $data) {
+      return $handler->oilPaintImage($data['radius']);
+    }
+  });
 
   return graphicsmagick_image_effect($image, $effect, $data);
 }
@@ -595,9 +617,11 @@ function graphicsmagick_effects_solarize_form(array $data) {
  *   TRUE on success, FALSE on failure to apply the effect.
  */
 function graphicsmagick_effects_solarize($image, array $data) {
-  $effect = function ($handler, $data) {
-    return $handler->solarizeImage($data['level']);
-  };
+  $effect = (new class {
+    public function __invoke($handler, $data) {
+      return $handler->solarizeImage($data['level']);
+    }
+  });
 
   return graphicsmagick_image_effect($image, $effect, $data);
 }
@@ -642,9 +666,11 @@ function graphicsmagick_effects_spread_form(array $data) {
  *   TRUE on success, FALSE on failure to apply the effect.
  */
 function graphicsmagick_effects_spread($image, array $data) {
-  $effect = function ($handler, $data) {
-    return $handler->spreadImage($data['radius']);
-  };
+  $effect = (new class {
+    public function __invoke($handler, $data) {
+      return $handler->spreadImage($data['radius']);
+    }
+  });
 
   return graphicsmagick_image_effect($image, $effect, $data);
 }
@@ -689,9 +715,11 @@ function graphicsmagick_effects_swirl_form(array $data) {
  *   TRUE on success, FALSE on failure to apply the effect.
  */
 function graphicsmagick_effects_swirl($image, array $data) {
-  $effect = function ($handler, $data) {
-    return $handler->swirlImage($data['degrees']);
-  };
+  $effect = (new class {
+    public function __invoke($handler, $data) {
+      return $handler->swirlImage($data['degrees']);
+    }
+  });
 
   return graphicsmagick_image_effect($image, $effect, $data);
 }
