@@ -762,9 +762,21 @@ function graphicsmagick_image_format_to_extension($format) {
     'XBM' => 'xbm',
   );
 
-  if (!isset($extensions[$format])) {
-    // Return only the values present in this array, as
-    // Gmagick::getImageFormat() returns also video formats.
+  try {
+    $handler = new Gmagick();
+    $supported_formats = $handler->queryFormats();
+  }
+  catch (GmagickException) {
+    // Return an empty string to signal an error.
+    return '';
+  }
+
+  if (isset($supported_formats[$format]) && isset($extensions[$format])) {
+    return $extensions[$format];
+  }
+  else {
+    // If a format is not in $extensions, return an empty string, since
+    // Gmagick::queryFormats() returns also video formats and raw image formats.
     return '';
   }
 }
@@ -837,13 +849,23 @@ function graphicsmagick_image_format_to_mime_type($format) {
     'XBM' => 'image/x-xbitmap',
   );
 
-  if (!isset($mime_types[$format])) {
-    // Return only the values present in this array, as
-    // Gmagick::getImageFormat() returns also video formats.
+  try {
+    $handler = new Gmagick();
+    $supported_formats = $handler->queryFormats();
+  }
+  catch (GmagickException) {
+    // Return an empty string to signal an error.
     return '';
   }
 
-  return $mime_types[$format];
+  if (isset($supported_formats[$format]) && isset($mime_types[$format])) {
+    return $mime_types[$format];
+  }
+  else {
+    // If a format is not in $mime_types, return an empty string, since
+    // Gmagick::queryFormats() returns also video formats and raw image formats.
+    return '';
+  }
 }
 
 /**
