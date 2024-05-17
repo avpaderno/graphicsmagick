@@ -831,6 +831,8 @@ function graphicsmagick_image_effect($image, callable $effect, array $data) {
   }
 
   try {
+    // Clone the image handler and work with the clone. In case of exceptions,
+    // the original image handler and its state is preserved.
     $handler = clone $image->handler;
 
     if (isset($data['background'])) {
