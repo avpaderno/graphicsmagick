@@ -65,12 +65,69 @@ function image_graphicsmagick_toolkit_settings() {
  * Retrieves the supported extensions for the GraphicsMagick toolkit.
  */
 function image_graphicsmagick_toolkit_supported_extensions() {
-  // The returned extensions exclude raw images.
-  return array('tif', 'bmp', 'cin', 'dcx', 'dpx', 'pdf', 'epi', 'eps', 'fits',
-    'gif', 'icb', 'jpeg', 'jpg', 'pam', 'pbm', 'pdf', 'pgm', 'xpm', 'png',
-    'pnm', 'ppm', 'ps', 'tif', 'sgi', 'tga', 'tiff', 'vda', 'vst', 'wbmp',
-    'webp', 'xbm',
+  // The following list doesn't include all the file types recognized by the
+  // GraphicsMagick library; it includes most of the image types, excluding
+  // the raw images and those images the Gmagick class is not able to write.
+  $extensions = array(
+    'BIGTIFF' => 'tif',
+    'BMP' => 'bmp',
+    'CIN' => 'cin',
+    'DCX' => 'dcx',
+    'DPX' => 'dpx',
+    'EPDF' => 'pdf',
+    'EPI' => 'epi',
+    'EPS' => 'eps',
+    'EPSF' => 'eps',
+    'EPSI' => 'eps',
+    'EPT' => 'eps',
+    'EPT2' => 'eps',
+    'EPT3' => 'eps',
+    'FITS' => 'fits',
+    'GIF' => 'gif',
+    'GIF87' => 'gif',
+    'ICB' => 'icb',
+    'JPEG' => 'jpeg',
+    'JPG' => 'jpg',
+    'PAM' => 'pam',
+    'PBM' => 'pbm',
+    'PDF' => 'pdf',
+    'PGM' => 'pgm',
+    'PICON' => 'xpm',
+    'PNG' => 'png',
+    'PNG00' => 'png',
+    'PNG24' => 'png',
+    'PNG32' => 'png',
+    'PNG48' => 'png',
+    'PNM' => 'pnm',
+    'PPM' => 'ppm',
+    'PS' => 'ps',
+    'PTIF' => 'tif',
+    'SGI' => 'sgi',
+    'TGA' => 'tga',
+    'TIFF' => 'tiff',
+    'VDA' => 'vda',
+    'VST' => 'vst',
+    'WBMP' => 'wbmp',
+    'WEBP' => 'webp',
+    'XBM' => 'xbm',
   );
+  $supported_extensions = array();
+
+  try {
+    $handler = new Gmagick();
+
+    foreach ($handler->queryFormats() as $format) {
+      if (isset($extensions[$format])) {
+        $supported_extensions[] = $extensions[$format];
+      }
+    }
+  }
+  catch (GmagickException) {
+    // Ignore the thrown exception; return the already gathered extensions.
+  }
+
+  // The returned extensions exclude raw images.
+  return array_unique($supported_extensions);
 }
 
 /**
