@@ -36,7 +36,6 @@ function graphicsmagick_requirements($phase) {
       return $requirements;
     }
 
-    // Verify the necessary methods are defined from the Gmagick class.
     try {
       $handler = new \Gmagick();
 
