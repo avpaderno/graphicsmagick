@@ -771,7 +771,7 @@ function graphicsmagick_image_format_to_extension($format) {
     return '';
   }
 
-  if (isset($supported_formats[$format]) && isset($extensions[$format])) {
+  if (in_array($format, $supported_formats) && isset($extensions[$format])) {
     return $extensions[$format];
   }
   else {
@@ -858,7 +858,7 @@ function graphicsmagick_image_format_to_mime_type($format) {
     return '';
   }
 
-  if (isset($supported_formats[$format]) && isset($mime_types[$format])) {
+  if (in_array($format, $supported_formats) && isset($mime_types[$format])) {
     return $mime_types[$format];
   }
   else {
