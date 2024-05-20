@@ -169,7 +169,7 @@ function image_graphicsmagick_toolkit_resize($image, $width, $height, $backgroun
     $color = Color::toHex($background);
   }
   catch (\InvalidArgumentException $e) {
-    watchdog_exception($e);
+    watchdog_exception('graphicsmagick', $e);
     return FALSE;
   }
 
@@ -183,7 +183,7 @@ function image_graphicsmagick_toolkit_resize($image, $width, $height, $backgroun
     $background = Color::toHex($color);
   }
   catch (\InvalidArgumentException $e) {
-    watchdog_exception($e);
+    watchdog_exception('graphicsmagick', $e);
     return FALSE;
   }
 
@@ -237,7 +237,7 @@ function image_graphicsmagick_toolkit_rotate($image, $degrees, $background = NUL
     $color = Color::toHex($background);
   }
   catch (\InvalidArgumentException $e) {
-    watchdog_exception($e);
+    watchdog_exception('graphicsmagick', $e);
     return FALSE;
   }
 
@@ -284,7 +284,7 @@ function image_graphicsmagick_toolkit_crop($image, $x, $y, $width, $height, $bac
     $color = Color::toHex($background);
   }
   catch (\InvalidArgumentException $e) {
-    watchdog_exception($e);
+    watchdog_exception('graphicsmagick', $e);
     return FALSE;
   }
 
