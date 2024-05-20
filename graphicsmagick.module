@@ -134,7 +134,7 @@ function image_graphicsmagick_toolkit_supported_extensions() {
     }
   }
   catch (GmagickException) {
-    // Ignore the thrown exception; return the already gathered extensions.
+    // Ignore the thrown exception.
   }
 
   // The returned extensions exclude raw images.
@@ -203,7 +203,7 @@ function image_graphicsmagick_toolkit_resize($image, $width, $height, $backgroun
     $new_width = $image->handler->getImageWidth();
     $new_height = $image->handler->getImageHeight();
   }
-  catch (GmagickException $e) {
+  catch (GmagickException) {
     $new_width = $width;
     $new_height = $height;
   }
@@ -238,7 +238,6 @@ function image_graphicsmagick_toolkit_rotate($image, $degrees, $background = NUL
   }
   catch (\InvalidArgumentException $e) {
     watchdog_exception($e);
-
     return FALSE;
   }
 
@@ -321,7 +320,7 @@ function image_graphicsmagick_toolkit_crop($image, $x, $y, $width, $height, $bac
     $new_height = $image->handler->getImageHeight();
   }
 
-  catch (GmagickException $e) {
+  catch (GmagickException) {
     $new_width = $width;
     $new_height = $height;
   }
@@ -421,7 +420,7 @@ function image_graphicsmagick_toolkit_get_info($image) {
     $details['width'] = $handler->getImageWidth();
     $details['height'] = $handler->getImageHeight();
   }
-  catch (GmagickException $e) {
+  catch (GmagickException) {
     if (empty($details['extension'])) {
       // The file is not an image, the code failed before checking that, or
       // graphicsmagick_image_format_to_extension() did not return a valid
@@ -516,7 +515,7 @@ function graphicsmagick_available() {
 
       return !$missing_methods;
     }
-    catch (GmagickException $e) {
+    catch (GmagickException) {
       return FALSE;
     }
   }
@@ -556,7 +555,7 @@ function graphicsmagick_image_load($image) {
     // Destroy the existing Gmagick instance.
     try {
       $image->handler->destroy();
-    } catch (GmagickException $e) {
+    } catch (GmagickException) {
       // Ignore the exception, as there is not anything that can be done when
       // destroying a Gmagick instance fails.
     }
@@ -573,7 +572,7 @@ function graphicsmagick_image_load($image) {
 
     $handler = new Gmagick(backdrop_realpath($image->source));
     $format = $handler->getImageFormat();
-  } catch (GmagickException $e) {
+  } catch (GmagickException) {
     // If either the constructor or getImageFormat() returned an
     // exception, report a failure to the calling function. An exception in
     // those cases could mean the file doesn't contain an image, it does not
@@ -624,7 +623,7 @@ function graphicsmagick_image_format($image) {
 
   try {
     $format = $image->handler->getImageFormat();
-  } catch (GmagickException $e) {
+  } catch (GmagickException) {
     // If Gmagick::getImageFormat() returned an exception, report a failure to
     // the calling function. An exception in this case could mean the file
     // does not contain an image, it does not contain an image recognized from
@@ -924,7 +923,7 @@ function graphicsmagick_image_effect($image, callable $effect, array $data) {
     try {
       $handler->destroy();
     }
-    catch(GmagickException $e) {
+    catch(GmagickException) {
       // Gmagick::destroy() can throw an exception, but nothing can be done to
       // fix that.
       // Failure to destroy the unused Gmagick instance is not considered a
@@ -941,7 +940,7 @@ function graphicsmagick_image_effect($image, callable $effect, array $data) {
 
     $image->handler->destroy();
   }
-  catch (GmagickException $e) {
+  catch (GmagickException) {
     // Either Gmagick::setImageBackgroundColor() or Gmagick::destroy() can throw
     // an exception, but nothing can be done to fix that.
     // Failure to change back the background color or destroy the unused Gmagick
@@ -1001,7 +1000,7 @@ function graphicsmagick_image_save($image, $destination) {
     $image->handler->writeImage(backdrop_realpath($destination), $image->handler->getNumberImages() > 1);
 
     return TRUE;
-  } catch (GmagickException $e) {
+  } catch (GmagickException) {
     return FALSE;
   }
 }

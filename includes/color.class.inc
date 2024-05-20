@@ -57,8 +57,8 @@ class Color {
         $color['a'] = intval(round(256 * $alpha));
       }
     }
-    catch (\GmagickPixelException) {
-      throw new \InvalidArgumentException("'{$value}' is not a valid color value.");
+    catch (\GmagickPixelException $e) {
+      throw new \InvalidArgumentException("'{$value}' is not a valid color value.", 0, $e);
     }
   }
 
@@ -96,8 +96,8 @@ class Color {
           $input['a'] = intval(round(256 * $alpha));
         }
       }
-      catch (\GmagickPixelException) {
-        throw new \InvalidArgumentException("'{$input}' is not a valid color value.");
+      catch (\GmagickPixelException $e) {
+        throw new \InvalidArgumentException("'{$input}' is not a valid color value.", 0, $e);
       }
     }
 

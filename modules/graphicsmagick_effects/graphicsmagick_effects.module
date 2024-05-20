@@ -582,7 +582,7 @@ function graphicsmagick_effects_solarize_form(array $data) {
     $gmagick = new Gmagick();
     $quantum_level = $gmagick->getQuantumDepth()['quantumDepthLong'];
   }
-  catch (Exception $e) {
+  catch (Exception) {
     // As getting the quantum dept value failed, assume its value is 8.
     $quantum_level = 8;
   }
