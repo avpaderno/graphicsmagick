@@ -4,7 +4,9 @@
  * Hooks implementations for the GraphicsMagick module.
  */
 
-/**
+use \graphicsmagick\Utility\Color;
+
+ /**
  * Implements hook_autoload_info().
  */
 function graphicsmagick_autoload_info() {
@@ -161,8 +163,15 @@ function image_graphicsmagick_toolkit_supported_extensions() {
  */
 function image_graphicsmagick_toolkit_resize($image, $width, $height, $background = NULL) {
   $blur = graphicsmagick_toolkit_get_image_blur();
-  $color = graphicsmagick_color_to_object($background);
   $filter = graphicsmagick_toolkit_get_image_filter();
+
+  try {
+    $color = Color::toHex($background);
+  }
+  catch (\InvalidArgumentException $e) {
+    watchdog_exception($e);
+    return FALSE;
+  }
 
   $effect = (new class {
     public function __invoke($handler, $data) {
@@ -170,11 +179,19 @@ function image_graphicsmagick_toolkit_resize($image, $width, $height, $backgroun
     }
   });
 
+  try {
+    $background = Color::toHex($color);
+  }
+  catch (\InvalidArgumentException $e) {
+    watchdog_exception($e);
+    return FALSE;
+  }
+
   $data = array(
     'width' => $width,
     'height' => $height,
     // If creating the GmagickPixel instance failed, use white as default color.
-    'background' => $color ?? '#FFFFFF',
+    'background' => $background,
     'blur' => $blur,
     'filter' => $filter,
   );
@@ -216,10 +233,18 @@ function image_graphicsmagick_toolkit_resize($image, $width, $height, $backgroun
  * @see image_rotate()
  */
 function image_graphicsmagick_toolkit_rotate($image, $degrees, $background = NULL) {
-  $color = graphicsmagick_color_to_object($background);
+  try {
+    $color = Color::toHex($background);
+  }
+  catch (\InvalidArgumentException $e) {
+    watchdog_exception($e);
+
+    return FALSE;
+  }
+
   $data = array(
     // If creating the GmagickPixel instance failed, use white as default color.
-    'color' => $color ?? '#FFFFFF',
+    'color' => $color,
     'degrees' => $degrees,
   );
   $effect = (new class {
@@ -256,10 +281,17 @@ function image_graphicsmagick_toolkit_rotate($image, $degrees, $background = NUL
  * @see image_crop()
  */
 function image_graphicsmagick_toolkit_crop($image, $x, $y, $width, $height, $background = NULL) {
-  $color = graphicsmagick_color_to_object($background);
+  try {
+    $color = Color::toHex($background);
+  }
+  catch (\InvalidArgumentException $e) {
+    watchdog_exception($e);
+    return FALSE;
+  }
+
   $data = array(
     // If creating the GmagickPixel instance failed, use white as default color.
-    'background' => $color ?? '#FFFFFF',
+    'background' => $color,
     'width' => $width,
     'height' => $height,
     'x' => $x,
@@ -490,64 +522,6 @@ function graphicsmagick_available() {
   }
 
   return FALSE;
-}
-
-/**
- * Converts a value representing a color in a GmagickPixel instance.
- *
- * @param string|int $color
- *   The value representing the color.
- *
- * @return GmagickPixel|null
- *   The GmagickPixel instance for that color, or NULL in case of error.
- */
-function graphicsmagick_color_to_object($color = NULL) {
-  if (isset($color)) {
-    if (is_int($color)) {
-      $color = sprintf('%X', $color);
-    }
-    elseif (is_string($color)) {
-      // Remove the leading '0x' or '#', if any.
-      if (strpos($color, '0x') === 0) {
-        $color = substr($color, 2);
-      }
-      elseif ($color[0] === '#') {
-        $color = substr($color, 1);
-      }
-    }
-
-    // Verify the color is a hex string and normalize shorthand versions.
-    // 'AB3' becomes 'AABB33', while 'A371' becomes 'AA337711'.
-    if (preg_match('/^[0-9A-F]{1,4}$/', $color)) {
-      $color = preg_replace('|([0-9A-F])|', '\1\1', $color);
-
-      $color = "#$color";
-    }
-  }
-  else {
-    // Use white as color.
-    $color = '#FFFFFF';
-  }
-
-  try {
-    $pixel = new GmagickPixel($color);
-  }
-  catch (GmagickException $e) {
-    // If the requested color isn't white, try to create a GmagickPixel instance
-    // for white.
-    if ($color !== '#FFFFFF') {
-      try {
-        $pixel = new GmagickPixel('#FFFFFF');
-
-        return $pixel;
-      }
-      catch (GmagickException $e) {
-        return NULL;
-      }
-    }
-
-    return NULL;
-  }
 }
 
 /**
