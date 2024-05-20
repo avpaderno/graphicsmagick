@@ -923,8 +923,6 @@ function graphicsmagick_image_effect($image, callable $effect, array $data) {
     catch(GmagickException) {
       // Gmagick::destroy() can throw an exception, but nothing can be done to
       // fix that.
-      // Failure to destroy the unused Gmagick instance is not considered a
-      // failure of the image effect.
     }
 
     return FALSE;

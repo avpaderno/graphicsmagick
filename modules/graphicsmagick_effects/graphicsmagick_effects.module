@@ -368,7 +368,7 @@ function graphicsmagick_effects_enhance($image, array $data) {
  *   currently used for this effect.
  *
  * @return bool
- *   TRUE on success, FALSE on failure to blur the image.
+ *   TRUE on success, FALSE on failure to apply the effect.
  */
 function graphicsmagick_effects_equalize($image, array $data) {
   $effect = (new class {
@@ -390,7 +390,7 @@ function graphicsmagick_effects_equalize($image, array $data) {
  *   attributes are currently used for this effect.
  *
  * @return bool
- *   TRUE on success, FALSE on failure to blur the image.
+ *   TRUE on success, FALSE on failure to apply the effect.
  */
 function graphicsmagick_effects_flip($image, array $data) {
   $effect = (new class {
