@@ -25,7 +25,7 @@
 *.xml     text eol=lf whitespace=blank-at-eol,-blank-at-eof,-space-before-tab,tab-in-indent,tabwidth=2
 *.yml     text eol=lf whitespace=blank-at-eol,-blank-at-eof,-space-before-tab,tab-in-indent,tabwidth=2
 
-# Define binary file attrributes.
+# Define binary file attributes.
 *.eot     -text diff
 *.exe     -text diff
 *.gif     -text diff
