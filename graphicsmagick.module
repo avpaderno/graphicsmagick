@@ -190,7 +190,6 @@ function image_graphicsmagick_toolkit_resize($image, $width, $height, $backgroun
   $data = array(
     'width' => $width,
     'height' => $height,
-    // If creating the GmagickPixel instance failed, use white as default color.
     'background' => $background,
     'blur' => $blur,
     'filter' => $filter,
@@ -242,7 +241,6 @@ function image_graphicsmagick_toolkit_rotate($image, $degrees, $background = NUL
   }
 
   $data = array(
-    // If creating the GmagickPixel instance failed, use white as default color.
     'color' => $color,
     'degrees' => $degrees,
   );
@@ -289,7 +287,6 @@ function image_graphicsmagick_toolkit_crop($image, $x, $y, $width, $height, $bac
   }
 
   $data = array(
-    // If creating the GmagickPixel instance failed, use white as default color.
     'background' => $color,
     'width' => $width,
     'height' => $height,
