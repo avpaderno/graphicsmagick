@@ -65,7 +65,7 @@ function image_graphicsmagick_toolkit_settings() {
     '#description' => t('The PNG compression (from 0 to 99). Higher values do not mean better compression, although 99 usually compresses a PNG image more than other values. Verify the file size once the image has been saved.'),
     '#default_value' => graphicsmagick_toolkit_get_png_compression(),
     '#min' => 0,
-    '#max' => 99,
+    '#max' => 100,
     '#step' => 1,
   );
 
@@ -404,24 +404,17 @@ function image_graphicsmagick_toolkit_get_info($image) {
   $details = array(
     'width' => 0,
     'height' => 0,
-    'extension' => '',
-    'mime_type' => '',
   );
 
   try {
     $handler = new Gmagick(backdrop_realpath($image->source));
-    $format = $handler->getImageFormat();
-
-    $details['extension'] = graphicsmagick_image_format_to_extension($format);
-    $details['mime_type'] = graphicsmagick_image_format_to_mime_type($format);
     $details['width'] = $handler->getImageWidth();
     $details['height'] = $handler->getImageHeight();
   }
   catch (GmagickException) {
-    if (empty($details['extension'])) {
-      // The file is not an image, the code failed before checking that, or
-      // graphicsmagick_image_format_to_extension() did not return a valid
-      // image extension.
+    // An exception has been thrown when trying to access the image information,
+    // which could also mean the image file is corrupted. Return FALSE to signal
+    // an error.
       return FALSE;
     }
   }
@@ -439,9 +432,9 @@ function image_graphicsmagick_toolkit_get_info($image) {
 function graphicsmagick_toolkit_get_jpeg_quality() {
   $value = config_get('graphicsmagick_toolkit_jpeg_quality');
 
-  // If the JPEG quality value hasn't been set, return 95 instead of 0, which
+  // If the JPEG quality value hasn't been set, return 80 instead of 0, which
   // would be a bad image quality to use by default.
-  return value ?? 95;
+  return value ?? 80;
 }
 
 /**
@@ -993,7 +986,6 @@ function graphicsmagick_image_save($image, $destination) {
     }
 
     $image->handler->writeImage(backdrop_realpath($destination), $image->handler->getNumberImages() > 1);
-
     return TRUE;
   } catch (GmagickException) {
     return FALSE;
