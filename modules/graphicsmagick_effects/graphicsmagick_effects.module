@@ -208,7 +208,7 @@ function graphicsmagick_effects_blur($image, array $data) {
 }
 
 /**
- * Image effect callback; emboss an image.
+ * Image effect callback; reduce the speckle noise in an image.
  *
  * @param object $image
  *   An image object.
@@ -260,7 +260,7 @@ function graphicsmagick_effects_edge_form(array $data) {
  * @param object $image
  *   An image object.
  * @param array $data
- *   An array of attributes to use when performing the emboss effect with the
+ *   An array of attributes to use when enhancing the image edges with the
  *   following items:
  *   - "radius": The operation radius.
  *
