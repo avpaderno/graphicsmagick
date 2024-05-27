@@ -416,7 +416,6 @@ function image_graphicsmagick_toolkit_get_info($image) {
     // which could also mean the image file is corrupted. Return FALSE to signal
     // an error.
       return FALSE;
-    }
   }
 
   return $details;
@@ -434,7 +433,7 @@ function graphicsmagick_toolkit_get_jpeg_quality() {
 
   // If the JPEG quality value hasn't been set, return 80 instead of 0, which
   // would be a bad image quality to use by default.
-  return value ?? 80;
+  return $value ?? 80;
 }
 
 /**
