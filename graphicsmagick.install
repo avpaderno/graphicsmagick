@@ -91,9 +91,28 @@ function graphicsmagick_requirements($phase) {
 }
 
 /**
- * Clear the image effect definitions cache.
+ * Uninstall the GraphicsMagick Effects module.
  */
 function graphicsmagick_update_1101() {
+  if (module_exists('graphicsmagick_effects')) {
+    $path = backdrop_get_path('module', 'graphicsmagick_effects');
+
+    backdrop_uninstall_modules(array('graphicsmagick_effects'));
+    backdrop_set_message(
+      t(
+        'The contributed module <em>GraphicsMagick Effects</em> is located at %path. The module has been disabled and uninstalled, since its functionality is now provided by the <em>GraphicsMagick</em> module. It is recommended that you remove this module from your site.',
+        array('%path' => BACKDROP_ROOT . "/$path")
+      ),
+      'warning'
+    );
+  }
+
+}
+
+/**
+ * Clear the image effect definitions cache.
+ */
+function graphicsmagick_update_1102() {
   $cache = cache();
   backdrop_static_reset('image_effect_definitions');
 
