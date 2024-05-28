@@ -106,17 +106,12 @@ function graphicsmagick_update_1101() {
       'warning'
     );
   }
-
 }
 
 /**
  * Clear the image effect definitions cache.
  */
 function graphicsmagick_update_1102() {
-  $cache = cache();
   backdrop_static_reset('image_effect_definitions');
-
-  foreach (language_list(TRUE) as $lang_code => $language) {
-    $cache->delete("image_effect_definitions:$lang_code");
-  }
+  cache()->deletePrefix('image_effect_definitions:');
 }
