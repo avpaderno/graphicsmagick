@@ -13,7 +13,7 @@
  *
  * @ingroup themeable
  */
-function theme_graphicsmagick_effects_blur_summary(array $variables) {
+function theme_graphicsmagick_blur_summary(array $variables) {
   $data = $variables['data'];
   $summary = '';
 
@@ -36,8 +36,8 @@ function theme_graphicsmagick_effects_blur_summary(array $variables) {
  *
  * @ingroup themeable
  */
-function theme_graphicsmagick_effects_emboss_summary(array $variables) {
-  return theme('graphicsmagick_effects_blur_summary', $variables);
+function theme_graphicsmagick_emboss_summary(array $variables) {
+  return theme('graphicsmagick_blur_summary', $variables);
 }
 
 /**
@@ -49,7 +49,7 @@ function theme_graphicsmagick_effects_emboss_summary(array $variables) {
  *
  * @ingroup themeable
  */
-function theme_graphicsmagick_effects_gamma_summary(array $variables) {
+function theme_graphicsmagick_gamma_summary(array $variables) {
   $data = $variables['data'];
   $summary = '';
 
@@ -69,7 +69,7 @@ function theme_graphicsmagick_effects_gamma_summary(array $variables) {
  *
  * @ingroup themeable
  */
-function theme_graphicsmagick_effects_noise_summary(array $variables) {
+function theme_graphicsmagick_noise_summary(array $variables) {
   $data = $variables['data'];
   $options = graphicsmagick_image_noise_options();
   $summary = '';
@@ -90,7 +90,7 @@ function theme_graphicsmagick_effects_noise_summary(array $variables) {
  *
  * @ingroup themeable
  */
-function theme_graphicsmagick_effects_oil_paint_summary(array $variables) {
+function theme_graphicsmagick_oil_paint_summary(array $variables) {
   $data = $variables['data'];
   $summary = '';
 
@@ -110,7 +110,7 @@ function theme_graphicsmagick_effects_oil_paint_summary(array $variables) {
  *
  * @ingroup themeable
  */
-function theme_graphicsmagick_effects_solarize_summary(array $variables) {
+function theme_graphicsmagick_solarize_summary(array $variables) {
   $data = $variables['data'];
   $summary = '';
 
@@ -130,8 +130,8 @@ function theme_graphicsmagick_effects_solarize_summary(array $variables) {
  *
  * @ingroup themeable
  */
-function theme_graphicsmagick_effects_spread_summary(array $variables) {
-  return theme('graphicsmagick_effects_oil_paint_summary', $variables);
+function theme_graphicsmagick_spread_summary(array $variables) {
+  return theme('graphicsmagick_oil_paint_summary', $variables);
 }
 
 /**
@@ -143,7 +143,7 @@ function theme_graphicsmagick_effects_spread_summary(array $variables) {
  *
  * @ingroup themeable
  */
-function theme_graphicsmagick_effects_swirl_summary(array $variables) {
+function theme_graphicsmagick_swirl_summary(array $variables) {
   $data = $variables['data'];
   $summary = '';
 

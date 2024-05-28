@@ -19,7 +19,7 @@ function graphicsmagick_requirements($phase) {
       $version = $version_array['versionString'] ?? ($version_array['versionNumber'] ?? NULL);
 
       $requirements['graphicsmagick_extension']['severity'] = REQUIREMENT_OK;
-      $requirements['graphicsmagick_extension']['value'] = (isset($version) ? $t('Version: %version', ['%version' => $version]) : $this->t('Version: unknown'));
+      $requirements['graphicsmagick_extension']['value'] = (isset($version) ? $t('Version: %version', ['%version' => $version]) : $t('Version: unknown'));
       $requirements['graphicsmagick_extension']['description'] = $t(
         'The <a href="@gmagick_link">Gmagick</a> extension has been enabled and loaded.',
         array('@gmagick_link' => 'https://www.php.net/manual/en/book.gmagick.php')
@@ -73,8 +73,8 @@ function graphicsmagick_requirements($phase) {
         ]
       );
     }
-    elseif (extension_loaded('gmagick') && !class_exists('Gmagick')) {
-      // In the case the Gmagick estension has been loaded, but the Gmagick
+    elseif (!class_exists('Gmagick')) {
+      // In the case the Gmagick extension has been loaded, but the Gmagick
       // class has not found, give a more specific error that explains that.
       $requirements['graphicsmagick_extension']['severity'] = REQUIREMENT_ERROR;
       $requirements['graphicsmagick_extension']['value'] = $t('Not found');
@@ -88,4 +88,16 @@ function graphicsmagick_requirements($phase) {
   }
 
   return $requirements;
+}
+
+/**
+ * Clear the image effect definitions cache.
+ */
+function graphicsmagick_update_1101() {
+  $cache = cache();
+  backdrop_static_reset('image_effect_definitions');
+
+  foreach (language_list(TRUE) as $lang_code => $language) {
+    $cache->delete("image_effect_definitions:$lang_code");
+  }
 }
