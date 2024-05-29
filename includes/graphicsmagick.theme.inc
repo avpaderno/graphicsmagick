@@ -28,19 +28,6 @@ function theme_graphicsmagick_effects_blur_summary(array $variables) {
 }
 
 /**
- * Returns HTML for the summary of the image emboss effect.
- *
- * @param array $variables
- *   An associative array containing:
- *   - data: The current configuration for the emboss effect.
- *
- * @ingroup themeable
- */
-function theme_graphicsmagick_effects_emboss_summary(array $variables) {
-  return theme('graphicsmagick_effects_blur_summary', $variables);
-}
-
-/**
  * Returns HTML for the summary of the image gamma effect.
  *
  * @param array $variables
@@ -114,24 +101,11 @@ function theme_graphicsmagick_effects_solarize_summary(array $variables) {
   $data = $variables['data'];
   $summary = '';
 
-  if ($data['radius']) {
+  if ($data['level']) {
     $summary = t('level @level', array('@level' => $data['level']));
   }
 
   return $summary;
-}
-
-/**
- * Returns HTML for the summary of the image spread effect.
- *
- * @param array $variables
- *   An associative array containing:
- *   - data: The current configuration for the spread effect.
- *
- * @ingroup themeable
- */
-function theme_graphicsmagick_effects_spread_summary(array $variables) {
-  return theme('graphicsmagick_effects_oil_paint_summary', $variables);
 }
 
 /**

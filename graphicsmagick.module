@@ -23,7 +23,7 @@ function graphicsmagick_image_effect_info() {
 
   $effects['graphicsmagick_effects_blur'] = array(
     'label' => t('Blur'),
-    'help' => t('This effect will make the image details less distinct. A Gaussian operator with the given radius and standard deviation (sigma) will be applied.'),
+    'help' => t('This effect will make the image details less distinct using a Gaussian operator.'),
     'dimensions passthrough' => TRUE,
     'form callback' => 'graphicsmagick_effects_blur_form',
     'effect callback' => 'graphicsmagick_effects_blur',
@@ -48,11 +48,11 @@ function graphicsmagick_image_effect_info() {
 
   $effects['graphicsmagick_effects_emboss'] = array(
     'label' => t('Emboss'),
-    'help' => t('This effect will convolve the image with a Gaussian operator, giving to the image a three-dimensional effect.'),
+    'help' => t('This effect will convolve the image using a Gaussian operator, giving the image a three-dimensional effect.'),
     'dimensions passthrough' => TRUE,
     'form callback' => 'graphicsmagick_effects_emboss_form',
     'effect callback' => 'graphicsmagick_effects_emboss',
-    'summary theme' => 'graphicsmagick_effects_emboss_summary',
+    'summary theme' => 'graphicsmagick_effects_blur_summary',
   );
 
   $effects['graphicsmagick_effects_enhance'] = array(
@@ -64,27 +64,27 @@ function graphicsmagick_image_effect_info() {
 
   $effects['graphicsmagick_effects_equalize'] = array(
     'label' => t('Equalize'),
-    'help' => t('This effect will enhance the image contrast.'),
+    'help' => t('This effect will equalize the image histogram.'),
     'dimensions passthrough' => TRUE,
-    'effect callback' => 'graphicsmagick_effects_enhance',
+    'effect callback' => 'graphicsmagick_effects_equalize',
   );
 
   $effects['graphicsmagick_effects_flip'] = array(
     'label' => t('Vertical mirror'),
-    'help' => t('This effect will create a vertical mirror image by reflecting the pixels around the central x-axis.'),
+    'help' => t('This effect will create a vertical mirror image.'),
     'dimensions passthrough' => TRUE,
     'effect callback' => 'graphicsmagick_effects_flip',
   );
 
   $effects['graphicsmagick_effects_flop'] = array(
-    'help' => t('This effect will create a horizontal mirror image by reflecting the pixels around the central y-axis.'),
+    'help' => t('This effect will create a horizontal mirror image.'),
     'dimensions passthrough' => TRUE,
     'effect callback' => 'graphicsmagick_effects_flop',
   );
 
   $effects['graphicsmagick_effects_gamma'] = array(
     'label' => t('Gamma'),
-    'help' => t("This effect will change the gamma values. The same image viewed on different devices will have perceptual differences on intensity."),
+    'help' => t("This effect will change the gamma values."),
     'dimensions passthrough' => TRUE,
     'form callback' => 'graphicsmagick_effects_gamma_form',
     'effect callback' => 'graphicsmagick_effects_gamma',
@@ -102,7 +102,7 @@ function graphicsmagick_image_effect_info() {
 
   $effects['graphicsmagick_effects_oil_paint'] = array(
     'label' => t('Oil paint'),
-    'help' => t('This effect will simulate an oil painting. Each pixel is replaced by the most frequent color occurring in a circular region defined by radius.'),
+    'help' => t('This effect will simulate an oil painting.'),
     'dimensions passthrough' => TRUE,
     'form callback' => 'graphicsmagick_effects_oil_paint_form',
     'effect callback' => 'graphicsmagick_effects_oil_paint',
@@ -111,7 +111,7 @@ function graphicsmagick_image_effect_info() {
 
   $effects['graphicsmagick_effects_solarize'] = array(
     'label' => t('Solarize'),
-    'help' => t('Solarize will apply a special effect to the image, similar to the effect achieved in a photo darkroom by selectively exposing areas of photo sensitive paper to light.'),
+    'help' => t('Solarize will apply an effect to the image, similar to the one achieved in a photo darkroom by selectively exposing areas of photo sensitive paper to light.'),
     'dimensions passthrough' => TRUE,
     'form callback' => 'graphicsmagick_effects_solarize_form',
     'effect callback' => 'graphicsmagick_effects_solarize',
@@ -120,15 +120,15 @@ function graphicsmagick_image_effect_info() {
 
   $effects['graphicsmagick_effects_spread'] = array(
     'label' => t('Spread'),
-    'help' => t('This effect will randomly displace each pixel in a block defined by the radius parameter.'),
+    'help' => t('This effect will randomly displace each pixel in a block defined by the radius.'),
     'form callback' => 'graphicsmagick_effects_spread_form',
     'effect callback' => 'graphicsmagick_effects_spread',
-    'summary theme' => 'graphicsmagick_effects_spread_summary',
+    'summary theme' => 'graphicsmagick_effects_oil_paint_summary',
   );
 
   $effects['graphicsmagick_effects_swirl'] = array(
     'label' => t('Swirl'),
-    'help' => t('This effect will swirl the pixels about the center of the image, where degrees indicates the sweep of the arc through which each pixel is moved.'),
+    'help' => t('This effect will swirl the pixels about the center of the image.'),
     'form callback' => 'graphicsmagick_effects_swirl_form',
     'effect callback' => 'graphicsmagick_effects_swirl',
     'summary theme' => 'graphicsmagick_effects_swirl_summary',
@@ -295,214 +295,6 @@ function image_graphicsmagick_toolkit_supported_extensions() {
 }
 
 /**
- * Scales an image to the specified size using the GraphicsMagick library.
- *
- * @param object $image
- *   An image object. The $image->info['width'] and $image->info['height']
- *   values will be modified by this call.
- * @param int $width
- *   The new width of the resized image, in pixels.
- * @param int $height
- *   The new height of the resized image, in pixels.
- * @param int|string $background
- *   A hexadecimal integer specifying the background color to use for the
- *   uncovered area of the image after the rotation, for example 0x000000 for
- *   black or 0xff00ff for magenta. The default value is 0xFFFFFF.
- *
- * @return bool
- *   TRUE or FALSE, based on success.
- *
- * @see image_resize()
- */
-function image_graphicsmagick_toolkit_resize($image, $width, $height, $background = NULL) {
-  $blur = graphicsmagick_toolkit_get_image_blur();
-  $filter = graphicsmagick_toolkit_get_image_filter();
-
-  try {
-    $color = Color::toHex($background);
-  }
-  catch (\InvalidArgumentException $e) {
-    watchdog_exception('graphicsmagick', $e);
-    return FALSE;
-  }
-
-  $effect = (new class {
-    public function __invoke($handler, $data) {
-      return $handler->resizeImage($data['width'], $data['height'], $data['filter'], $data['blur']);
-    }
-  });
-
-  try {
-    $background = Color::toHex($color);
-  }
-  catch (\InvalidArgumentException $e) {
-    watchdog_exception('graphicsmagick', $e);
-    return FALSE;
-  }
-
-  $data = array(
-    'width' => $width,
-    'height' => $height,
-    'background' => $background,
-    'blur' => $blur,
-    'filter' => $filter,
-  );
-  $result = graphicsmagick_image_effect($image, $effect, $data);
-
-  try {
-    // The following methods could throw an exception. In the case they do, use
-    // the width and height values passed to the method.
-    $new_width = $image->handler->getImageWidth();
-    $new_height = $image->handler->getImageHeight();
-  }
-  catch (GmagickException) {
-    $new_width = $width;
-    $new_height = $height;
-  }
-
-  $image->info['width'] = $new_width;
-  $image->info['height'] = $new_height;
-
-  return $result;
-}
-
-/**
- * Rotates an image the given number of degrees.
- *
- * @param object $image
- *   An image object. The $image->info['width'] and $image->info['height']
- *   values will be modified by this call.
- * @param int $degrees
- *   The number of (clockwise) degrees to rotate the image.
- * @param int|string $background
- *   A hexadecimal value specifying the background color to use for the
- *   uncovered area of the image after the rotation, for example 0x000000 for
- *   black or 0xff00ff for magenta. The default value is #FFFFFF.
- *
- * @return bool
- *   TRUE or FALSE, based on success.
- *
- * @see image_rotate()
- */
-function image_graphicsmagick_toolkit_rotate($image, $degrees, $background = NULL) {
-  try {
-    $color = Color::toHex($background);
-  }
-  catch (\InvalidArgumentException $e) {
-    watchdog_exception('graphicsmagick', $e);
-    return FALSE;
-  }
-
-  $data = array(
-    'color' => $color,
-    'degrees' => $degrees,
-  );
-  $effect = (new class {
-    public function __invoke($handler, $data) {
-      return $handler->rotateImage($data['color'], $data['degrees']);
-    }
-  });
-
-  return graphicsmagick_image_effect($image, $effect, $data);
-}
-
-/**
- * Crops an image using the GraphicsMagick library.
- *
- * @param object $image
- *   An image object. The $image->info['width'] and $image->info['height']
- *   values will be modified by this call.
- * @param int $x
- *   The starting x offset at which to start the crop, in pixels.
- * @param int $y
- *   The starting y offset at which to start the crop, in pixels.
- * @param int $width
- *   The width of the cropped area, in pixels.
- * @param int $height
- *   The height of the cropped area, in pixels.
- * @param int|string $background
- *   A hexadecimal value specifying the background color to use for the
- *   uncovered area of the image after the rotation, for example 0x000000 for
- *   black or 0xff00ff for magenta. The default value is #FFFFFF.
- *
- * @return bool
- *   TRUE or FALSE, based on success.
- *
- * @see image_crop()
- */
-function image_graphicsmagick_toolkit_crop($image, $x, $y, $width, $height, $background = NULL) {
-  try {
-    $color = Color::toHex($background);
-  }
-  catch (\InvalidArgumentException $e) {
-    watchdog_exception('graphicsmagick', $e);
-    return FALSE;
-  }
-
-  $data = array(
-    'background' => $color,
-    'width' => $width,
-    'height' => $height,
-    'x' => $x,
-    'y' => $y,
-  );
-  $effect = (new class {
-    public function __invoke($handler, $data) {
-      $handler = $handler->cropImage($data['width'], $data['height'], $data['x'], $data['y']);
-
-      // This method is not documented on
-      // https://www.php.net/manual/en/class.gmagick.php.
-      // Verify it is implemented before using it.
-      if (method_exists($handler, 'setImagePage')) {
-        $handler = $handler->setImagePage($data['width'], $data['height'], $data['x'], $data['y']);
-      }
-
-      return $handler;
-    }
-  });
-
-  $result = graphicsmagick_image_effect($image, $effect, $data);
-
-  try {
-    // The following methods could throw an exception. In the case they do, use
-    // the width and height values passed to the method.
-    $new_width = $image->handler->getImageWidth();
-    $new_height = $image->handler->getImageHeight();
-  }
-
-  catch (GmagickException) {
-    $new_width = $width;
-    $new_height = $height;
-  }
-
-  $image->info['width'] = $new_width;
-  $image->info['height'] = $new_height;
-
-  return TRUE;
-}
-
-/**
- * Converts an image to grayscale.
- *
- * @param object $image
- *   An image object.
- *
- * @return bool
- *   TRUE or FALSE, based on success.
- *
- * @see image_desaturate()
- */
-function image_graphicsmagick_toolkit_desaturate($image) {
-  $effect = (new class {
-    public function __invoke($handler, $data) {
-      return $handler->setImageType(Gmagick::IMGTYPE_GRAYSCALE);
-    }
-  });
-
-  return graphicsmagick_image_effect($image, $effect, array());
-}
-
-/**
  * Loads an image from a file.
  *
  * @param object $image
@@ -548,8 +340,6 @@ function image_graphicsmagick_toolkit_save($image, $destination) {
  *   keyed array containing information about the image:
  *   - "width": Width, in pixels.
  *   - "height": Height, in pixels.
- *   - "extension": Commonly used file extension for the image.
- *   - "mime_type": MIME type (for example 'image/jpeg' or 'image/gif').
  *
  * @see image_get_info()
  */
@@ -560,11 +350,11 @@ function image_graphicsmagick_toolkit_get_info($image) {
   );
 
   try {
-    $handler = new Gmagick(backdrop_realpath($image->source));
+    $handler = new \Gmagick(backdrop_realpath($image->source));
     $details['width'] = $handler->getImageWidth();
     $details['height'] = $handler->getImageHeight();
   }
-  catch (GmagickException) {
+  catch (\GmagickException) {
     // An exception has been thrown when trying to access the image information,
     // which could also mean the image file is corrupted. Return FALSE to signal
     // an error.
@@ -572,6 +362,475 @@ function image_graphicsmagick_toolkit_get_info($image) {
   }
 
   return $details;
+}
+
+/**
+ * Scales an image to the specified size using the GraphicsMagick library.
+ *
+ * @param object $image
+ *   An image object. The $image->info['width'] and $image->info['height']
+ *   values will be modified by this call.
+ * @param int $width
+ *   The new width of the resized image, in pixels.
+ * @param int $height
+ *   The new height of the resized image, in pixels.
+ * @param int|string $background
+ *   A hexadecimal integer specifying the background color to use for the
+ *   uncovered area of the image after the rotation, for example 0x000000 for
+ *   black or 0xff00ff for magenta. The default value is 0xFFFFFF.
+ *
+ * @return bool
+ *   TRUE or FALSE, based on success.
+ *
+ * @see image_resize()
+ */
+function image_graphicsmagick_toolkit_resize($image, $width, $height, $background = NULL) {
+  $blur = graphicsmagick_toolkit_get_image_blur();
+  $filter = graphicsmagick_toolkit_get_image_filter();
+
+  try {
+    $color = Color::toHex($background);
+  }
+  catch (\InvalidArgumentException $e) {
+    watchdog_exception('graphicsmagick', $e);
+    return FALSE;
+  }
+
+  $effect = (new class {
+    public function __invoke($handler, $width, $height, $background) {
+      return $handler->resizeImage($width, $height, $background, \Gmagick::FILTER_UNDEFINED, 0.88);
+    }
+  });
+
+  try {
+    $background = Color::toHex($color);
+  }
+  catch (\InvalidArgumentException $e) {
+    watchdog_exception('graphicsmagick', $e);
+    return FALSE;
+  }
+
+  $result = graphicsmagick_image_effect($image, $effect, $width, $height, $background);
+
+  try {
+    // The following methods could throw an exception. In the case they do, use
+    // the width and height values passed to the method.
+    $new_width = $image->handler->getImageWidth();
+    $new_height = $image->handler->getImageHeight();
+  }
+  catch (\GmagickException) {
+    $new_width = $width;
+    $new_height = $height;
+  }
+
+  $image->info['width'] = $new_width;
+  $image->info['height'] = $new_height;
+
+  return $result;
+}
+
+/**
+ * Rotates an image the given number of degrees.
+ *
+ * @param object $image
+ *   An image object. The $image->info['width'] and $image->info['height']
+ *   values will be modified by this call.
+ * @param int $degrees
+ *   The number of (clockwise) degrees to rotate the image.
+ * @param int|string $background
+ *   A hexadecimal value specifying the background color to use for the
+ *   uncovered area of the image after the rotation, for example 0x000000 for
+ *   black or 0xff00ff for magenta. The default value is #FFFFFF.
+ *
+ * @return bool
+ *   TRUE or FALSE, based on success.
+ *
+ * @see image_rotate()
+ */
+function image_graphicsmagick_toolkit_rotate($image, $degrees, $background = NULL) {
+  try {
+    $color = Color::toHex($background);
+  }
+  catch (\InvalidArgumentException $e) {
+    watchdog_exception('graphicsmagick', $e);
+    return FALSE;
+  }
+
+  $effect = (new class {
+    public function __invoke($handler, $degrees, $background) {
+      return $handler->rotateImage($degrees, $background);
+    }
+  });
+
+  return graphicsmagick_image_effect($image, $effect, $degrees, $background);
+}
+
+/**
+ * Crops an image using the GraphicsMagick library.
+ *
+ * @param object $image
+ *   An image object. The $image->info['width'] and $image->info['height']
+ *   values will be modified by this call.
+ * @param int $x
+ *   The starting x offset at which to start the crop, in pixels.
+ * @param int $y
+ *   The starting y offset at which to start the crop, in pixels.
+ * @param int $width
+ *   The width of the cropped area, in pixels.
+ * @param int $height
+ *   The height of the cropped area, in pixels.
+ *
+ * @return bool
+ *   TRUE or FALSE, based on success.
+ *
+ * @see image_crop()
+ */
+function image_graphicsmagick_toolkit_crop($image, $x, $y, $width, $height) {
+  $effect = (new class {
+    public function __invoke($handler, $x, $y, $width, $height) {
+      $handler = $handler->cropImage($width, $height, $x, $y);
+
+      // This method is not documented on
+      // https://www.php.net/manual/en/class.gmagick.php.
+      // Verify it is implemented before using it.
+      if (method_exists($handler, 'setImagePage')) {
+        $handler = $handler->setImagePage($width, $height, $x, $y);
+      }
+
+      return $handler;
+    }
+  });
+
+  $result = graphicsmagick_image_effect($image, $effect, $x, $y, $width, $height);
+
+  try {
+    // The following methods could throw an exception. In the case they do, use
+    // the width and height values passed to the method.
+    $new_width = $image->handler->getImageWidth();
+    $new_height = $image->handler->getImageHeight();
+  }
+
+  catch (\GmagickException) {
+    $new_width = $width;
+    $new_height = $height;
+  }
+
+  $image->info['width'] = $new_width;
+  $image->info['height'] = $new_height;
+
+  return TRUE;
+}
+
+/**
+ * Converts an image to grayscale.
+ *
+ * @param object $image
+ *   An image object.
+ *
+ * @return bool
+ *   TRUE or FALSE, based on success.
+ *
+ * @see image_desaturate()
+ */
+function image_graphicsmagick_toolkit_desaturate($image) {
+  $effect = (new class {
+    public function __invoke($handler) {
+      return $handler->setImageType(Gmagick::IMGTYPE_GRAYSCALE);
+    }
+  });
+
+  return graphicsmagick_image_effect($image, $effect);
+}
+
+/**
+ * Blurs an image.
+ *
+ * @param object $image
+ *   An image object.
+ * @param $radius
+ *   A float representing the Gaussian radius.
+ * @param $sigma
+ *   A float representing the Gaussian sigma.
+ *
+ * @return bool
+ *   TRUE or FALSE, based on success.
+ */
+function image_graphicsmagick_toolkit_blur($image, $radius, $sigma) {
+  $effect = (new class {
+    public function __invoke($handler, $radius, $sigma) {
+      return $handler->blurImage($radius, $sigma);
+    }
+  });
+
+  return graphicsmagick_image_effect($image, $effect, $radius, $sigma);
+}
+
+/**
+ * Reduces the speckle noise in an image.
+ *
+ * @param object $image
+ *   An image object.
+ *
+ * @return bool
+ *   TRUE or FALSE, based on success.
+ */
+function image_graphicsmagick_toolkit_despeckle($image) {
+  $effect = (new class {
+    public function __invoke($handler) {
+      return $handler->despeckleImage();
+    }
+  });
+
+  return graphicsmagick_image_effect($image, $effect);
+}
+
+/**
+ * Enhances the image edges.
+ *
+ * @param object $image
+ *   An image object.
+ * @param $radius
+ *   The operation radius.
+ *
+ * @return bool
+ *   TRUE or FALSE, based on success.
+ */
+function image_graphicsmagick_toolkit_edge($image, $radius) {
+  $effect = (new class {
+    public function __invoke($handler, $radius) {
+      return $handler->edgeImage($radius);
+    }
+  });
+
+  return graphicsmagick_image_effect($image, $effect, $radius);
+}
+
+/**
+ * Embosses an image.
+ *
+ * @param object $image
+ *   An image object.
+ * @param $radius
+ *   A float representing the Gaussian radius.
+ * @param $sigma
+ *   A float representing the Gaussian sigma.
+ *
+ * @return bool
+ *   TRUE on success, FALSE on failure to apply the effect.
+ */
+function image_graphicsmagick_toolkit_emboss($image, $radius, $sigma) {
+  $effect = (new class {
+    public function __invoke($handler, $radius, $sigma) {
+      return $handler->embossImage($radius, $sigma);
+    }
+  });
+
+  return graphicsmagick_image_effect($image, $effect, $radius, $sigma);
+}
+
+/**
+ * Enhances an image.
+ *
+ * @param object $image
+ *   An image object.
+ *
+ * @return bool
+ *   TRUE on success, FALSE on failure to blur the image.
+ */
+function image_graphicsmagick_toolkit_enhance($image) {
+  $effect = (new class {
+    public function __invoke($handler) {
+      return $handler->enhanceImage();
+    }
+  });
+
+  return graphicsmagick_image_effect($image, $effect);
+}
+
+/**
+ * Equalizes an image.
+ *
+ * @param object $image
+ *   An image object.
+ *
+ * @return bool
+ *   TRUE on success, FALSE on failure to apply the effect.
+ */
+function image_graphicsmagick_toolkit_equalize($image) {
+  $effect = (new class {
+    public function __invoke($handler) {
+      return $handler->equalizeImage();
+    }
+  });
+
+  return graphicsmagick_image_effect($image, $effect);
+}
+
+/**
+ * Creates a vertical mirror image.
+ *
+ * @param object $image
+ *   An image object.
+ *
+ * @return bool
+ *   TRUE on success, FALSE on failure to apply the effect.
+ */
+function image_graphicsmagick_toolkit_flip($image) {
+  $effect = (new class {
+    public function __invoke($handler) {
+      return $handler->flipImage();
+    }
+  });
+
+  return graphicsmagick_image_effect($image, $effect);
+}
+
+/**
+ * Creates a horizontal mirror image.
+ *
+ * @param object $image
+ *   An image object.
+ *
+ * @return bool
+ *   TRUE on success, FALSE on failure to apply the effect.
+ */
+function image_graphicsmagick_toolkit_flop($image) {
+  $effect = (new class {
+    public function __invoke($handler) {
+      return $handler->flopImage();
+    }
+  });
+
+  return graphicsmagick_image_effect($image, $effect);
+}
+
+/**
+ * Changes the image gamma value.
+ *
+ * @param object $image
+ *   An image object.
+ * @param $gamma
+ *   A float representing the new gamma value.
+ *
+ * @return bool
+ *   TRUE on success, FALSE on failure to apply the effect.
+ */
+function image_graphicsmagick_toolkit_gamma($image, $gamma) {
+  $effect = (new class {
+    public function __invoke($handler, $gamma) {
+      return $handler->gammaImage($gamma);
+    }
+  });
+
+  return graphicsmagick_image_effect($image, $effect, $gamma);
+}
+
+/**
+ * Adds random noise.
+ *
+ * @param object $image
+ *   An image object.
+ * @param $noise
+ *   The noise type.
+ *
+ * @return bool
+ *   TRUE on success, FALSE on failure to apply the effect.
+ */
+function image_graphicsmagick_toolkit_noise($image, $noise) {
+  $effect = (new class {
+    public function __invoke($handler, $noise) {
+      return $handler->addNoiseImage($noise);
+    }
+  });
+
+  return graphicsmagick_image_effect($image, $effect, $noise);
+}
+
+/**
+ * Image effect callback; simulate an oil painting.
+ *
+ * @param object $image
+ *   An image object.
+ * @param $radius
+ *   A float representing the radius of the circular region used to calculate
+ *   the most frequent color.
+ *
+ * @return bool
+ *   TRUE on success, FALSE on failure to apply the effect.
+ */
+function image_graphicsmagick_toolkit_oil_paint($image, $radius) {
+  $effect = (new class {
+    public function __invoke($handler, $data) {
+      return $handler->oilPaintImage($radius);
+    }
+  });
+
+  return graphicsmagick_image_effect($image, $effect, $radius);
+}
+
+/**
+ * Simulates a solarize effect.
+ *
+ * @param object $image
+ *   An image object.
+ * @param $level
+ *   An integer representing the level of the effect.
+ *
+ * @return bool
+ *   TRUE on success, FALSE on failure to apply the effect.
+ */
+function image_graphicsmagick_toolkit_solarize($image, $level) {
+  $effect = (new class {
+    public function __invoke($handler, $level) {
+      return $handler->solarizeImage($level);
+    }
+  });
+
+  return graphicsmagick_image_effect($image, $effect, $level);
+}
+
+/**
+ * Randomly displaces each pixel in a circular region.
+ *
+ * @.param object $image
+ *   An image object.
+ * @param $radius
+ *   A float representing the radius of the circular region where the pixels are
+ *   randomly displaced.
+ *
+ * @return bool
+ *   TRUE on success, FALSE on failure to apply the effect.
+ */
+function image_graphicsmagick_toolkit_spread($image, $radius) {
+  $effect = (new class {
+    public function __invoke($handler, $radius) {
+      return $handler->spreadImage($radius);
+    }
+  });
+
+  return graphicsmagick_image_effect($image, $effect, $radius);
+}
+
+/**
+ * Swirls the pixels about the center of the image.
+ *
+ * @param object $image
+ *   An image object.
+ * @param $degrees
+ *   A float representing the sweep of the arc through which each pixel is
+ *   moved.
+ *
+ * @return bool
+ *   TRUE on success, FALSE on failure to apply the effect.
+ */
+function image_graphicsmagick_toolkit_swirl($image, $degrees) {
+  $effect = (new class {
+    public function __invoke($handler, $degrees) {
+      return $handler->swirlImage($degrees);
+    }
+  });
+
+  return graphicsmagick_image_effect($image, $effect, $degrees);
 }
 
 /**
@@ -615,7 +874,7 @@ function graphicsmagick_effects_blur_form(array $data) {
  * @param object $image
  *   An image object.
  * @param array $data
- *   An array of attributes to use when performing the bluring effect with the
+ *   An array of attributes to use when performing the blur effect with the
  *   following items:
  *   - "radius": A float representing the Gaussian radius.
  *   - "sigma": A float representing the Gaussian sigma.
@@ -624,13 +883,7 @@ function graphicsmagick_effects_blur_form(array $data) {
  *   TRUE on success, FALSE on failure to apply the effect.
  */
 function graphicsmagick_effects_blur($image, array $data) {
-  $effect = (new class {
-    public function __invoke($handler, $data) {
-      return $handler->blurImage($data['radius'], $data['sigma']);
-    }
-  });
-
-  return graphicsmagick_image_effect($image, $effect, $data);
+  return image_toolkit_invoke('blur', $image, array_values($data));
 }
 
 /**
@@ -638,21 +891,12 @@ function graphicsmagick_effects_blur($image, array $data) {
  *
  * @param object $image
  *   An image object.
- * @param array $data
- *   An array of attributes to use when despeckling the image. No attributes are
- *   currently used for this effect.
  *
  * @return bool
  *   TRUE on success, FALSE on failure to apply the effect.
  */
-function graphicsmagick_effects_despeckle($image, array $data) {
-  $effect = (new class {
-    public function __invoke($handler, $data) {
-      return $handler->despeckleImage();
-    }
-  });
-
-  return graphicsmagick_image_effect($image, $effect, $data);
+function graphicsmagick_effects_despeckle($image) {
+  return image_toolkit_invoke('despeckle', $image);
 }
 
 /**
@@ -685,22 +929,14 @@ function graphicsmagick_effects_edge_form(array $data) {
  *
  * @param object $image
  *   An image object.
- * @param array $data
- *   An array of attributes to use when enhancing the image edges with the
- *   following items:
- *   - "radius": The operation radius.
+ * @param $radius
+ *   The operation radius.
  *
  * @return bool
  *   TRUE on success, FALSE on failure to apply the effect.
  */
 function graphicsmagick_effects_edge($image, array $data) {
-  $effect = (new class {
-    public function __invoke($handler, $data) {
-      return $handler->edgeImage($data['radius']);
-    }
-  });
-
-  return graphicsmagick_image_effect($image, $effect, $data);
+  return image_toolkit_invoke('edge', $image, array_values($data));
 }
 
 /**
@@ -753,13 +989,7 @@ function graphicsmagick_effects_emboss_form(array $data) {
  *   TRUE on success, FALSE on failure to apply the effect.
  */
 function graphicsmagick_effects_emboss($image, array $data) {
-  $effect = (new class {
-    public function __invoke($handler, $data) {
-      return $handler->embossImage($data['radius'], $data['sigma']);
-    }
-  });
-
-  return graphicsmagick_image_effect($image, $effect, $data);
+  return image_toolkit_invoke('emboss', $image, array_values($data));
 }
 
 /**
@@ -775,13 +1005,7 @@ function graphicsmagick_effects_emboss($image, array $data) {
  *   TRUE on success, FALSE on failure to blur the image.
  */
 function graphicsmagick_effects_enhance($image, array $data) {
-  $effect = (new class {
-    public function __invoke($handler, $data) {
-      return $handler->enhanceImage();
-    }
-  });
-
-  return graphicsmagick_image_effect($image, $effect, $data);
+  return image_toolkit_invoke('enhance', $image, array_values($data));
 }
 
 /**
@@ -797,13 +1021,7 @@ function graphicsmagick_effects_enhance($image, array $data) {
  *   TRUE on success, FALSE on failure to apply the effect.
  */
 function graphicsmagick_effects_equalize($image, array $data) {
-  $effect = (new class {
-    public function __invoke($handler, $data) {
-      return $handler->equalizeImage();
-    }
-  });
-
-  return graphicsmagick_image_effect($image, $effect, $data);
+  return image_toolkit_invoke('equalize', $image, array_values($data));
 }
 
 /**
@@ -819,14 +1037,7 @@ function graphicsmagick_effects_equalize($image, array $data) {
  *   TRUE on success, FALSE on failure to apply the effect.
  */
 function graphicsmagick_effects_flip($image, array $data) {
-  $effect = (new class {
-    public function __invoke($handler, $data) {
-      return $handler->flipImage();
-    }
-  });
-
-  return graphicsmagick_image_effect($image, $effect, $data);
-}
+  return image_toolkit_invoke('flip', $image, array_values($data));}
 
 /**
  * Image effect callback; create a horizontal mirror image.
@@ -841,13 +1052,7 @@ function graphicsmagick_effects_flip($image, array $data) {
  *   TRUE on success, FALSE on failure to apply the effect.
  */
 function graphicsmagick_effects_flop($image, array $data) {
-  $effect = (new class {
-    public function __invoke($handler, $data) {
-      return $handler->flopImage();
-    }
-  });
-
-  return graphicsmagick_image_effect($image, $effect, $data);
+  return image_toolkit_invoke('flop', $image, array_values($data));
 }
 
 /**
@@ -889,13 +1094,7 @@ function graphicsmagick_effects_gamma_form(array $data) {
  *   TRUE on success, FALSE on failure to apply the effect.
  */
 function graphicsmagick_effects_gamma($image, array $data) {
-  $effect = (new class {
-    public function __invoke($handler, $data) {
-      return $handler->gammaImage($data['gamma']);
-    }
-  });
-
-  return graphicsmagick_image_effect($image, $effect, $data);
+  return image_toolkit_invoke('gamma', $image, array_values($data));
 }
 
 /**
@@ -935,13 +1134,7 @@ function graphicsmagick_effects_noise_form(array $data) {
  *   TRUE on success, FALSE on failure to apply the effect.
  */
 function graphicsmagick_effects_noise($image, array $data) {
-  $effect = (new class {
-    public function __invoke($handler, $data) {
-      return $handler->addNoiseImage($data['radius']);
-    }
-  });
-
-  return graphicsmagick_image_effect($image, $effect, $data);
+  return image_toolkit_invoke('noise', $image, array_values($data));
 }
 
 /**
@@ -984,13 +1177,7 @@ function graphicsmagick_effects_oil_paint_form(array $data) {
  *   TRUE on success, FALSE on failure to apply the effect.
  */
 function graphicsmagick_effects_oil_paint($image, array $data) {
-  $effect = (new class {
-    public function __invoke($handler, $data) {
-      return $handler->oilPaintImage($data['radius']);
-    }
-  });
-
-  return graphicsmagick_image_effect($image, $effect, $data);
+  return image_toolkit_invoke('oil_paint', $image, array_values($data));
 }
 
 /**
@@ -1043,13 +1230,7 @@ function graphicsmagick_effects_solarize_form(array $data) {
  *   TRUE on success, FALSE on failure to apply the effect.
  */
 function graphicsmagick_effects_solarize($image, array $data) {
-  $effect = (new class {
-    public function __invoke($handler, $data) {
-      return $handler->solarizeImage($data['level']);
-    }
-  });
-
-  return graphicsmagick_image_effect($image, $effect, $data);
+  return image_toolkit_invoke('solarize', $image, array_values($data));
 }
 
 /**
@@ -1092,13 +1273,7 @@ function graphicsmagick_effects_spread_form(array $data) {
  *   TRUE on success, FALSE on failure to apply the effect.
  */
 function graphicsmagick_effects_spread($image, array $data) {
-  $effect = (new class {
-    public function __invoke($handler, $data) {
-      return $handler->spreadImage($data['radius']);
-    }
-  });
-
-  return graphicsmagick_image_effect($image, $effect, $data);
+  return image_toolkit_invoke('spread', $image, array_values($data));
 }
 
 /**
@@ -1127,7 +1302,7 @@ function graphicsmagick_effects_swirl_form(array $data) {
 }
 
 /**
- * Image effect callback; randomly displace each pixel in a circular region.
+ * Image effect callback; swirl the pixels about the center of the image.
  *
  * @param object $image
  *   An image object.
@@ -1141,13 +1316,7 @@ function graphicsmagick_effects_swirl_form(array $data) {
  *   TRUE on success, FALSE on failure to apply the effect.
  */
 function graphicsmagick_effects_swirl($image, array $data) {
-  $effect = (new class {
-    public function __invoke($handler, $data) {
-      return $handler->swirlImage($data['degrees']);
-    }
-  });
-
-  return graphicsmagick_image_effect($image, $effect, $data);
+  return image_toolkit_invoke('swirl', $image, array_values($data));
 }
 
 /**
@@ -1590,7 +1759,7 @@ function graphicsmagick_image_format_to_mime_type($format) {
  * @return bool
  *   TRUE on success, FALSE on failure to apply the effect.
  */
-function graphicsmagick_image_effect($image, callable $effect, array $data) {
+function graphicsmagick_image_effect($image, callable $effect, ...$data) {
   if (isset($image->handler) && !is_a($image->handler, 'Gmagick')) {
     // $image->handler has been already set, but it is not a Gmagick instance.
     // To avoid conflicts with other modules, avoid to save the image and return
@@ -1612,16 +1781,6 @@ function graphicsmagick_image_effect($image, callable $effect, array $data) {
     // the original image handler and its state is preserved.
     $handler = clone $image->handler;
 
-    if (isset($data['background'])) {
-      $background = $data['background'];
-
-      // Remove the background value to avoid to pass it to the effect callable.
-      unset($data['background']);
-
-      $original_background = $handler->getImageBackgroundColor();
-      $handler->setImageBackgroundColor($background);
-    }
-
     if ($handler->getNumberImages() > 1) {
       $handler = $handler->coalesceImages();
 
@@ -1635,32 +1794,18 @@ function graphicsmagick_image_effect($image, callable $effect, array $data) {
       $handler = $effect($handler, $data);
     }
   }
-  catch (GmagickException $e) {
+  catch (\GmagickException $e) {
     watchdog_exception('graphicsmagick', $e);
 
     try {
       $handler->destroy();
     }
-    catch(GmagickException) {
-      // Gmagick::destroy() can throw an exception, but nothing can be done to
+    catch (\GmagickException) {
+      // \Gmagick::destroy() can throw an exception, but nothing can be done to
       // fix that.
     }
 
     return FALSE;
-  }
-
-  try {
-    if (isset($original_background)) {
-      $handler->setImageBackgroundColor($original_background);
-    }
-
-    $image->handler->destroy();
-  }
-  catch (GmagickException) {
-    // Either Gmagick::setImageBackgroundColor() or Gmagick::destroy() can throw
-    // an exception, but nothing can be done to fix that.
-    // Failure to change back the background color or destroy the unused Gmagick
-    // instance is not considered a failure of the image effect.
   }
 
   $image->handler = $handler;
