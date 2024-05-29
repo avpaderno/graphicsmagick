@@ -150,21 +150,14 @@ function graphicsmagick_image_toolkits() {
 }
 
 /**
- * Implements hook_modules_enabled().
+ * Implements hook_system_info_alter().
  */
-function graphicsmagick_modules_enabled($modules) {
-  if (in_array('graphicsmagick_effects', $modules)) {
-    $path = backdrop_get_path('module', 'graphicsmagick_effects');
-    backdrop_set_message(
-      t(
-        'The contributed <em>GraphicsMagick Effects</em> module located at %path is no longer necessary, since its functionality is now provided by the <em>GraphicsMagick</em> module. It is recommended to remove the <em>GraphicsMagick Effects</em> module from your site.',
-        array('%path' => BACKDROP_ROOT . "/$path")
-      ),
-      'warning'
-    );
-
+function graphicsmagick_system_info_alter(&$info, $file, $type) {
+  if ($type == 'module' && $file->name == 'graphicsmagick_effects' && !module_exists('graphicsmagick_effects')) {
+    $info['disabled'] = TRUE;
   }
 }
+
 /**
  * Implements hook_theme().
  */
