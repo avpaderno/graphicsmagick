@@ -87,6 +87,18 @@ function graphicsmagick_requirements($phase) {
     }
   }
 
+  if ($phase == 'runtime' && module_exists('graphicsmagick_effects')) {
+    // Give a warning if the GraphicsMagick Effects module is installed.
+    $path = backdrop_get_path('module', 'graphicsmagick_effects');
+    $requirements['graphicsmagick_effects']['title'] = $t('GraphicMagick Effects');
+    $requirements['graphicsmagick_effects']['severity'] = REQUIREMENT_WARNING;
+    $requirements['graphicsmagick_effects']['value'] = $t('Installed');
+    $requirements['graphicsmagick_effects']['description'] = $t(
+      'The contributed <em>GraphicsMagick Effects</em> module located at %path is no longer necessary, since its functionality is now provided by the <em>GraphicsMagick</em> module. It is recommended to !operation the <em>GraphicsMagick Effects</em> module from your site.',
+      array('!operation' => t('uninstall'), '%path' => BACKDROP_ROOT . "/$path")
+    );
+  }
+
   return $requirements;
 }
 
@@ -101,7 +113,7 @@ function graphicsmagick_update_1101() {
     backdrop_set_message(
       t(
         'The contributed <em>GraphicsMagick Effects</em> module located at %path is no longer necessary, since its functionality is now provided by the <em>GraphicsMagick</em> module. It is recommended to remove the <em>GraphicsMagick Effects</em> module from your site.',
-        array('%path' => BACKDROP_ROOT . "/$path")
+        array('!operation' => t('remove'), '%path' => BACKDROP_ROOT . "/$path")
       ),
       'warning'
     );
