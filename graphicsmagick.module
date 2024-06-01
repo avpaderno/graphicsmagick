@@ -184,24 +184,6 @@ function graphicsmagick_theme() {
  * Retrieves settings for the GraphicsMagick toolkit.
  */
 function image_graphicsmagick_toolkit_settings() {
-  $form['graphicsmagick_toolkit_image_blur'] = array(
-    '#type' => 'number',
-    '#title' => t('Image blur'),
-    '#description' => t('The image blur (from 0.0 to 2.0). Values higher than 1.0 make the image blurry, while values lower than 1.0 make the image sharper.'),
-    '#default_value' => graphicsmagick_toolkit_get_image_blur(),
-    '#min' => 0.0,
-    '#max' => 2.0,
-    '#step' => 0.2,
-  );
-
-  $form['graphicsmagick_toolkit_image_filter'] = array(
-    '#type' => 'select',
-    '#title' => t('Image filter'),
-    '#description' => t('The image filter applied to the image. By default no filter is applied when an image is resized. For a better effect, choose Lanczos or Mitchell.'),
-    '#options' => graphicsmagick_image_filter_options(),
-    '#default_value' => graphicsmagick_toolkit_get_image_filter(),
-  );
-
   $form['graphicsmagick_toolkit_jpeg_quality'] = array(
     '#type' => 'number',
     '#title' => t('JPEG quality'),
@@ -358,7 +340,7 @@ function image_graphicsmagick_toolkit_get_info($image) {
     // An exception has been thrown when trying to access the image information,
     // which could also mean the image file is corrupted. Return FALSE to signal
     // an error.
-      return FALSE;
+    return FALSE;
   }
 
   return $details;
@@ -1257,7 +1239,7 @@ function graphicsmagick_effects_spread_form(array $data) {
  * @param array $data
  *   An array of attributes to use when applying the effect with the following
  *   items:
- *   - "radius":  A float representing the radius of the circular region
+ *   - "radius": A float representing the radius of the circular region
  *     where the pixels are randomly displaced.
  *
  * @return bool
@@ -1300,7 +1282,7 @@ function graphicsmagick_effects_swirl_form(array $data) {
  * @param array $data
  *   An array of attributes to use when applying the effect with the following
  *   items:
- *   - "degrees":  A float representing the sweep of the arc through which each
+ *   - "degrees": A float representing the sweep of the arc through which each
  *     pixel is moved.
  *
  * @return bool
@@ -1338,32 +1320,6 @@ function graphicsmagick_toolkit_get_png_compression() {
   // If the PNG compression value hasn't been set, return 99 instead of 0, which
   // is a better compression value to use by default.
   return $value ?? 99;
-}
-
-/**
- * Returns the blur value required by some image manipulation methods.
- *
- * @return float
- *   A value between 0.0 and 2.0 where 1.0 is the default value.
- */
-function graphicsmagick_toolkit_get_image_blur() {
-  $value = config_get('graphicsmagick_toolkit_image_blur');
-
-  // If the blur value hasn't been set, return 1.0 instead of 0.
-  return $value ?? 1.0;
-}
-
-/**
- * Returns the filter to use in some image manipulation methods.
- *
- * @return int
- *   The filter value set in the settings form.
- */
-function graphicsmagick_toolkit_get_image_filter() {
-  $value = config_get('graphicsmagick_toolkit_image_filter');
-
-  // If  the filter value hasn't been set, return Gmagick::FILTER_LANCZOS.
-  return $value ?? Gmagick::FILTER_LANCZOS;
 }
 
 /**
@@ -1510,34 +1466,6 @@ function graphicsmagick_image_format($image) {
   $image->format = $format;
 
   return $format;
-}
-
-/**
- * Returns the option array for the filters implemented by the Gmagick class.
- *
- * @return array
- *   An array whose keys are the Gmagick::FILTER_* constants and the values are
- *   the filter names to shown in forms.
- */
-function graphicsmagick_image_filter_options() {
-  return array(
-    Gmagick::FILTER_UNDEFINED => t('None'),
-    Gmagick::FILTER_POINT => t('Point'),
-    Gmagick::FILTER_BOX => t('Box'),
-    Gmagick::FILTER_TRIANGLE => t('Triangle'),
-    Gmagick::FILTER_HERMITE => t('Hermite'),
-    Gmagick::FILTER_HANNING => t('Hanning'),
-    Gmagick::FILTER_HAMMING => t('Hamming'),
-    Gmagick::FILTER_BLACKMAN => t('Blackman'),
-    Gmagick::FILTER_GAUSSIAN => t('Gaussian'),
-    Gmagick::FILTER_QUADRATIC => t('Quadratic'),
-    Gmagick::FILTER_CUBIC => t('Cubic'),
-    Gmagick::FILTER_CATROM => t('Catmull-Rom'),
-    Gmagick::FILTER_MITCHELL => t('Mitchell'),
-    Gmagick::FILTER_LANCZOS => t('Lanczos'),
-    Gmagick::FILTER_BESSEL => t('Bessel'),
-    Gmagick::FILTER_SINC => t('Sinc'),
-  );
 }
 
 /**
@@ -1849,7 +1777,7 @@ function graphicsmagick_image_save($image, $destination) {
 
     $image->handler->writeImage(backdrop_realpath($destination), $image->handler->getNumberImages() > 1);
     return TRUE;
-  } catch (GmagickException) {
+  } catch (\GmagickException) {
     return FALSE;
   }
 }
