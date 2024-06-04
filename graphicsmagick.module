@@ -152,7 +152,7 @@ function graphicsmagick_image_toolkits(): array {
 /**
  * Implements hook_system_info_alter().
  */
-function graphicsmagick_system_info_alter(&$info, $file, $type): void {
+function graphicsmagick_system_info_alter(array &$info, object $file, string $type): void {
   if ($type == 'module' && $file->name == 'graphicsmagick_effects' && !module_exists('graphicsmagick_effects')) {
     $info['disabled'] = TRUE;
   }
@@ -1111,7 +1111,7 @@ function graphicsmagick_effects_noise_form(array $data): array {
  * @return bool
  *   TRUE on success, FALSE on failure to apply the effect.
  */
-function graphicsmagick_effects_noise($image, array $data): bool {
+function graphicsmagick_effects_noise(object $image, array $data): bool {
   return image_toolkit_invoke('noise', $image, array_values($data));
 }
 
