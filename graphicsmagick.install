@@ -7,7 +7,7 @@
 /**
  * Implements hook_requirements().
  */
-function graphicsmagick_requirements($phase) {
+function graphicsmagick_requirements($phase): array {
   $requirements = array();
 
   // Ensure translations don't break during installation.
@@ -105,7 +105,7 @@ function graphicsmagick_requirements($phase) {
 /**
  * Uninstall the GraphicsMagick Effects module.
  */
-function graphicsmagick_update_1101() {
+function graphicsmagick_update_1101(): void {
   if (module_exists('graphicsmagick_effects')) {
     $path = backdrop_get_path('module', 'graphicsmagick_effects');
 
@@ -123,7 +123,7 @@ function graphicsmagick_update_1101() {
 /**
  * Clear the image effect definitions cache.
  */
-function graphicsmagick_update_1102() {
+function graphicsmagick_update_1102(): void {
   backdrop_static_reset('image_effect_definitions');
   cache()->deletePrefix('image_effect_definitions:');
 }
