@@ -1148,7 +1148,7 @@ function graphicsmagick_effects_oil_paint_form(array $data): array {
  * @param array $data
  *   An array of attributes to use when applying the effect with the following
  *   items:
- *   - "radius": The radius of the circular region used  to calculate the most
+ *   - "radius": The radius of the circular region used to calculate the most
  *     frequently used color.
  *
  * @return bool
