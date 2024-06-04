@@ -849,8 +849,8 @@ function graphicsmagick_effects_blur_form(array $data): array {
  * @param array $data
  *   An array of attributes to use when performing the blur effect with the
  *   following items:
- *   - "radius": A float representing the Gaussian radius.
- *   - "sigma": A float representing the Gaussian sigma.
+ *   - "radius": The Gaussian radius.
+ *   - "sigma": The Gaussian sigma.
  *
  * @return bool
  *   TRUE on success, FALSE on failure to apply the effect.
@@ -959,8 +959,8 @@ function graphicsmagick_effects_emboss_form(array $data): array {
  * @param array $data
  *   An array of attributes to use when performing the emboss effect with the
  *   following items:
- *   - "radius": A float representing the Gaussian radius.
- *   - "sigma": A float representing the Gaussian sigma.
+ *   - "radius": The Gaussian radius.
+ *   - "sigma": The Gaussian sigma.
  *
  * @return bool
  *   TRUE on success, FALSE on failure to apply the effect.
@@ -1066,7 +1066,7 @@ function graphicsmagick_effects_gamma_form(array $data): array {
  * @param array $data
  *   An array of attributes to use when changing the gamma value with the
  *   following items:
- *   - "gamma": A float representing the new gamma value.
+ *   - "gamma": The new gamma value.
  *
  * @return bool
  *   TRUE on success, FALSE on failure to apply the effect.
@@ -1148,8 +1148,8 @@ function graphicsmagick_effects_oil_paint_form(array $data): array {
  * @param array $data
  *   An array of attributes to use when applying the effect with the following
  *   items:
- *   - "radius": A float representing the radius of the circular region used
- *     to calculate the most frequent color.
+ *   - "radius": The radius of the circular region used  to calculate the most
+ *     frequently used color.
  *
  * @return bool
  *   TRUE on success, FALSE on failure to apply the effect.
@@ -1244,8 +1244,8 @@ function graphicsmagick_effects_spread_form(array $data): array {
  * @param array $data
  *   An array of attributes to use when applying the effect with the following
  *   items:
- *   - "radius": A float representing the radius of the circular region
- *     where the pixels are randomly displaced.
+ *   - "radius": The radius of the circular region where the pixels are randomly
+ *     displaced.
  *
  * @return bool
  *   TRUE on success, FALSE on failure to apply the effect.
@@ -1287,8 +1287,7 @@ function graphicsmagick_effects_swirl_form(array $data): array {
  * @param array $data
  *   An array of attributes to use when applying the effect with the following
  *   items:
- *   - "degrees": A float representing the sweep of the arc through which each
- *     pixel is moved.
+ *   - "degrees": The sweep of the arc through which each pixel is moved.
  *
  * @return bool
  *   TRUE on success, FALSE on failure to apply the effect.
