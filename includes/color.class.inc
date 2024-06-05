@@ -1,6 +1,6 @@
 <?php
 
-namespace \graphicsmagick\Utility;
+namespace graphicsmagick\Utility;
 
 /**
  * Performs color conversions.
@@ -18,7 +18,7 @@ class Color {
    */
   public static function validate(string $value): bool {
     try {
-      $pixel = new \GmagickPixel($value);
+      new \GmagickPixel($value);
     }
     catch (\GmagickPixelException) {
       return FALSE;
@@ -59,8 +59,10 @@ class Color {
       }
     }
     catch (\GmagickPixelException $e) {
-      throw new \InvalidArgumentException("'{$value}' is not a valid color value.", 0, $e);
+      throw new \InvalidArgumentException("'$value' is not a valid color value.", 0, $e);
     }
+
+    return $color;
   }
 
   /**
@@ -103,7 +105,7 @@ class Color {
         }
       }
       catch (\GmagickPixelException $e) {
-        throw new \InvalidArgumentException("'{$input}' is not a valid color value.", 0, $e);
+        throw new \InvalidArgumentException("'$input' is not a valid color value.", 0, $e);
       }
     }
 
