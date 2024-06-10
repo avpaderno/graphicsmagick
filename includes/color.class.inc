@@ -10,7 +10,7 @@ class Color {
   /**
    * Validates whether a color value is correct.
    *
-   * @param $value
+   * @param string $value
    *   The string to validate.
    *
    * @return bool
@@ -18,7 +18,7 @@ class Color {
    */
   public static function validate(string $value): bool {
     try {
-      $pixel = new \GmagickPixel($value);
+      new \GmagickPixel($value);
     }
     catch (\GmagickPixelException) {
       return FALSE;
@@ -30,8 +30,9 @@ class Color {
   /**
    * Parses a color string.
    *
-   * @param string $value
-   *   The color string to parse.
+   * @param ?string $value
+   *   The color string to parse or NULL. In the latter case, 'transparent' is
+   *   used.
    * @param bool $include_alpha
    *   TRUE if the alpha channel must be included, FALSE otherwise.
    *
@@ -41,9 +42,9 @@ class Color {
    * @throws \InvalidArgumentException
    *   The argument is not a valid color value.
    */
-  public static function toRgb(string $value, bool $include_alpha = FALSE): array {
+  public static function toRgb(?string $value, bool $include_alpha = FALSE): array {
     try {
-      $pixel = new \GmagickPixel($value);
+      $pixel = new \GmagickPixel($value ?? 'transparent');
       $color = $pixel->getColor(TRUE);
 
       if ($include_alpha) {
@@ -59,7 +60,7 @@ class Color {
       }
     }
     catch (\GmagickPixelException $e) {
-      throw new \InvalidArgumentException("'{$value}' is not a valid color value.", 0, $e);
+      throw new \InvalidArgumentException("'$value' is not a valid color value.", 0, $e);
     }
 
     return $color;
@@ -68,9 +69,10 @@ class Color {
   /**
    * Converts RGB color arrays or strings to lowercase CSS notation.
    *
-   * @param array|string $input
-   *   The value to convert. If the value is an array the first three elements
-   *   will be used as the red, green and blue components.
+   * @param array|string|null $input
+   *   The value to convert or NULL. If the value is an array the first three
+   *   elements will be used as the red, green and blue components. If the value
+   *   is NULL, 'transparent' will be instead used.
    * @param bool $include_alpha
    *   TRUE if the alpha channel must be included, FALSE otherwise.
    *
@@ -80,8 +82,12 @@ class Color {
    * @throws \InvalidArgumentException
    *   The argument is not a valid color value.
    */
-  public static function toHex(array|string $input, bool $include_alpha = FALSE): string {
+  public static function toHex(array|string|null $input, bool $include_alpha = FALSE): string {
     $output = '';
+
+    if (is_null($input)) {
+      $input = 'transparent';
+    }
 
     if (is_string($input)) {
       try {
@@ -100,7 +106,7 @@ class Color {
         }
       }
       catch (\GmagickPixelException $e) {
-        throw new \InvalidArgumentException("'{$input}' is not a valid color value.", 0, $e);
+        throw new \InvalidArgumentException("'$input' is not a valid color value.", 0, $e);
       }
     }
 
