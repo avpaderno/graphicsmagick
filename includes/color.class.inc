@@ -53,7 +53,8 @@ class Color {
         // \Gmagick::Gmagick::COLOR_ALPHA throws
         // "GmagickPixelException: Unknown color type" despite the constant is
         // shown from `php --rc Gmagick`. The code only works with
-        // \Gmagick::COLOR_OPACITY.
+        // \Gmagick::COLOR_OPACITY, which apparently returns the alpha value,
+        // not the opacity value (whose value would be 1 - $alpha).
         $alpha = $pixel->getColorValue(\Gmagick::COLOR_OPACITY);
         $color['a'] = intval(round(256 * $alpha));
       }
