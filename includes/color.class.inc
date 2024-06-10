@@ -1,6 +1,6 @@
 <?php
 
-namespace \graphicsmagick\Utility;
+namespace graphicsmagick\Utility;
 
 /**
  * Performs color conversions.
@@ -52,7 +52,8 @@ class Color {
         // \Gmagick::Gmagick::COLOR_ALPHA throws
         // "GmagickPixelException: Unknown color type" despite the constant is
         // shown from `php --rc Gmagick`. The code only works with
-        // \Gmagick::COLOR_OPACITY.
+        // \Gmagick::COLOR_OPACITY, which apparently returns the alpha value,
+        // not the opacity value (whose value would be 1 - $alpha).
         $alpha = $pixel->getColorValue(\Gmagick::COLOR_OPACITY);
         $color['a'] = intval(round(256 * $alpha));
       }
@@ -60,6 +61,8 @@ class Color {
     catch (\GmagickPixelException $e) {
       throw new \InvalidArgumentException("'{$value}' is not a valid color value.", 0, $e);
     }
+
+    return $color;
   }
 
   /**
