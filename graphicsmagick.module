@@ -150,15 +150,6 @@ function graphicsmagick_image_toolkits(): array {
 }
 
 /**
- * Implements hook_system_info_alter().
- */
-function graphicsmagick_system_info_alter(array &$info, object $file, string $type): void {
-  if ($type == 'module' && $file->name == 'graphicsmagick_effects' && !module_exists('graphicsmagick_effects')) {
-    $info['disabled'] = TRUE;
-  }
-}
-
-/**
  * Implements hook_theme().
  */
 function graphicsmagick_theme(): array {

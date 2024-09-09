@@ -1,8 +1,0 @@
-<?php
-/**
- * @file
- * Hooks implementations for the GraphicsMagick Effects module.
- *
- * This file is empty because the code has been moved to the
- * graphicsmagick.module file.
- */
