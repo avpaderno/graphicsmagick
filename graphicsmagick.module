@@ -1693,6 +1693,10 @@ function graphicsmagick_image_effect(object $image, callable $effect, ...$data):
     // the original image handler and its state is preserved.
     $handler = clone $image->handler;
 
+    if (!method_exists($handler, 'getNumberImages') || !method_exists($handler, 'coalesceImages')) {
+      return FALSE;
+    }
+
     if ($handler->getNumberImages() > 1) {
       $handler = $handler->coalesceImages();
 
