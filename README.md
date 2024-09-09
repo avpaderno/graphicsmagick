@@ -38,12 +38,12 @@ Bugs and Feature requests should be reported in the
 
 ## Credits
 
-- Ported to Backdrop CMS by
-  [Alberto Paderno](https://www.drupal.org/u/avpaderno), co-maintainer of the
-  Drupal module, who maintains the Drupal 8+ branch.
-- Originally written for Drupal by [Andor](https://www.drupal.org/u/Sweetchuck),
-  project owner and maintainer of the Drupal module.
+Ported to Backdrop CMS by [Alberto Paderno](https://github.com/avpaderno)
 
+### Drupal maintainers
+
+- [Alberto Paderno](https://www.drupal.org/u/avpaderno)
+- [Andor](https://www.drupal.org/u/Sweetchuck)
 
 ## License
 
