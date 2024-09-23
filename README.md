@@ -42,8 +42,8 @@ Ported to Backdrop CMS by [Alberto Paderno](https://github.com/avpaderno)
 
 ### Drupal maintainers
 
-- [Alberto Paderno](https://www.drupal.org/u/avpaderno)
-- [Andor](https://www.drupal.org/u/Sweetchuck)
+- [Alberto Paderno](https://www.drupal.org/u/avpaderno) ([GraphicsMagick](https://www.drupal.org/project/graphicsmagick))
+- [Andor](https://www.drupal.org/u/Sweetchuck) ([GraphicsMagick PECL](https://www.drupal.org/project/gmagick))
 
 ## License
 
