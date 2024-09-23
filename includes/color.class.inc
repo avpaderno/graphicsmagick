@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * @file
+ * Contains \graphicsmagick\Utility\Color.
+ */
+
+declare(strict_types=1);
+
 namespace graphicsmagick\Utility;
 
 /**

@@ -1,4 +1,4 @@
-<?php
+g<?php
 /**
  * @file
  * Hooks implementations for the GraphicsMagick module.
@@ -757,7 +757,7 @@ function image_graphicsmagick_toolkit_solarize(object $image, int $level): bool 
 /**
  * Randomly displaces each pixel in a circular region.
  *
- * @.param object $image
+ * @param object $image
  *   An image object.
  *
  * @param float $radius
